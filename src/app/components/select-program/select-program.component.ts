@@ -17,6 +17,20 @@ export class SelectProgramComponent {
   showMuscleGroups = false;
   selectedMuscle: string | null = null;
 
+  muscleImages: { [key: string]: string } = {
+    Chest: 'assets/muscles/chest.png',
+    Shoulders: 'assets/muscles/shoulders.png',
+    Triceps: 'assets/muscles/tricpes.png',
+    Back: 'assets/muscles/back.png',
+    Biceps: 'assets/muscles/biceps.png',
+    Quads: 'assets/muscles/quads.png',
+    Hamstrings: 'assets/muscles/hamstrings.png',
+    Calves: 'assets/muscles/claves.png',
+    Abs: 'assets/muscles/abs.png',
+    Glutes: 'assets/muscles/glutes.png',
+    Cardio: 'assets/muscles/cardio.png'
+  };
+
   muscleGroups: string[] = [
     'Chest',
     'Shoulders',
