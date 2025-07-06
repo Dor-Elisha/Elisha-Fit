@@ -12,6 +12,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { CalanderComponent } from './components/calander/calander.component';
+import { SelectProgramComponent } from './components/select-program/select-program.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { CalanderComponent } from './components/calander/calander.component';
     HomeComponent,
     ProgramsComponent,
     AnalyicComponent,
-    CalanderComponent
+    CalanderComponent,
+    SelectProgramComponent
   ],
   imports: [
     BrowserModule,

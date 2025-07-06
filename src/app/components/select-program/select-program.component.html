@@ -1,0 +1,18 @@
+<button class="btn btn-primary" (click)="showMuscles = !showMuscles">
+  Create a program
+</button>
+
+<div *ngIf="showMuscles" class="mt-3">
+  <div *ngFor="let group of muscleGroups" class="mb-2">
+    <button class="btn btn-secondary" (click)="selectedMuscle = group">{{ group }}</button>
+  </div>
+</div>
+
+<div *ngIf="selectedMuscle" class="mt-3">
+  <h4>Exercises for {{ selectedMuscle }}</h4>
+  <ul>
+    <li *ngFor="let ex of filteredExercises">
+      {{ ex.name }} - {{ ex.reps }} reps x {{ ex.times }} sets, rest {{ ex.rest_between }}
+    </li>
+  </ul>
+</div>

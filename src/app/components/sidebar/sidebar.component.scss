@@ -1,0 +1,11 @@
+.sidebar {
+  width: 200px;
+}
+.sidebar.open {
+  display: block;
+}
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}

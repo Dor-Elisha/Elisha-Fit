@@ -1,0 +1,10 @@
+<div class="sidebar" [class.open]="sidebarOpen">
+  <button class="btn btn-link d-md-none" (click)="sidebarClose.emit()">Close</button>
+  <ul class="list-unstyled">
+    <li><a routerLink="/">Home</a></li>
+    <li><a routerLink="/programs">Programs</a></li>
+    <li><a routerLink="/calander">Calendar</a></li>
+    <li><a routerLink="/analyic">Analyic</a></li>
+    <li><a routerLink="/select-program">Select Program</a></li>
+  </ul>
+</div>
