@@ -8,6 +8,7 @@ import { HomeComponent } from './components/home/home.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ProgramsComponent } from './components/programs/programs.component';
 import { AnalyicComponent } from './components/analyic/analyic.component';
+import { SelectProgramComponent } from './components/select-program/select-program.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
@@ -21,7 +22,8 @@ import { CalanderComponent } from './components/calander/calander.component';
     HomeComponent,
     ProgramsComponent,
     AnalyicComponent,
-    CalanderComponent
+    CalanderComponent,
+    SelectProgramComponent
   ],
   imports: [
     BrowserModule,

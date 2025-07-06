@@ -1,0 +1,36 @@
+<div class="d-flex flex-column gap-3">
+  <span class="page-title" style="font-size: 1.5rem; font-weight: bold;">Select Program</span>
+  <button class="btn btn-primary align-self-start" (click)="toggleMuscleGroups()">Create a program</button>
+
+  <div *ngIf="showMuscleGroups" class="mt-3">
+    <div class="d-flex flex-wrap gap-2">
+      <button *ngFor="let muscle of muscleGroups" class="btn btn-outline-secondary" (click)="selectMuscle(muscle)">
+        {{ muscle }}
+      </button>
+    </div>
+
+    <div *ngIf="selectedMuscle" class="mt-4">
+      <h5>{{ selectedMuscle }} Exercises</h5>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Exercise</th>
+              <th>Reps</th>
+              <th>Sets</th>
+              <th>Rest</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ex of filteredExercises">
+              <td>{{ ex.name }}</td>
+              <td>{{ ex.reps }}</td>
+              <td>{{ ex.times }}</td>
+              <td>{{ ex.rest_between }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
