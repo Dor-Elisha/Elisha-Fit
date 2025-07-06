@@ -1,0 +1,31 @@
+<!-- calander.component.html -->
+<div class="calendar-wrapper h-100 d-flex flex-column">
+
+  <!-- header with controls & title -->
+  <div class="cal-header d-flex justify-content-center align-items-center">
+    <div class="d-flex align-items-center justify-content-between w-100">
+        <div
+          class="btn btn-light border"
+          mwlCalendarPreviousView
+          [view]="'month'"
+          [(viewDate)]="viewDate">
+          ‹
+        </div>
+        <span>{{ viewDate | calendarDate:'monthViewTitle':locale }}</span>
+        <div
+          class="btn btn-light border"
+          mwlCalendarNextView
+          [view]="'month'"
+          [(viewDate)]="viewDate">
+          ›
+        </div>
+    </div>
+  </div>
+  <!-- actual month view -->
+  <mwl-calendar-month-view
+    class="flex-grow-1"
+    [viewDate]="viewDate"
+    [events]="events"
+    [activeDayIsOpen]="false">
+  </mwl-calendar-month-view>
+</div>

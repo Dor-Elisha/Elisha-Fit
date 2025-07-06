@@ -1,0 +1,116 @@
+::ng-deep mwl-calendar-month-view {
+  border: none;
+  font-family: inherit;
+  font-size: 16px;
+  display: flex;
+  height: 100%;
+  width: 100%;
+
+  .cal-month-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+
+    .cal-days {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      border: none;
+      font-weight: 600;
+      color: #444;
+
+      .ng-star-inserted {
+        flex-grow: 1;
+        border: none;
+
+        .cal-cell-row {
+          height: 100%;
+          border: none;
+
+          &:hover {
+            background-color: unset;
+          }
+
+          .cal-cell {
+            border-radius: 12px;
+          }
+        }
+      }
+
+      .cal-day-cell {
+        border: none;
+        background-color: transparent;
+        text-align: center;
+        vertical-align: middle;
+        min-height: unset;
+        cursor: pointer;
+
+
+        &.cal-today {
+          background-color: black;
+          font-weight: bold;
+          border-radius: 12px;
+
+          &:hover {
+            background-color: #0d1b3e;
+          }
+
+          .cal-day-number {
+            color: white !important;
+
+            &:hover {
+              background-color: unset;
+            }
+          }
+        }
+
+        &.cal-weekend .cal-day-number {
+          color: black;
+        }
+
+        &.cal-out-month {
+          color: #ccc;
+        }
+      }
+
+      .cal-cell-top {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: unset;
+
+        .cal-day-number {
+          color: black;
+          opacity: unset;
+        }
+      }
+
+      .cal-day-number {
+        font-size: 1rem !important;
+        font-weight: 500;
+        margin: 0 !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px;
+        transition: background-color 0.2s;
+
+        &:hover {
+          background-color: #e0e0e0;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .cal-header {
+      text-align: center;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .cal-events {
+      display: none;
+    }
+  }
+}
