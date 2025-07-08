@@ -22,13 +22,18 @@
             <span class="mb-3">Select exercises for the selected day</span>
             <div class="row g-3 overflow-auto" style="max-height: 250px;">
               <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let exercise of exerciseService.exercises">
-                <div class="card h-100 exercise-card" (click)="addExercise(exercise)" style="cursor: pointer;">
-                  <div class="card-body d-flex flex-column align-items-center">
-                    <h5 class="card-title">{{ exercise.name }}</h5>
-                    <div style="width: 50px; height: 50px; overflow: hidden; border-radius: 50%;" *ngFor="let image of exercise.images">
-                      <img [src]="image" alt="{{ exercise.name }}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                    <!-- Add more exercise details here if needed -->
+                <div class="card exercise-card p-2 d-flex flex-column align-items-center" (click)="addExercise(exercise)" style="cursor: pointer;">
+                  <div class="flex-fill w-100 d-flex align-items-center justify-content-center">
+                    <button class="btn btn-link" (click)="prevImage(exercise); $event.stopPropagation();">
+                      &lt;
+                    </button>
+                    <img [src]="exercise.images[imageIndexes[exercise.name] || 0]" alt="{{ exercise.name }}" class="img-fluid" style="max-height: 100%; max-width: 80%; object-fit: contain;">
+                    <button class="btn btn-link" (click)="nextImage(exercise); $event.stopPropagation();">
+                      &gt;
+                    </button>
+                  </div>
+                  <div class="mt-auto">
+                    <h5 class="card-title text-center mb-0">{{ exercise.name }}</h5>
                   </div>
                 </div>
               </div>

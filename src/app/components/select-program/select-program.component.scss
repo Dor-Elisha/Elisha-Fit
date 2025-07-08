@@ -32,9 +32,18 @@
 .animated-container {
   width: 100%;
 }
-.exercise-card:hover {
- box-shadow: 0 4px 16px rgba(0,0,0,0.15);
- border: 1.5px solid #007bff;
- background: #f5faff;
- transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+.exercise-card {
+  width: 500px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    border: 1.5px solid #007bff;
+    background: #f5faff;
+    transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+  }
 }
