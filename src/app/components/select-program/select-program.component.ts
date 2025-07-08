@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GeneralService } from 'src/general.service';
 
 interface Exercise {
   name: string;
@@ -14,6 +15,8 @@ interface Exercise {
   styleUrls: ['./select-program.component.scss']
 })
 export class SelectProgramComponent {
+  constructor(private gs: GeneralService) {}
+
   showMuscleGroups = false;
   selectedMuscle: string | null = null;
 
@@ -118,5 +121,9 @@ export class SelectProgramComponent {
 
   selectMuscle(muscle: string): void {
     this.selectedMuscle = muscle;
+  }
+
+  addExerciseToProgram(ex: Exercise): void {
+    this.gs.addExerciseToProgram(ex);
   }
 }
