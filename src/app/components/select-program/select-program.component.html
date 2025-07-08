@@ -25,6 +25,9 @@
                 <div class="card h-100 exercise-card" (click)="addExercise(exercise)" style="cursor: pointer;">
                   <div class="card-body d-flex flex-column align-items-center">
                     <h5 class="card-title">{{ exercise.name }}</h5>
+                    <div style="width: 50px; height: 50px; overflow: hidden; border-radius: 50%;" *ngFor="let image of exercise.images">
+                      <img [src]="image" alt="{{ exercise.name }}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
                     <!-- Add more exercise details here if needed -->
                   </div>
                 </div>
