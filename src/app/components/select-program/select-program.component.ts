@@ -20,16 +20,36 @@ interface Exercise {
 })
 export class SelectProgramComponent {
   constructor(private gs: GeneralService, private exerciseService: ExerciseService) { }
-
+  newProgram:any;
   _=_;
+  containerOpen = false;
 
-  toggleMuscleGroups(): void {
+  createNewProgram(): void {
+    this.newProgram = {
+      name: '',
+      description: '',
+      exercises: [],
+      duration: 0,
+      level: '',
+      category: '',
+      show: true,
+      save: () => {
+        console.log(this.newProgram.name);
+      }
+    }
+
     this.exerciseService.getExercises().subscribe(data => {
       this.exerciseService.exercises = data.exercises;
       this.exerciseService.categories = _.uniq(_.map(this.exerciseService.exercises, 'category'));
       this.exerciseService.muscleGroups = _.uniq(_.flatMap(this.exerciseService.exercises, 'primaryMuscles'));
       this.exerciseService.exerciseLevels = _.uniq(_.map(this.exerciseService.exercises, 'level'));
     });
+  }
+
+
+  onDayClick(day: string) {
+    this.containerOpen = true;
+    // handle day selection logic if needed
   }
 
 }

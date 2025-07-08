@@ -16,6 +16,7 @@ import { CalanderComponent } from './components/calander/calander.component';
 import { GeneralService } from './services/general.service';
 import { ExerciseService } from './services/exercise.service';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,7 @@ import { HttpClientModule } from '@angular/common/http';
     ProgramsComponent,
     AnalyicComponent,
     CalanderComponent,
-    SelectProgramComponent
+    SelectProgramComponent,
   ],
   imports: [
     BrowserModule,
@@ -37,11 +38,9 @@ import { HttpClientModule } from '@angular/common/http';
       provide: DateAdapter,
       useFactory: adapterFactory,
     }),
+    FormsModule,
   ],
-  providers: [
-    GeneralService,
-    ExerciseService
-  ],
+  providers: [GeneralService, ExerciseService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
