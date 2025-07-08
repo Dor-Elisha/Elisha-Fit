@@ -13,7 +13,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { CalanderComponent } from './components/calander/calander.component';
-import { GeneralService } from '../general.service';
+import { GeneralService } from './services/general.service';
+import { ExerciseService } from './services/exercise.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -30,12 +32,16 @@ import { GeneralService } from '../general.service';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    HttpClientModule,
     CalendarModule.forRoot({
       provide: DateAdapter,
       useFactory: adapterFactory,
     }),
   ],
-  providers: [GeneralService],
+  providers: [
+    GeneralService,
+    ExerciseService
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
