@@ -13,6 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { CalanderComponent } from './components/calander/calander.component';
+import { GeneralService } from '../general.service';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,7 @@ import { CalanderComponent } from './components/calander/calander.component';
       useFactory: adapterFactory,
     }),
   ],
-  providers: [],
+  providers: [GeneralService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
