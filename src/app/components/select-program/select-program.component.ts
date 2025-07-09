@@ -12,6 +12,8 @@ export class SelectProgramComponent {
   constructor(private gs: GeneralService, public exerciseService: ExerciseService) { }
   newProgram:any;
 
+  imageIndexes: { [key: string]: number } = {};
+
   _=_;
   containerOpen = false;
   selectedDay = 'Sunday';
@@ -56,5 +58,21 @@ export class SelectProgramComponent {
     if (this.newProgram && this.newProgram.exercises && this.selectedDay) {
       this.newProgram.exercises[this.selectedDay].programs.push(exercise);
     }
+  }
+
+  nextImage(exercise: any) {
+    const key = exercise.name;
+    if (!this.imageIndexes[key]) {
+      this.imageIndexes[key] = 0;
+    }
+    this.imageIndexes[key] = (this.imageIndexes[key] + 1) % exercise.images.length;
+  }
+
+  prevImage(exercise: any) {
+    const key = exercise.name;
+    if (!this.imageIndexes[key]) {
+      this.imageIndexes[key] = 0;
+    }
+    this.imageIndexes[key] = (this.imageIndexes[key] - 1 + exercise.images.length) % exercise.images.length;
   }
 }
