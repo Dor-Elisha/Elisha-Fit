@@ -12,6 +12,7 @@ export class ExerciseService {
   categories: any;
   muscleGroups: any;
   exerciseLevels: any;
+
   getExercises(): Observable<any> {
     return this.http.get<any>('assets/data/exercises.json');
   }

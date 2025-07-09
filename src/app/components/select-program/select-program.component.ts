@@ -17,6 +17,10 @@ export class SelectProgramComponent {
   _=_;
   containerOpen = false;
   selectedDay = 'Sunday';
+  searchText = '';
+  activeFilters: string[] = [];
+
+
   createNewProgram(): void {
     this.newProgram = {
       name: '',
@@ -74,5 +78,25 @@ export class SelectProgramComponent {
       this.imageIndexes[key] = 0;
     }
     this.imageIndexes[key] = (this.imageIndexes[key] - 1 + exercise.images.length) % exercise.images.length;
+  }
+
+
+  searchExercises = (filterCategory?: string) => {
+    if (filterCategory) {
+      // Toggle filter selection
+      if (this.activeFilters.includes(filterCategory)) {
+        this.activeFilters = this.activeFilters.filter(f => f !== filterCategory);
+      } else {
+        this.activeFilters.push(filterCategory);
+      }
+    }
+
+    const search = this.searchText ? this.searchText.toLowerCase() : '';
+
+    this.exerciseService.exercises.forEach((exercise: any) => {
+      const matchesSearch = !search || exercise.name.toLowerCase().includes(search);
+      const matchesFilter = !this.activeFilters.length || this.activeFilters.includes(exercise.category) || (exercise.primaryMuscles && exercise.primaryMuscles.some((muscle: string) => this.activeFilters.includes(muscle)));
+      exercise.show = !(matchesSearch && matchesFilter);
+    });
   }
 }
