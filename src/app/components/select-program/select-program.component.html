@@ -15,21 +15,21 @@
           {{ day }}
         </button>
       </div>
-    <div class="animated-container" [style.height]="containerOpen ? '400px' : '0'" [style.overflow]="'hidden'" [style.transition]="'height 0.4s cubic-bezier(0.4,0,0.2,1)'">
+    <div class="animated-container" [style.height]="containerOpen ? '800px' : '0'" [style.overflow]="'hidden'" [style.transition]="'height 0.4s cubic-bezier(0.4,0,0.2,1)'">
       <div class="row g-3">
         <ng-container *ngFor="let day of ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']">
           <div class="col-12" *ngIf="selectedDay === day">
             <span class="mb-3">Select exercises for the selected day</span>
-            <div class="row g-3 overflow-auto" style="max-height: 250px;">
+            <div class="row g-3 overflow-auto" style="max-height: 500px;">
               <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let exercise of exerciseService.exercises">
-                <div class="card exercise-card p-2 d-flex flex-column align-items-center" (click)="addExercise(exercise)" style="cursor: pointer;">
+                <div class="card exercise-card d-flex flex-column align-items-center" (click)="addExercise(exercise)" style="cursor: pointer;">
                   <div class="flex-fill w-100 d-flex align-items-center justify-content-center">
-                    <button class="btn btn-link" (click)="prevImage(exercise); $event.stopPropagation();">
-                      &lt;
+                    <button class="btn btn-link border position-absolute" style="left: 10px;" (click)="prevImage(exercise); $event.stopPropagation();">
+                      <i class="fas fa-chevron-left"></i>
                     </button>
-                    <img [src]="exercise.images[imageIndexes[exercise.name] || 0]" alt="{{ exercise.name }}" class="img-fluid" style="max-height: 100%; max-width: 80%; object-fit: contain;">
-                    <button class="btn btn-link" (click)="nextImage(exercise); $event.stopPropagation();">
-                      &gt;
+                    <img [src]="exercise.images[imageIndexes[exercise.name] || 0]" alt="{{ exercise.name }}" class="img-fluid" style="max-height: 100%; object-fit: contain;">
+                    <button class="btn btn-link border position-absolute" style="right: 10px;" (click)="nextImage(exercise); $event.stopPropagation();">
+                      <i class="fas fa-chevron-right"></i>
                     </button>
                   </div>
                   <div class="mt-auto">
