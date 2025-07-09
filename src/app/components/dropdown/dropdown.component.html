@@ -1,11 +1,19 @@
 <div class="dropdown" [class.show]="menuOpen">
   <button type="button" class="btn btn-secondary dropdown-toggle" (click)="toggleMenu()" aria-expanded="menuOpen">
-    {{ text }}
+    {{ displayText }}
   </button>
-  <ul class="dropdown-menu" [class.show]="menuOpen" style="max-height: 300px; overflow-y: auto;">
+  <ul class="dropdown-menu" [class.show]="menuOpen" style="max-height: 300px; overflow-y: auto">
     <li *ngFor="let item of items">
-      <span *ngIf="itemDisplayKey" class="dropdown-item" style="cursor: pointer;" (click)="itemClick(item[itemDisplayKey])">{{ item[itemDisplayKey] }}</span>
-      <span *ngIf="!itemDisplayKey" class="dropdown-item" style="cursor: pointer;" (click)="itemClick(item)">{{ item }}</span>
+      <span class="dropdown-item" style="cursor: pointer" (click)="itemClick(item)">
+        <input
+          *ngIf="isMultipleSelection"
+          type="checkbox"
+          class="form-check-input me-2"
+          [checked]="item.selected"
+          (click)="$event.stopPropagation(); itemClick(item)"
+        />
+        {{ itemDisplayKey ? item[itemDisplayKey] : item }}
+      </span>
     </li>
   </ul>
 </div>
