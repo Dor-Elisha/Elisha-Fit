@@ -1,0 +1,10 @@
+<div class="dropdown" [class.show]="menuOpen">
+  <button type="button" class="btn btn-secondary dropdown-toggle" (click)="toggleMenu()" aria-expanded="menuOpen">
+    {{ text }}
+  </button>
+  <ul class="dropdown-menu" [class.show]="menuOpen">
+    <li *ngFor="let item of items">
+      <a class="dropdown-item" href="#" (click)="menuOpen = false">{{ item }}</a>
+    </li>
+  </ul>
+</div>

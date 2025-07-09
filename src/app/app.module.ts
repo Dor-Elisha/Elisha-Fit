@@ -13,6 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { CalanderComponent } from './components/calander/calander.component';
+import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { GeneralService } from './services/general.service';
 import { ExerciseService } from './services/exercise.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -28,6 +29,7 @@ import { FormsModule } from '@angular/forms';
     AnalyicComponent,
     CalanderComponent,
     SelectProgramComponent,
+    DropdownComponent,
   ],
   imports: [
     BrowserModule,
