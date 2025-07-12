@@ -16,6 +16,7 @@ import { CalanderComponent } from './components/calander/calander.component';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { LoginComponent } from './components/login/login.component';
 import { GeneralService } from './services/general.service';
+import { AuthService } from './services/auth.service';
 import { ExerciseService } from './services/exercise.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -50,7 +51,7 @@ import { ToastrModule } from 'ngx-toastr';
     }),
     FormsModule,
   ],
-  providers: [GeneralService, ExerciseService],
+  providers: [GeneralService, ExerciseService, AuthService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
