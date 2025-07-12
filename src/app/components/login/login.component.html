@@ -1,0 +1,69 @@
+<div class="auth-container">
+  <div class="card p-4">
+    <h2 class="mb-4 text-center">{{ isSignup ? 'Sign Up' : 'Login' }}</h2>
+
+    <form *ngIf="!isSignup" (ngSubmit)="login()" #loginForm="ngForm">
+      <div class="mb-3">
+        <input
+          type="email"
+          class="form-control"
+          name="email"
+          placeholder="Email"
+          required
+          [(ngModel)]="loginData.email"
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="password"
+          class="form-control"
+          name="password"
+          placeholder="Password"
+          required
+          [(ngModel)]="loginData.password"
+        />
+      </div>
+      <button class="btn btn-primary w-100" type="submit">Login</button>
+    </form>
+
+    <form *ngIf="isSignup" (ngSubmit)="signup()" #signupForm="ngForm">
+      <div class="mb-3">
+        <input
+          type="email"
+          class="form-control"
+          name="email"
+          placeholder="Email"
+          required
+          [(ngModel)]="signupData.email"
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="password"
+          class="form-control"
+          name="password"
+          placeholder="Password"
+          required
+          [(ngModel)]="signupData.password"
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="password"
+          class="form-control"
+          name="confirmPassword"
+          placeholder="Confirm Password"
+          required
+          [(ngModel)]="signupData.confirmPassword"
+        />
+      </div>
+      <button class="btn btn-primary w-100" type="submit">Sign Up</button>
+    </form>
+
+    <div class="text-center mt-3">
+      <a href="#" (click)="toggleMode(); $event.preventDefault()">
+        {{ isSignup ? 'Already have an account? Log in' : "Don't have an account? Sign up" }}
+      </a>
+    </div>
+  </div>
+</div>
