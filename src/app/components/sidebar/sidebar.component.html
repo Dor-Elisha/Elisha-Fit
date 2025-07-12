@@ -28,9 +28,9 @@
       <i class="fas fa-chart-line"></i>
       <span style="font-size: 14px;">Analytic</span>
     </div>
-    <div class="d-flex flex-row align-items-center gap-2 nav-item" [routerLink]="['/select-program']">
+    <div class="d-flex flex-row align-items-center gap-2 nav-item" (click)="gs.createProgramPopupShow = true;">
       <i class="fas fa-dumbbell"></i>
-      <span style="font-size: 14px;">Select Program</span>
+      <span style="font-size: 14px;">Create Program</span>
     </div>
   </div>
 
@@ -55,7 +55,7 @@
           <span>Programs</span>
           <span class="text-muted" style="font-size: 12px;">Active</span>
         </div>
-        <span class="text-success" style="font-size: 1.2rem">{{programsActive}}</span>
+        <span class="text-success" style="font-size: 1.2rem">{{savedProgram}}</span>
       </div>
     </div>
   </div>

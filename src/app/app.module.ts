@@ -18,6 +18,7 @@ import { GeneralService } from './services/general.service';
 import { ExerciseService } from './services/exercise.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,11 @@ import { FormsModule } from '@angular/forms';
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
+    ToastrModule.forRoot({
+      timeOut: 3000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+    }),
     CalendarModule.forRoot({
       provide: DateAdapter,
       useFactory: adapterFactory,

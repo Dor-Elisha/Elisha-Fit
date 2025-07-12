@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { GeneralService } from '../../services/general.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -8,11 +9,16 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class SidebarComponent implements OnInit {
   @Input() sidebarOpen: boolean = false;
   @Output() sidebarClose: EventEmitter<void> = new EventEmitter();
-  constructor() { }
+  constructor(public gs: GeneralService) {}
 
   weekWorkouts = 0;
-  programsActive = 0;
+  savedProgram = this.gs.savedPrograms.length;
+
   ngOnInit(): void {
+
   }
 
+  openCreateProgramPopup = () => {
+
+  }
 }

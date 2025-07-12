@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { GeneralService } from '../../services/general.service';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-home',
@@ -6,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  constructor() { }
+  constructor(public gs: GeneralService) { }
 
   activeTab: 'calendar' | 'programs' = 'calendar';
   today = new Date();
@@ -14,6 +16,7 @@ export class HomeComponent implements OnInit {
   activeProgram = 1;
   totalSessions = 24;
   caloriesBurned = 1543;
+  _=_;
 
   cards = [
     {
@@ -39,5 +42,10 @@ export class HomeComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+
+  }
+
+  viewProgram = (program:any) => {
+
   }
 }

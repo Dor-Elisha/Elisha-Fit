@@ -42,7 +42,14 @@
   </div>
 
   <div *ngIf="activeTab === 'programs'" class="mt-4">
-    <!-- Placeholder for Programs tab content -->
-    <p>[ Programs content will go here ]</p>
+    <div *ngFor="let program of gs.savedPrograms">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ program.name }}</h5>
+          <p class="card-text">Exercises: {{program.exercises.length}}</p>
+          <button class="btn btn-primary" (click)="viewProgram(program)">View Program</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

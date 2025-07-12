@@ -1,57 +1,47 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { GeneralService } from 'src/app/services/general.service';
 import { ExerciseService } from '../../services/exercise.service';
 import * as _ from 'lodash';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-select-program',
   templateUrl: './select-program.component.html',
   styleUrls: ['./select-program.component.scss']
 })
-export class SelectProgramComponent {
-  constructor(public gs: GeneralService, public exerciseService: ExerciseService) { }
+export class SelectProgramComponent implements OnInit {
+  constructor(public gs: GeneralService, public exerciseService: ExerciseService, private toaster: ToastrService) { }
   newProgram:any;
   dayProgramName = '';
 
   imageIndexes: { [key: string]: number } = {};
 
   _=_;
-  containerOpen = false;
-  selectedDay = 'Sunday';
   searchText = '';
   activeFilters: string[] = [];
   addWeightPopup:any;
   addRepsPopup: any;
+  addRestPopup: any;
 
-
-  createNewProgram(): void {
+  ngOnInit(): void {
     this.newProgram = {
       name: '',
-      description: '',
       exercises: [],
-      duration: 0,
-      level: '',
-      category: '',
       show: true,
       save: () => {
-        console.log(this.newProgram.name);
+        if (!this.newProgram.name) {
+          this.toaster.error('Please enter a program name');
+          return;
+        }
+        if (!this.newProgram.exercises.length) {
+          this.toaster.error('Please add at least one exercise to the program');
+          return;
+        }
+        this.gs.saveProgram({name: this.newProgram.name, exercises: this.newProgram.exercises});
       }
     }
-
-    this.exerciseService.getExercises().subscribe(data => {
-      this.exerciseService.exercises = data.exercises;
-      this.exerciseService.categories = _.uniq(_.map(this.exerciseService.exercises, 'category'));
-      this.exerciseService.muscleGroups = _.uniq(_.flatMap(this.exerciseService.exercises, 'primaryMuscles'));
-      this.exerciseService.exerciseLevels = _.uniq(_.map(this.exerciseService.exercises, 'level'));
-    });
   }
 
-
-  onDayClick(day: string) {
-    this.selectedDay = day;
-    this.containerOpen = true;
-    // handle day selection logic if needed
-  }
 
   addExercise = (exercise: any) => {
     this.newProgram.exercises.push(exercise);
@@ -103,17 +93,52 @@ export class SelectProgramComponent {
     this.addWeightPopup = {
       show: true,
       exercise: exercise,
-      weight: 0,
+      unit: exercise.weight?.unit || 'kg',
+      weight: exercise.weight?.weight || 0,
       confirm: () => {
         if (this.addWeightPopup.weight > 0) {
-          exercise.weight = this.addWeightPopup.weight;
+          exercise.weight = {weight: this.addWeightPopup.weight, unit: this.addWeightPopup.unit};
         }
         this.addWeightPopup = null;
       }
     }
   }
 
-  addRestTime = (day:any ,exercise: any) => {
+  addReps = (exercise: any) => {
+    this.addRepsPopup = {
+      show: true,
+      exercise: exercise,
+      timeNum: 1,
+      repsNum: 1,
+      restSecondsNum: 0,
+      preview: [{reps: 1}],
+      timesChange: () => {
+        this.addRepsPopup.preview = Array.from({ length: this.addRepsPopup.timeNum }, () => ({ reps: this.addRepsPopup.repsNum, restSeconds: this.addRepsPopup.restSecondsNum }));
+      },
+      confirm: () => {
+        exercise.reps = Array.from(
+          { length: this.addRepsPopup.timeNum },
+          () => ({
+            reps: this.addRepsPopup.repsNum,
+            restSeconds: this.addRepsPopup.restSecondsNum
+          })
+        );
+        this.addRepsPopup = null;
+      }
+    }
+  }
 
+  addRestTime = (exercise: any) => {
+    this.addRestPopup = {
+      show: true,
+      exercise: exercise,
+      restSecondsNum: 0,
+      confirm: () => {
+        if (this.addRestPopup.restSecondsNum > 0) {
+          exercise.restSeconds = this.addRestPopup.restSecondsNum;
+        }
+        this.addRestPopup = null;
+      }
+    }
   }
 }

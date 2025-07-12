@@ -16,7 +16,7 @@
     "format": "npx prettier . --write"
   },
   "dependencies": {
-    "@angular/animations": "^14.2.6",
+    "@angular/animations": "^14.3.0",
     "@angular/common": "^14.2.6",
     "@angular/compiler": "^14.2.6",
     "@angular/core": "^14.2.6",
@@ -28,6 +28,7 @@
     "bootstrap": "^5.3.7",
     "date-fns": "^4.1.0",
     "lodash": "^4.17.21",
+    "ngx-toastr": "^14.1.4",
     "rxjs": "^7.5.7",
     "the-new-css-reset": "^1.11.3",
     "tslib": "^2.4.0",

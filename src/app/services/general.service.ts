@@ -9,11 +9,12 @@ export interface SavedProgram {
   providedIn: 'root'
 })
 export class GeneralService {
-  public savedPrograms: SavedProgram[] = [];
+  savedPrograms: any = [];
+  createProgramPopupShow = false;
 
   constructor() {}
 
-  saveProgram(program: SavedProgram): void {
+  saveProgram (program: SavedProgram) {
     this.savedPrograms.push(program);
   }
 }
