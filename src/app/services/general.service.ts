@@ -16,5 +16,6 @@ export class GeneralService {
 
   saveProgram (program: SavedProgram) {
     this.savedPrograms.push(program);
+    this.createProgramPopupShow = false;
   }
 }

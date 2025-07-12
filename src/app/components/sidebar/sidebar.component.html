@@ -1,4 +1,4 @@
-<div class="sidebar-container d-flex flex-column gap-4 p-4" [ngClass]="{'open': sidebarOpen}">
+<div class="sidebar-container d-flex flex-column gap-4 p-4 h-100" [ngClass]="{'open': sidebarOpen}">
   <div class="header-container d-flex flex-row align-items-center">
     <!-- Mobile hamburger -->
     <button
@@ -57,6 +57,12 @@
         </div>
         <span class="text-success" style="font-size: 1.2rem">{{savedProgram}}</span>
       </div>
+    </div>
+  </div>
+  <div class="mt-auto">
+    <div class="d-flex flex-row align-items-center gap-2 nav-item">
+      <i class="fas fa-sign-out-alt"></i>
+      <span style="font-size: 14px;">Logout</span>
     </div>
   </div>
 </div>

@@ -1,7 +1,7 @@
 <div class="main-page d-flex flex-md-row flex-column" style="background-color: #f8f9fa;">
   <div class="d-flex flex-column">
     <app-header (sidebarToggle)="sidebarToggle = !sidebarToggle"></app-header>
-    <app-sidebar [sidebarOpen]="sidebarToggle" (sidebarClose)="sidebarToggle = false">
+    <app-sidebar class="flex-grow-1" [sidebarOpen]="sidebarToggle" (sidebarClose)="sidebarToggle = false">
     </app-sidebar>
   </div>
   <div class="content-container d-flex flex-column gap-4 p-4" style="flex: 1 0;">
