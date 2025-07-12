@@ -99,4 +99,8 @@ export class SelectProgramComponent {
       exercise.show = !(matchesSearch && matchesFilter);
     });
   }
+
+  addWeight = (day:any ,exercise: any) => {
+
+  }
 }

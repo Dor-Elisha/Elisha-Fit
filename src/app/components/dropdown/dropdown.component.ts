@@ -1,11 +1,12 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-dropdown',
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.scss'],
 })
-export class DropdownComponent {
+export class DropdownComponent implements OnInit {
   @Input() items: any[] = [];
   @Input() text = 'Select';
   @Input() itemDisplayKey = '';
@@ -13,44 +14,22 @@ export class DropdownComponent {
   @Output() onItemClick = new EventEmitter<any>();
 
   menuOpen = false;
+  displayText = '';
+  selectedIndex: number | null = null;
+  _=_;
 
-  get displayText(): string {
-    if (this.isMultipleSelection) {
-      const selectedItems = this.items.filter((i) => i && i.selected);
-      if (selectedItems.length) {
-        return selectedItems.map((i) => (this.itemDisplayKey ? i[this.itemDisplayKey] : i)).join(', ');
-      }
-    } else {
-      const selectedItem = this.items.find((i) => i && i.selected);
-      if (selectedItem) {
-        return this.itemDisplayKey ? selectedItem[this.itemDisplayKey] : selectedItem;
-      }
-    }
-    return this.text || 'Select';
+  ngOnInit() {
+    this.displayText = 'Select';
   }
 
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
 
-  itemClick(item: any): void {
-    if (this.isMultipleSelection) {
-      if (item && typeof item === 'object') {
-        item.selected = !item.selected;
-      }
-      // keep menu open for multiple selection
-    } else {
-      this.menuOpen = false;
-      this.items.forEach((i) => {
-        if (i && typeof i === 'object') {
-          i.selected = false;
-        }
-      });
-      if (item && typeof item === 'object') {
-        item.selected = true;
-      }
-    }
-
+  itemClick(item: any, index: number): void {
+    this.selectedIndex = index;
+    this.menuOpen = false;
+    this.displayText = (this.displayText === item) ? 'Select' : item;
     const emitItem = this.itemDisplayKey && !this.isMultipleSelection ? item[this.itemDisplayKey] : item;
     this.onItemClick.emit(emitItem);
   }

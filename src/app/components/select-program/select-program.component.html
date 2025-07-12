@@ -16,13 +16,13 @@
         </button>
       </div>
       <!--search-->
-      <div class="d-flex flex-row align-items-center">
+      <div class="d-flex flex-column gap-2">
         <input type="text" class="form-control" style="width: 250px;" [(ngModel)]="searchText" placeholder="Search exercises" (input)="searchExercises()">
-        <div class="d-flex flex-row align-items-center gap-2">
+        <div class="d-flex flex-row align-items-center gap-2" *ngIf="exerciseService.categories">
           <span>Filter by categories</span>
           <app-dropdown [text]="'Select'" [items]="exerciseService.categories" (onItemClick)="searchExercises($event)"></app-dropdown>
         </div>
-        <div class="d-flex flex-row align-items-center gap-2">
+        <div class="d-flex flex-row align-items-center gap-2" *ngIf="exerciseService.muscleGroups">
           <span>Filter by muscles group</span>
           <app-dropdown [text]="'Select'" [items]="exerciseService.muscleGroups" (onItemClick)="searchExercises($event)"></app-dropdown>
         </div>
@@ -30,7 +30,7 @@
     <div class="animated-container">
       <div class="row g-3">
         <ng-container *ngFor="let day of ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']">
-          <div class="col-12" *ngIf="selectedDay === day">
+          <div class="col-6" *ngIf="selectedDay === day">
             <span class="mb-3">Select exercises for the selected day</span>
             <div class="row g-3 overflow-auto" style="max-height: 500px;">
               <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let exercise of exerciseService.exercises" [hidden]="exercise.show">
@@ -50,13 +50,27 @@
                 </div>
               </div>
             </div>
-            <div *ngIf="newProgram.exercises[day].programs.length" class="mt-3">
-              <hr/>
-              <div *ngFor="let ex of newProgram.exercises[day].programs">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                  <span>{{ ex.name }}</span>
-                  <!-- Add more exercise details here if needed -->
+          </div>
+          <div *ngIf="newProgram.exercises[day].programs.length" class="col-6">
+            <hr/>
+            <div *ngFor="let ex of newProgram.exercises[day].programs">
+              <div class="d-flex gap-2 mb-2 border rounded" style="height: 200px;">
+                <div class="overflow-hidden" style="width: 120px; height: 120px;">
+                  <img [src]="ex.images[0]" alt="{{ ex.name }}" class="img-fluid rounded" style="max-height: 100%; object-fit: cover;">
                 </div>
+                <div class="d-flex flex-column gap-1">
+                  <span style="font-size: 1.4rem; font-weight: bold;">{{ ex.name }}</span>
+                  <div class="px-1 rounded bg-danger bg-opacity-50" style="cursor: pointer; width: fit-content;" (click)="addWeight(day, ex)">
+                    <span class="text-white" style="font-size: 0.9rem;">{{'Add Weight +'}}</span>
+                  </div>
+                  <div class="px-1 rounded bg-danger bg-opacity-50" style="cursor: pointer; width: fit-content;" (click)="addWeight(day, ex)">
+                    <span class="text-white" style="font-size: 0.9rem;">{{'Add Reps and times +'}}</span>
+                  </div>
+                </div>
+                <!--<div class="text-danger border border-danger rounded" style="cursor: pointer;">
+                  <i class="fas fa-times"></i> remove
+                </div>-->
+                <!-- Add more exercise details here if needed -->
               </div>
             </div>
           </div>
@@ -71,36 +85,4 @@
         </button>
       </div>
     </div>
-  <!--<div *ngIf="showMuscleGroups" class="mt-3">
-    <div class="muscle-grid">
-      <div *ngFor="let muscle of muscleGroups" class="muscle-card" (click)="selectMuscle(muscle)">
-        <img [src]="muscleImages[muscle]" [alt]="muscle" />
-        <span>{{ muscle }}</span>
-      </div>
-    </div>
-
-    <div *ngIf="selectedMuscle" class="mt-4">
-      <h5>{{ selectedMuscle }} Exercises</h5>
-      <div class="table-responsive">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Exercise</th>
-              <th>Reps</th>
-              <th>Sets</th>
-              <th>Rest</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let ex of filteredExercises">
-              <td>{{ ex.name }}</td>
-              <td>{{ ex.reps }}</td>
-              <td>{{ ex.times }}</td>
-              <td>{{ ex.rest_between }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>-->
 </div>

@@ -3,17 +3,23 @@
     {{ displayText }}
   </button>
   <ul class="dropdown-menu" [class.show]="menuOpen" style="max-height: 300px; overflow-y: auto">
-    <li *ngFor="let item of items">
-      <span class="dropdown-item" style="cursor: pointer" (click)="itemClick(item)">
-        <input
-          *ngIf="isMultipleSelection"
-          type="checkbox"
-          class="form-check-input me-2"
-          [checked]="item.selected"
-          (click)="$event.stopPropagation(); itemClick(item)"
-        />
-        {{ itemDisplayKey ? item[itemDisplayKey] : item }}
-      </span>
-    </li>
+    <div *ngIf="items">
+      <li *ngFor="let item of items; let i = index"
+          [ngClass]="{'border border-primary': selectedIndex === i}">
+        <span class="dropdown-item" style="cursor: pointer" (click)="itemClick(item, i)">
+          <input
+            *ngIf="isMultipleSelection"
+            type="checkbox"
+            class="form-check-input me-2"
+            id="checkbox{{itemDisplayKey ? item[itemDisplayKey] : item}}"
+            (click)="$event.stopPropagation(); itemClick(item, i)"
+          />
+          {{ itemDisplayKey ? item[itemDisplayKey] : item }}
+        </span>
+      </li>
+    </div>
+    <div style="display: contents;">
+      <ng-content></ng-content>
+    </div>
   </ul>
 </div>
