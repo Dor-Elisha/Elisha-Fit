@@ -9,7 +9,7 @@ import * as _ from 'lodash';
   styleUrls: ['./select-program.component.scss']
 })
 export class SelectProgramComponent {
-  constructor(private gs: GeneralService, public exerciseService: ExerciseService) { }
+  constructor(public gs: GeneralService, public exerciseService: ExerciseService) { }
   newProgram:any;
   dayProgramName = '';
 
@@ -20,21 +20,15 @@ export class SelectProgramComponent {
   selectedDay = 'Sunday';
   searchText = '';
   activeFilters: string[] = [];
+  addWeightPopup:any;
+  addRepsPopup: any;
 
 
   createNewProgram(): void {
     this.newProgram = {
       name: '',
       description: '',
-      exercises: {
-        Sunday: { programs: [] },
-        Monday: { programs: [] },
-        Tuesday: { programs: [] },
-        Wednesday: { programs: [] },
-        Thursday: { programs: [] },
-        Friday: { programs: [] },
-        Saturday: { programs: [] }
-      },
+      exercises: [],
       duration: 0,
       level: '',
       category: '',
@@ -60,23 +54,12 @@ export class SelectProgramComponent {
   }
 
   addExercise = (exercise: any) => {
-    if (this.newProgram && this.newProgram.exercises && this.selectedDay) {
-      this.newProgram.exercises[this.selectedDay].programs.push(exercise);
-    }
+    this.newProgram.exercises.push(exercise);
   }
-
-  saveDayProgram() {
-    const exercises = this.newProgram?.exercises?.[this.selectedDay]?.programs || [];
-    if (!exercises.length || !this.dayProgramName.trim()) {
-      return;
-    }
-    this.gs.saveProgram({ name: this.dayProgramName.trim(), exercises: [...exercises] });
-    this.dayProgramName = '';
-  }
-
-  applySavedProgram(program: any) {
-    if (this.newProgram && this.selectedDay) {
-      this.newProgram.exercises[this.selectedDay].programs = [...program.exercises];
+  removeExercise = (exercise: any) => {
+    const index = this.newProgram.exercises.indexOf(exercise);
+    if (index > -1) {
+      this.newProgram.exercises.splice(index, 1);
     }
   }
 
@@ -116,7 +99,21 @@ export class SelectProgramComponent {
     });
   }
 
-  addWeight = (day:any ,exercise: any) => {
+  addWeight = (exercise: any) => {
+    this.addWeightPopup = {
+      show: true,
+      exercise: exercise,
+      weight: 0,
+      confirm: () => {
+        if (this.addWeightPopup.weight > 0) {
+          exercise.weight = this.addWeightPopup.weight;
+        }
+        this.addWeightPopup = null;
+      }
+    }
+  }
+
+  addRestTime = (day:any ,exercise: any) => {
 
   }
 }
