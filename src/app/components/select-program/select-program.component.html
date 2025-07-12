@@ -73,8 +73,20 @@
                 <!-- Add more exercise details here if needed -->
               </div>
             </div>
+            <div class="mt-3">
+              <input type="text" class="form-control mb-2" placeholder="Program name" [(ngModel)]="dayProgramName">
+              <button class="btn btn-primary" (click)="saveDayProgram()">Save Program</button>
+            </div>
           </div>
         </ng-container>
+      </div>
+    </div>
+    <div *ngIf="gs.savedPrograms.length" class="mt-3">
+      <span>Saved Programs:</span>
+      <div class="d-flex flex-wrap gap-2 mt-1">
+        <button *ngFor="let sp of gs.savedPrograms" class="btn btn-outline-secondary" (click)="applySavedProgram(sp)">
+          {{ sp.name }}
+        </button>
       </div>
     </div>
       <!-- Add more fields as needed -->

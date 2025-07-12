@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
 
+export interface SavedProgram {
+  name: string;
+  exercises: any[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class GeneralService {
-  public progrem: any[] = [];
+  public savedPrograms: SavedProgram[] = [];
 
   constructor() {}
 
-  addExerciseToProgram(item: any): void {
-    this.progrem.push(item);
+  saveProgram(program: SavedProgram): void {
+    this.savedPrograms.push(program);
   }
 }

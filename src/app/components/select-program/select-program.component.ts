@@ -11,6 +11,7 @@ import * as _ from 'lodash';
 export class SelectProgramComponent {
   constructor(private gs: GeneralService, public exerciseService: ExerciseService) { }
   newProgram:any;
+  dayProgramName = '';
 
   imageIndexes: { [key: string]: number } = {};
 
@@ -61,6 +62,21 @@ export class SelectProgramComponent {
   addExercise = (exercise: any) => {
     if (this.newProgram && this.newProgram.exercises && this.selectedDay) {
       this.newProgram.exercises[this.selectedDay].programs.push(exercise);
+    }
+  }
+
+  saveDayProgram() {
+    const exercises = this.newProgram?.exercises?.[this.selectedDay]?.programs || [];
+    if (!exercises.length || !this.dayProgramName.trim()) {
+      return;
+    }
+    this.gs.saveProgram({ name: this.dayProgramName.trim(), exercises: [...exercises] });
+    this.dayProgramName = '';
+  }
+
+  applySavedProgram(program: any) {
+    if (this.newProgram && this.selectedDay) {
+      this.newProgram.exercises[this.selectedDay].programs = [...program.exercises];
     }
   }
 
