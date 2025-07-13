@@ -336,4 +336,16 @@ export class ExerciseSelectorComponent implements OnInit, OnDestroy {
       default: return 'fas fa-dumbbell';
     }
   }
+
+  onImageError(event: Event, exercise: Exercise): void {
+    // Hide the image and show the icon instead
+    const imgElement = event.target as HTMLImageElement;
+    const imageContainer = imgElement.closest('.exercise-image, .item-image') as HTMLElement;
+    const iconContainer = imageContainer?.nextElementSibling as HTMLElement;
+    
+    if (imageContainer && iconContainer) {
+      imageContainer.style.display = 'none';
+      iconContainer.style.display = 'flex';
+    }
+  }
 } 

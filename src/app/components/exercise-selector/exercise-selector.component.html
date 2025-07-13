@@ -162,7 +162,15 @@
     <div class="selected-grid">
       <div *ngFor="let exercise of selectedExercises" class="selected-item">
         <div class="selected-content">
-          <div class="exercise-icon">
+          <div class="exercise-image" *ngIf="exercise.images && exercise.images.length > 0">
+            <img 
+              [src]="exercise.images[0]" 
+              [alt]="exercise.name + ' exercise demonstration'"
+              class="exercise-img"
+              (error)="onImageError($event, exercise)"
+            />
+          </div>
+          <div class="exercise-icon" *ngIf="!exercise.images || exercise.images.length === 0">
             <i [class]="getCategoryIcon(exercise.category)"></i>
           </div>
           <div class="exercise-info">
@@ -200,7 +208,15 @@
         (click)="toggleExerciseSelection(exercise)"
       >
         <div class="card-header">
-          <div class="exercise-icon">
+          <div class="exercise-image" *ngIf="exercise.images && exercise.images.length > 0">
+            <img 
+              [src]="exercise.images[0]" 
+              [alt]="exercise.name + ' exercise demonstration'"
+              class="exercise-img"
+              (error)="onImageError($event, exercise)"
+            />
+          </div>
+          <div class="exercise-icon" *ngIf="!exercise.images || exercise.images.length === 0">
             <i [class]="getCategoryIcon(exercise.category)"></i>
           </div>
           <div class="exercise-badge">
@@ -252,7 +268,15 @@
         [class.selected]="isExerciseSelected(exercise)"
         (click)="toggleExerciseSelection(exercise)"
       >
-        <div class="item-icon">
+        <div class="item-image" *ngIf="exercise.images && exercise.images.length > 0">
+          <img 
+            [src]="exercise.images[0]" 
+            [alt]="exercise.name + ' exercise demonstration'"
+            class="exercise-img"
+            (error)="onImageError($event, exercise)"
+          />
+        </div>
+        <div class="item-icon" *ngIf="!exercise.images || exercise.images.length === 0">
           <i [class]="getCategoryIcon(exercise.category)"></i>
         </div>
 
