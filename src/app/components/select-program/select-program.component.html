@@ -87,12 +87,13 @@
             </div>
           </div>
         </div>
-
-        <div class="d-flex justify-content-end gap-2 mt-auto">
-          <button class="btn btn-secondary" (click)="newProgram = null; gs.createProgramPopupShow = false;">Cancel</button>
-          <button class="btn btn-success" (click)="newProgram.save();">
-            <i class="fa fa-check"></i>
-          </button>
+        <div class="d-flex flex-column gap-1 mt-auto">
+          <div class="d-flex justify-content-end gap-2 mt-auto">
+            <button class="btn btn-secondary" (click)="newProgram = null; gs.createProgramPopupShow = false;">Cancel</button>
+            <button class="btn btn-success" (click)="newProgram.save();">
+              <i class="fa fa-check"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
