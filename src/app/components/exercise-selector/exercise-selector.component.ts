@@ -354,7 +354,7 @@ export class ExerciseSelectorComponent implements OnInit, OnDestroy {
 
   // Image navigation methods
   getCurrentImageIndex(exercise: Exercise): number {
-    return this.exerciseImageIndices[exercise.id] || 0;
+    return this.exerciseImageIndices[exercise.name] || 0;
   }
 
   getCurrentImage(exercise: Exercise): string {
@@ -370,13 +370,13 @@ export class ExerciseSelectorComponent implements OnInit, OnDestroy {
     event.stopPropagation(); // Prevent card selection
     const currentIndex = this.getCurrentImageIndex(exercise);
     const maxIndex = exercise.images.length - 1;
-    this.exerciseImageIndices[exercise.id] = currentIndex < maxIndex ? currentIndex + 1 : 0;
+    this.exerciseImageIndices[exercise.name] = currentIndex < maxIndex ? currentIndex + 1 : 0;
   }
 
   previousImage(event: Event, exercise: Exercise): void {
     event.stopPropagation(); // Prevent card selection
     const currentIndex = this.getCurrentImageIndex(exercise);
     const maxIndex = exercise.images.length - 1;
-    this.exerciseImageIndices[exercise.id] = currentIndex > 0 ? currentIndex - 1 : maxIndex;
+    this.exerciseImageIndices[exercise.name] = currentIndex > 0 ? currentIndex - 1 : maxIndex;
   }
 } 
