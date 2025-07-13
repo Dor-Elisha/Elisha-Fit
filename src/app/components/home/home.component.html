@@ -1,55 +1,238 @@
-<div class="d-flex flex-column gap-3">
-  <span class="page-title" style="font-size: 1.5rem; font-weight: bold;">Your Fitness Journey</span>
-  <span class="page-subtitle" style="color: #6c757d;">Track workouts, manage programs, and achieve your fitness goals with precision and style.</span>
-
-  <div class="card-container">
-    <div class="stat-card" *ngFor="let card of cards">
-      <div class="icon-wrapper">
-        <i [class]="card.icon"></i>
-      </div>
-      <div class="number">{{ card.value }}</div>
-      <div class="label">{{ card.label }}</div>
+<div class="dashboard-container">
+  <!-- Loading State -->
+  <app-loading 
+    *ngIf="loading"
+    type="spinner"
+    size="lg"
+    text="Loading dashboard..."
+    [overlay]="true">
+  </app-loading>
+  
+  <!-- Welcome Section -->
+  <div class="welcome-section">
+    <div class="welcome-content">
+      <h1 class="welcome-title">Welcome back!</h1>
+      <p class="welcome-subtitle">Ready to crush your fitness goals today?</p>
+      <div class="welcome-date">{{ today | date: 'EEEE, MMMM d, y' }}</div>
+    </div>
+    <div class="welcome-illustration">
+      <i class="fas fa-dumbbell"></i>
     </div>
   </div>
 
-  <ul class="nav nav-tabs tab-selector">
-      <li class="nav-item">
-        <a class="nav-link" [class.active]="activeTab === 'calendar'" (click)="activeTab = 'calendar'">Calendar</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" [class.active]="activeTab === 'programs'" (click)="activeTab = 'programs'">Programs</a>
-      </li>
-    </ul>
-
-  <div *ngIf="activeTab === 'calendar'" class="d-flex flex-wrap gap-4 mt-4">
-    <div class="box-container p-3 border rounded shadow-sm bg-white" style="min-width: 300px;">
-      <h5>Workout calendar</h5>
-      <div class="calendar-placeholder mt-3" style="height: 320px; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center;">
-        <app-calander style="width: 100%; height: 100%; flex: 1;"></app-calander>
-      </div>
-    </div>
-    <div class="box-container p-3 border rounded shadow-sm bg-white" style="flex: 1 1 48%; min-width: 300px; min-height: 320px;">
-      <div class="d-flex flex-row justify-content-between">
-        <h5>{{ today | date: 'fullDate' }}</h5>
-        <button class="btn btn-success">Add workout</button>
-      </div>
-      <div class="d-flex flex-column align-items-center justify-content-center text-center h-100">
-        <i class="fas fa-dumbbell mb-2 fa-2x text-muted"></i>
-        <p class="mb-1 mt-2 text-muted">No workout scheduled</p>
-        <small class="text-secondary">Add your first workout for this day</small>
-      </div>
-    </div>
-  </div>
-
-  <div *ngIf="activeTab === 'programs'" class="mt-4">
-    <div *ngFor="let program of gs.savedPrograms">
-      <div class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title">{{ program.name }}</h5>
-          <p class="card-text">Exercises: {{program.exercises.length}}</p>
-          <button class="btn btn-primary" (click)="viewProgram(program)">View Program</button>
+  <!-- Statistics Cards -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div 
+        *ngFor="let card of statsCards" 
+        class="stat-card"
+        [ngClass]="'stat-card-' + card.color">
+        <div class="stat-card-header">
+          <div class="stat-icon">
+            <i [class]="card.icon"></i>
+          </div>
+          <div class="stat-trend" [ngClass]="getTrendColor(card.trendDirection)">
+            <i [class]="getTrendIcon(card.trendDirection)"></i>
+            <span>{{ card.trend }}</span>
+          </div>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ card.value | number }}</div>
+          <div class="stat-label">{{ card.label }}</div>
+          <div class="stat-sublabel">{{ card.sublabel }}</div>
+        </div>
+        <div *ngIf="card.color === 'primary'" class="stat-progress">
+          <div class="progress">
+            <div 
+              class="progress-bar" 
+              [style.width.%]="getProgressPercentage(card.value, weeklyGoal)">
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions-section">
+    <h3 class="section-title">Quick Actions</h3>
+    <div class="quick-actions-grid">
+      <div 
+        *ngFor="let action of quickActions" 
+        class="quick-action-card"
+        (click)="navigateToRoute(action.route)">
+        <div class="action-icon" [ngClass]="'action-icon-' + action.color">
+          <i [class]="action.icon"></i>
+        </div>
+        <div class="action-content">
+          <h4 class="action-title">{{ action.label }}</h4>
+          <p class="action-description">{{ action.description }}</p>
+        </div>
+        <div class="action-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Tabs -->
+  <div class="dashboard-tabs">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button 
+          class="nav-link" 
+          [class.active]="activeTab === 'overview'"
+          (click)="activeTab = 'overview'"
+          type="button">
+          <i class="fas fa-chart-pie me-2"></i>
+          Overview
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button 
+          class="nav-link" 
+          [class.active]="activeTab === 'calendar'"
+          (click)="activeTab = 'calendar'"
+          type="button">
+          <i class="fas fa-calendar me-2"></i>
+          Calendar
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button 
+          class="nav-link" 
+          [class.active]="activeTab === 'programs'"
+          (click)="activeTab = 'programs'"
+          type="button">
+          <i class="fas fa-dumbbell me-2"></i>
+          Programs
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- Overview Tab -->
+    <div *ngIf="activeTab === 'overview'" class="overview-content">
+      <div class="overview-grid">
+        <!-- Weekly Progress Chart -->
+        <div class="overview-card">
+          <div class="card-header">
+            <h5 class="card-title">Weekly Progress</h5>
+            <span class="card-subtitle">This week's activity</span>
+          </div>
+          <div class="weekly-progress">
+            <div class="progress-bars">
+              <div 
+                *ngFor="let day of weeklyProgress" 
+                class="progress-day">
+                <div class="day-label">{{ day.day }}</div>
+                <div class="day-bar">
+                  <div 
+                    class="workout-indicator"
+                    [class.active]="day.workouts > 0"
+                    [style.background-color]="getWeeklyProgressColor(day)">
+                  </div>
+                </div>
+                <div class="day-calories">{{ day.calories }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="overview-card">
+          <div class="card-header">
+            <h5 class="card-title">Recent Activity</h5>
+            <span class="card-subtitle">Your latest achievements</span>
+          </div>
+          <div class="activity-list">
+            <div 
+              *ngFor="let activity of recentActivity" 
+              class="activity-item">
+              <div class="activity-icon" [ngClass]="'activity-icon-' + activity.color">
+                <i [class]="activity.icon"></i>
+              </div>
+              <div class="activity-content">
+                <div class="activity-title">{{ activity.title }}</div>
+                <div class="activity-time">{{ activity.time }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar Tab -->
+    <div *ngIf="activeTab === 'calendar'" class="calendar-content">
+      <div class="calendar-grid">
+        <div class="calendar-card">
+          <div class="card-header">
+            <h5 class="card-title">Workout Calendar</h5>
+            <button class="btn btn-fitness btn-sm">
+              <i class="fas fa-plus me-1"></i>
+              Add Workout
+            </button>
+          </div>
+          <div class="calendar-container">
+            <app-calander></app-calander>
+          </div>
+        </div>
+        
+        <div class="today-card">
+          <div class="card-header">
+            <h5 class="card-title">{{ today | date: 'fullDate' }}</h5>
+            <span class="card-subtitle">Today's Schedule</span>
+          </div>
+          <div class="today-content">
+            <div class="no-workout-state">
+              <i class="fas fa-dumbbell"></i>
+              <h6>No workout scheduled</h6>
+              <p>Add your first workout for this day</p>
+              <button class="btn btn-fitness">
+                <i class="fas fa-plus me-1"></i>
+                Schedule Workout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Programs Tab -->
+    <div *ngIf="activeTab === 'programs'" class="programs-content">
+      <div class="programs-header">
+        <h5 class="programs-title">Your Programs</h5>
+        <button class="btn btn-fitness" (click)="navigateToRoute('/program-wizard')">
+          <i class="fas fa-plus me-1"></i>
+          Create New Program
+        </button>
+      </div>
+      
+      <div class="programs-grid">
+        <div 
+          *ngFor="let program of gs.savedPrograms" 
+          class="program-card"
+          (click)="viewProgram(program)">
+          <div class="program-header">
+            <h6 class="program-name">{{ program.name }}</h6>
+            <span class="program-exercises">{{ program.exercises.length }} exercises</span>
+          </div>
+          <div class="program-actions">
+            <button class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-play me-1"></i>
+              Start
+            </button>
+            <button class="btn btn-outline-secondary btn-sm">
+              <i class="fas fa-eye me-1"></i>
+              View
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 </div>

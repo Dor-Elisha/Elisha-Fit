@@ -24,8 +24,9 @@ import { ToastrModule } from 'ngx-toastr';
 import { RouteService } from './services/route.service';
 import { AuthService } from './services/auth.service';
 import { AuthGuard } from './auth.guard';
+import { LoadingService } from './services/loading.service';
 import { ProgramWizardComponent } from './components/program-wizard/program-wizard/program-wizard.component';
-import { ExerciseSelectorComponent } from './components/program-wizard/exercise-selector/exercise-selector.component';
+import { ExerciseSelectorComponent } from './components/exercise-selector/exercise-selector.component';
 import { ExerciseConfigComponent } from './components/program-wizard/exercise-config/exercise-config.component';
 import { ProgramListComponent } from './components/program-list/program-list.component';
 import { ProgramDetailComponent } from './components/program-detail/program-detail.component';
@@ -37,6 +38,8 @@ import { ProgressHistoryComponent } from './components/progress-history/progress
 import { ProgressAnalyticsComponent } from './components/progress-analytics/progress-analytics.component';
 import { ProgressDashboardComponent } from './components/progress-dashboard/progress-dashboard.component';
 import { GoalManagementComponent } from './components/goal-management/goal-management.component';
+import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
+import { LoadingComponent } from './components/loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +67,8 @@ import { GoalManagementComponent } from './components/goal-management/goal-manag
     ProgressAnalyticsComponent,
     ProgressDashboardComponent,
     GoalManagementComponent,
+    BreadcrumbComponent,
+    LoadingComponent,
   ],
   imports: [
     BrowserModule,
@@ -88,6 +93,7 @@ import { GoalManagementComponent } from './components/goal-management/goal-manag
     RouteService,
     AuthService,
     AuthGuard,
+    LoadingService,
   ],
   bootstrap: [AppComponent],
 })

@@ -1,3 +1,177 @@
-.main-page {
+// App Container
+.app-container {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+// Main Content Area
+.main-content {
+  display: flex;
+  flex: 1;
+  position: relative;
+  height: calc(100vh - 80px); // Subtract header height
+  overflow: hidden;
+  padding-top: 80px; // Ensure content starts below header
+}
+
+// Content Wrapper
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; // Prevent flex item from overflowing
+  transition: margin-left 0.3s ease;
+  
+  // Desktop: Account for sidebar width
+  @media (min-width: 768px) {
+    margin-left: 280px; // Default sidebar width
+    
+    // When sidebar is collapsed
+    &.sidebar-collapsed {
+      margin-left: 70px;
+    }
+  }
+  
+  // Mobile: No margin, sidebar is overlay
+  @media (max-width: 767.98px) {
+    margin-left: 0;
+  }
+}
+
+// Content Area
+.content-area {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  
+  // Responsive padding
+  @media (max-width: 767.98px) {
+    padding: 1rem;
+  }
+  
+  @media (min-width: 1200px) {
+    padding: 2rem;
+  }
+}
+
+// Sidebar positioning adjustments
+app-sidebar {
+  position: fixed;
+  top: 80px; // Below header
+  left: 0;
+  height: calc(100vh - 80px);
+  z-index: 1030;
+  
+  // Desktop: Always visible
+  @media (min-width: 768px) {
+    position: fixed;
+  }
+  
+  // Mobile: Overlay mode
+  @media (max-width: 767.98px) {
+    position: fixed;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    
+    &.open {
+      transform: translateX(0);
+    }
+  }
+}
+
+// Header positioning
+app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1040;
+  height: 80px;
+}
+
+// Utility classes for sidebar state
+.sidebar-collapsed {
+  .content-wrapper {
+    margin-left: 70px;
+  }
+}
+
+.sidebar-open {
+  .content-wrapper {
+    margin-left: 280px;
+  }
+}
+
+// Mobile overlay backdrop
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1020;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 767.98px) {
+  .main-content {
+    height: calc(100vh - 70px); // Smaller header on mobile
+    padding-top: 70px; // Ensure content starts below header on mobile
+  }
+  
+  app-sidebar {
+    top: 70px;
+    height: calc(100vh - 70px);
+  }
+  
+  app-header {
+    height: 70px;
+  }
+}
+
+// Tablet adjustments
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .content-wrapper {
+    margin-left: 240px; // Smaller sidebar on tablet
+    
+    &.sidebar-collapsed {
+      margin-left: 60px;
+    }
+  }
+  
+  app-sidebar {
+    width: 240px;
+    
+    &.collapsed {
+      width: 60px;
+    }
+  }
+}
+
+// Print styles
+@media print {
+  app-sidebar,
+  app-header {
+    display: none !important;
+  }
+  
+  .content-wrapper {
+    margin-left: 0 !important;
+  }
+  
+  .content-area {
+    padding: 0;
+  }
 }

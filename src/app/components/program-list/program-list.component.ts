@@ -18,6 +18,7 @@ export class ProgramListComponent implements OnInit {
   @Output() duplicateProgram = new EventEmitter<Program>();
   @Output() viewProgram = new EventEmitter<Program>();
   @Output() startWorkout = new EventEmitter<Program>();
+  @Output() createProgram = new EventEmitter<void>();
 
   // Confirmation dialog properties
   showDeleteDialog = false;
@@ -334,12 +335,26 @@ export class ProgramListComponent implements OnInit {
     this.startWorkout.emit(program);
   }
 
+  onCreateProgram(): void {
+    this.createProgram.emit();
+  }
+
   getDifficultyColor(difficulty: ProgramDifficulty): string {
     switch (difficulty) {
       case 'beginner': return '#28a745';
       case 'intermediate': return '#ffc107';
       case 'advanced': return '#dc3545';
       default: return '#6c757d';
+    }
+  }
+
+  getDifficultyBadgeClass(difficulty: ProgramDifficulty): string {
+    const color = this.getDifficultyColor(difficulty);
+    switch (difficulty) {
+      case 'beginner': return 'badge bg-success';
+      case 'intermediate': return 'badge bg-warning text-dark';
+      case 'advanced': return 'badge bg-danger';
+      default: return 'badge bg-primary';
     }
   }
 

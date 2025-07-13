@@ -13,13 +13,13 @@
           <!--search-->
           <div class="d-flex align-items-center gap-2 mb-4">
             <input type="text" class="form-control" style="width: 250px;" [(ngModel)]="searchText" placeholder="Search exercises" (input)="searchExercises()">
-            <div class="d-flex flex-row align-items-center gap-2" *ngIf="exerciseService.categories">
+            <div class="d-flex flex-row align-items-center gap-2" *ngIf="categories.length > 0">
               <span>Filter by categories</span>
-              <app-dropdown [text]="'Select'" [items]="exerciseService.categories" (onItemClick)="searchExercises($event)"></app-dropdown>
+              <app-dropdown [text]="'Select'" [items]="categories" (onItemClick)="searchExercises($event)"></app-dropdown>
             </div>
-            <div class="d-flex flex-row align-items-center gap-2" *ngIf="exerciseService.muscleGroups">
+            <div class="d-flex flex-row align-items-center gap-2" *ngIf="muscleGroups.length > 0">
               <span>Filter by muscles group</span>
-              <app-dropdown [text]="'Select'" [items]="exerciseService.muscleGroups" (onItemClick)="searchExercises($event)"></app-dropdown>
+              <app-dropdown [text]="'Select'" [items]="muscleGroups" (onItemClick)="searchExercises($event)"></app-dropdown>
             </div>
             <button class="btn btn-outline-warning" (click)="addExercise({name: 'Rest'})">Add Rest</button>
           </div>

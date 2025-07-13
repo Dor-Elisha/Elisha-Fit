@@ -1,0 +1,63 @@
+<div 
+  *ngIf="visible"
+  class="loading-container"
+  [class]="sizeClass + ' ' + typeClass"
+  [class.loading-overlay]="loadingConfig.overlay"
+  [class.loading-fullscreen]="loadingConfig.fullscreen"
+  [attr.aria-label]="loadingConfig.text"
+  role="status">
+  
+  <!-- Overlay Background -->
+  <div *ngIf="loadingConfig.overlay" class="loading-backdrop"></div>
+  
+  <!-- Loading Content -->
+  <div class="loading-content">
+    <!-- Spinner Type -->
+    <div *ngIf="loadingConfig.type === 'spinner'" class="loading-spinner">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">{{ loadingConfig.text }}</span>
+      </div>
+    </div>
+    
+    <!-- Dots Type -->
+    <div *ngIf="loadingConfig.type === 'dots'" class="loading-dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    
+    <!-- Pulse Type -->
+    <div *ngIf="loadingConfig.type === 'pulse'" class="loading-pulse">
+      <div class="pulse-circle"></div>
+    </div>
+    
+    <!-- Progress Type -->
+    <div *ngIf="loadingConfig.type === 'progress'" class="loading-progress">
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div 
+            class="progress-fill"
+            [style.width.%]="progressPercentage"
+            [style.background-color]="progressColor">
+          </div>
+        </div>
+        <div class="progress-text" *ngIf="loadingConfig.showProgress">
+          {{ progressPercentage | number:'1.0-0' }}%
+        </div>
+      </div>
+    </div>
+    
+    <!-- Skeleton Type -->
+    <div *ngIf="loadingConfig.type === 'skeleton'" class="loading-skeleton">
+      <div class="skeleton-item skeleton-title"></div>
+      <div class="skeleton-item skeleton-text"></div>
+      <div class="skeleton-item skeleton-text skeleton-short"></div>
+      <div class="skeleton-item skeleton-avatar"></div>
+    </div>
+    
+    <!-- Loading Text -->
+    <div *ngIf="loadingConfig.text" class="loading-text">
+      {{ loadingConfig.text }}
+    </div>
+  </div>
+</div> 

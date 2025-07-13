@@ -30,7 +30,7 @@ export class ExerciseSelectorComponent implements OnInit {
 
   loadExercises() {
     this.exerciseService.getExercises().subscribe((data: any) => {
-      this.exercises = data.exercises || [];
+      this.exercises = data || [];
       this.filteredExercises = [...this.exercises];
       
       // Extract unique categories and muscle groups

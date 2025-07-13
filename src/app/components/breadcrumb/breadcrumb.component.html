@@ -1,0 +1,57 @@
+<nav aria-label="breadcrumb" class="breadcrumb-nav" *ngIf="breadcrumbs.length > 0">
+  <ol class="breadcrumb">
+    <li 
+      *ngFor="let item of getVisibleBreadcrumbs(); let last = last" 
+      class="breadcrumb-item"
+      [class.active]="item.active"
+      [class.collapsed]="item.label === '...'">
+      
+      <!-- Collapse Toggle Button -->
+      <button 
+        *ngIf="item.label === '...' && collapsed"
+        class="btn btn-link btn-sm collapse-toggle"
+        (click)="toggleCollapse()"
+        [attr.aria-expanded]="!collapsed"
+        aria-label="Show more breadcrumb items">
+        <i class="fas fa-ellipsis-h"></i>
+      </button>
+      
+      <!-- Breadcrumb Item -->
+      <ng-container *ngIf="item.label !== '...'">
+        <a 
+          *ngIf="!item.active && item.url" 
+          [href]="item.url"
+          (click)="onItemClick(item, $event)"
+          class="breadcrumb-link"
+          [attr.aria-current]="last ? 'page' : null">
+          <i *ngIf="item.icon" [class]="item.icon" class="breadcrumb-icon"></i>
+          <span class="breadcrumb-text">{{ item.label }}</span>
+        </a>
+        
+        <span 
+          *ngIf="item.active || !item.url" 
+          class="breadcrumb-text"
+          [attr.aria-current]="last ? 'page' : null">
+          <i *ngIf="item.icon" [class]="item.icon" class="breadcrumb-icon"></i>
+          {{ item.label }}
+        </span>
+      </ng-container>
+    </li>
+  </ol>
+  
+  <!-- Collapsed Items Dropdown -->
+  <div 
+    *ngIf="collapsed && !collapsed" 
+    class="collapsed-items-dropdown">
+    <div class="dropdown-menu show">
+      <a 
+        *ngFor="let item of getCollapsedBreadcrumbs()"
+        [href]="item.url"
+        (click)="onItemClick(item, $event)"
+        class="dropdown-item">
+        <i *ngIf="item.icon" [class]="item.icon" class="dropdown-icon"></i>
+        {{ item.label }}
+      </a>
+    </div>
+  </div>
+</nav> 

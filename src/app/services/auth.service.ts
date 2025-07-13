@@ -51,8 +51,22 @@ export class AuthService {
   }
 
   logout(): void {
+    // Clear all user-related data
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('userPreferences');
+    localStorage.removeItem('workoutHistory');
+    localStorage.removeItem('programs');
+    
+    // Clear any session storage
+    sessionStorage.clear();
+    
+    // Reset user state
     this.currentUserSubject.next(null);
-    this.router.navigate(['/login']);
+    
+    // Navigate to login with a clean state
+    this.router.navigate(['/login'], { 
+      replaceUrl: true,
+      queryParams: { logout: 'success' }
+    });
   }
 }

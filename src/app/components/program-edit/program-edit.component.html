@@ -303,4 +303,26 @@
       </div>
     </div>
   </div>
+
+  <!-- Confirmation Dialogs -->
+  <app-confirm-dialog
+    *ngIf="showSaveDialog"
+    [data]="saveDialogData"
+    (confirm)="onConfirmSave()"
+    (cancel)="onCancelSave()">
+  </app-confirm-dialog>
+
+  <app-confirm-dialog
+    *ngIf="showCancelDialog"
+    [data]="cancelDialogData"
+    (confirm)="onConfirmCancel()"
+    (cancel)="onCancelCancel()">
+  </app-confirm-dialog>
+
+  <app-confirm-dialog
+    *ngIf="showDeleteDialog"
+    [data]="deleteDialogData"
+    (confirm)="onConfirmDelete()"
+    (cancel)="onCancelDelete()">
+  </app-confirm-dialog>
 </div>

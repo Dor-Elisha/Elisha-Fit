@@ -20,6 +20,8 @@ export class SelectProgramComponent implements OnInit {
   _=_;
   searchText = '';
   activeFilters: string[] = [];
+  categories: string[] = [];
+  muscleGroups: string[] = [];
   addWeightPopup:any;
   addRepsPopup: any;
   addRestPopup: any;
@@ -43,10 +45,18 @@ export class SelectProgramComponent implements OnInit {
       }
     }
 
-    // Load exercises
+    // Load exercises and filter options
     this.exerciseService.getExercises().subscribe(exercises => {
       this.exercises = exercises;
       this.searchExercises();
+    });
+
+    this.exerciseService.getCategories().subscribe(categories => {
+      this.categories = categories;
+    });
+
+    this.exerciseService.getMuscleGroups().subscribe(muscleGroups => {
+      this.muscleGroups = muscleGroups;
     });
   }
 

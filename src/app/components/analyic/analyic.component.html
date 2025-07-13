@@ -1,1 +1,234 @@
-<p>analyic works!</p>
+<div class="analytics-page">
+  <!-- Breadcrumb Navigation -->
+  <app-breadcrumb></app-breadcrumb>
+  
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Analytics & Insights</h1>
+      <p class="page-subtitle">Track your progress and discover insights about your fitness journey</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline-primary">
+        <i class="fas fa-download me-2"></i>
+        Export Data
+      </button>
+    </div>
+  </div>
+
+  <!-- Analytics Tabs -->
+  <div class="analytics-tabs">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button 
+          class="nav-link" 
+          [class.active]="activeTab === 'overview'"
+          (click)="activeTab = 'overview'"
+          type="button">
+          <i class="fas fa-chart-pie me-2"></i>
+          Overview
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button 
+          class="nav-link" 
+          [class.active]="activeTab === 'progress'"
+          (click)="activeTab = 'progress'"
+          type="button">
+          <i class="fas fa-chart-line me-2"></i>
+          Progress
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button 
+          class="nav-link" 
+          [class.active]="activeTab === 'goals'"
+          (click)="activeTab = 'goals'"
+          type="button">
+          <i class="fas fa-bullseye me-2"></i>
+          Goals
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button 
+          class="nav-link" 
+          [class.active]="activeTab === 'performance'"
+          (click)="activeTab = 'performance'"
+          type="button">
+          <i class="fas fa-tachometer-alt me-2"></i>
+          Performance
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- Overview Tab -->
+    <div *ngIf="activeTab === 'overview'" class="overview-content">
+      <div class="overview-grid">
+        <!-- Monthly Stats -->
+        <div class="stats-overview">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-dumbbell"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ monthlyStats.totalWorkouts }}</div>
+              <div class="stat-label">Total Workouts</div>
+              <div class="stat-trend text-success">
+                <i class="fas fa-arrow-up"></i>
+                +{{ monthlyStats.improvement }}% from last month
+              </div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-fire"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ monthlyStats.totalCalories | number }}</div>
+              <div class="stat-label">Calories Burned</div>
+              <div class="stat-trend text-success">
+                <i class="fas fa-arrow-up"></i>
+                +8% from last month
+              </div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ monthlyStats.averageDuration }}min</div>
+              <div class="stat-label">Avg. Duration</div>
+              <div class="stat-trend text-success">
+                <i class="fas fa-arrow-up"></i>
+                +3min from last month
+              </div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ monthlyStats.consistency }}%</div>
+              <div class="stat-label">Consistency</div>
+              <div class="stat-trend text-warning">
+                <i class="fas fa-minus"></i>
+                Same as last month
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Progress Chart -->
+        <div class="progress-chart">
+          <div class="chart-header">
+            <h3>Weekly Progress</h3>
+            <p>Your activity over the past week</p>
+          </div>
+          <div class="chart-content">
+            <div class="progress-bars">
+              <div 
+                *ngFor="let day of weeklyProgress" 
+                class="progress-day">
+                <div class="day-label">{{ day.day }}</div>
+                <div class="day-bars">
+                  <div class="workout-bar">
+                    <div 
+                      class="bar-fill"
+                      [style.height.%]="day.workouts > 0 ? 100 : 20"
+                      [style.background-color]="day.workouts > 0 ? 'var(--fitness-primary)' : 'var(--text-muted)'">
+                    </div>
+                  </div>
+                  <div class="calorie-bar">
+                    <div 
+                      class="bar-fill"
+                      [style.height.%]="day.calories > 0 ? (day.calories / 500) * 100 : 20"
+                      [style.background-color]="day.calories > 0 ? 'var(--fitness-secondary)' : 'var(--text-muted)'">
+                    </div>
+                  </div>
+                </div>
+                <div class="day-stats">
+                  <small>{{ day.calories }} cal</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Tab -->
+    <div *ngIf="activeTab === 'progress'" class="progress-content">
+      <div class="progress-grid">
+        <div class="progress-card">
+          <h3>Progress Trends</h3>
+          <p>Coming soon: Detailed progress charts and trends</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Goals Tab -->
+    <div *ngIf="activeTab === 'goals'" class="goals-content">
+      <div class="goals-grid">
+        <div 
+          *ngFor="let goal of goals" 
+          class="goal-card">
+          <div class="goal-header">
+            <h4>{{ goal.name }}</h4>
+            <div class="goal-progress">
+              {{ goal.current }}/{{ goal.target }} {{ goal.unit }}
+            </div>
+          </div>
+          <div class="goal-bar">
+            <div class="progress">
+              <div 
+                class="progress-bar" 
+                [style.width.%]="goal.progress"
+                [style.background-color]="getProgressColor(goal.progress)">
+              </div>
+            </div>
+          </div>
+          <div class="goal-percentage">
+            {{ goal.progress }}% complete
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Tab -->
+    <div *ngIf="activeTab === 'performance'" class="performance-content">
+      <div class="performance-grid">
+        <div 
+          *ngFor="let metric of performanceMetrics" 
+          class="performance-card">
+          <div class="metric-header">
+            <h4>{{ metric.metric }}</h4>
+            <div class="metric-trend" [ngClass]="getTrendColor(metric.trend)">
+              <i [class]="getTrendIcon(metric.trend)"></i>
+              {{ metric.change }}
+            </div>
+          </div>
+          <div class="metric-value">
+            {{ metric.value }}
+          </div>
+          <div class="metric-bar">
+            <div class="progress">
+              <div 
+                class="progress-bar" 
+                [style.width.%]="metric.value"
+                [style.background-color]="getProgressColor(metric.value)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

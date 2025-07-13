@@ -1,12 +1,45 @@
-<div class="main-page d-flex flex-md-row flex-column" style="background-color: #f8f9fa;">
-  <div class="d-flex flex-column">
-    <app-header (sidebarToggle)="sidebarToggle = !sidebarToggle"></app-header>
-    <app-sidebar *ngIf="user" class="flex-grow-1" [sidebarOpen]="sidebarToggle" (sidebarClose)="sidebarToggle = false">
+<div class="app-container">
+  <!-- Header -->
+  <app-header [sidebarOpen]="sidebarToggle" (sidebarToggle)="onSidebarToggle()"></app-header>
+  
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Sidebar -->
+    <app-sidebar 
+      *ngIf="user" 
+      [sidebarOpen]="sidebarToggle" 
+      (sidebarClose)="onSidebarClose()"
+      (sidebarCollapse)="onSidebarCollapse($event)">
     </app-sidebar>
-  </div>
-  <div class="content-container d-flex flex-column gap-4 p-4" style="flex: 1 0;">
-    <router-outlet></router-outlet>
+    
+    <!-- Content Container -->
+    <div [ngClass]="getContentWrapperClasses()">
+      <div class="content-area">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
   </div>
 </div>
+
+<!-- Mobile Sidebar Backdrop -->
+<div 
+  *ngIf="isMobile && sidebarToggle" 
+  class="sidebar-backdrop visible"
+  (click)="onSidebarClose()">
+</div>
+
+<!-- Global Loading -->
+<app-loading 
+  *ngIf="isLoading"
+  [config]="loadingConfig"
+  [visible]="isLoading">
+</app-loading>
+
+<!-- Global Fullscreen Loading -->
+<app-loading 
+  *ngIf="isFullscreenLoading"
+  [config]="fullscreenLoadingConfig"
+  [visible]="isFullscreenLoading">
+</app-loading>
 
 <app-select-program *ngIf="gs.createProgramPopupShow"></app-select-program>
