@@ -4,6 +4,7 @@ import { HomeComponent } from './components/home/home.component';
 import { ProgramsComponent } from './components/programs/programs.component';
 import { AnalyicComponent } from './components/analyic/analyic.component'; // Adjust path if needed
 import { LoginComponent } from './components/login/login.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
@@ -21,6 +22,11 @@ const routes: Routes = [
   {
     path: 'analytic',
     component: AnalyicComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
     canActivate: [AuthGuard],
   },
   { path: '**', redirectTo: '' },

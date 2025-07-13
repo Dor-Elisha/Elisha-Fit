@@ -15,6 +15,7 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { CalanderComponent } from './components/calander/calander.component';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { LoginComponent } from './components/login/login.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { GeneralService } from './services/general.service';
 import { ExerciseService } from './services/exercise.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -36,6 +37,7 @@ import { AuthGuard } from './auth.guard';
     SelectProgramComponent,
     DropdownComponent,
     LoginComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,

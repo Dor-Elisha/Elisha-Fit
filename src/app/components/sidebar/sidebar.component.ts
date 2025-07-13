@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { GeneralService } from '../../services/general.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,7 +10,11 @@ import { GeneralService } from '../../services/general.service';
 export class SidebarComponent implements OnInit {
   @Input() sidebarOpen: boolean = false;
   @Output() sidebarClose: EventEmitter<void> = new EventEmitter();
-  constructor(public gs: GeneralService) {}
+  user: any;
+
+  constructor(public gs: GeneralService, private auth: AuthService) {
+    this.user = this.auth.currentUser || {};
+  }
 
   weekWorkouts = 0;
   savedProgram = this.gs.savedPrograms.length;
@@ -20,5 +25,9 @@ export class SidebarComponent implements OnInit {
 
   openCreateProgramPopup = () => {
 
+  }
+
+  logout() {
+    this.auth.logout();
   }
 }

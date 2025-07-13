@@ -1,0 +1,30 @@
+<div class="container py-4">
+  <h2>Profile</h2>
+
+  <div *ngIf="!user.name || editing; else showName" class="mt-3">
+    <form (ngSubmit)="saveName()" class="d-flex flex-column" #nameForm="ngForm">
+      <div class="mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Enter your name"
+          name="name"
+          required
+          [(ngModel)]="nameInput"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary align-self-start">
+        {{ user.name ? 'Update' : 'Add' }} Name
+      </button>
+    </form>
+  </div>
+
+  <ng-template #showName>
+    <div class="d-flex align-items-center gap-2 mt-3">
+      <span class="fs-5">{{ user.name }}</span>
+      <button class="btn btn-sm btn-link" (click)="enableEdit()">
+        <i class="fas fa-edit"></i>
+      </button>
+    </div>
+  </ng-template>
+</div>
