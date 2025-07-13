@@ -139,24 +139,12 @@
               <span>{{ getProgramSummary().name }}</span>
             </div>
             <div class="summary-item">
-              <label>Category:</label>
-              <span>{{ getProgramSummary().category }}</span>
-            </div>
-            <div class="summary-item">
               <label>Difficulty:</label>
               <span>{{ getProgramSummary().difficulty }}</span>
             </div>
             <div class="summary-item">
-              <label>Duration:</label>
-              <span>{{ getProgramSummary().estimatedDuration }} minutes</span>
-            </div>
-            <div class="summary-item">
               <label>Target Muscles:</label>
               <span>{{ getProgramSummary().targetMuscleGroups?.join(', ') }}</span>
-            </div>
-            <div class="summary-item">
-              <label>Equipment:</label>
-              <span>{{ getProgramSummary().equipment?.length ? getProgramSummary().equipment.join(', ') : 'None specified' }}</span>
             </div>
           </div>
           <div class="summary-item full-width" *ngIf="getProgramSummary().description">
@@ -235,16 +223,6 @@
     <div class="step-info">
       Step {{ currentStep }} of {{ totalSteps }}
     </div>
-
-    <button 
-      *ngIf="currentStep < totalSteps"
-      type="button" 
-      class="btn btn-primary btn-icon" 
-      (click)="nextStep()"
-      [disabled]="!canProceedToNextStep()"
-    >
-      Next <i class="fas fa-arrow-right"></i>
-    </button>
 
     <button 
       *ngIf="currentStep < totalSteps"
