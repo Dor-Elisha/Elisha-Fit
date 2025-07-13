@@ -25,10 +25,10 @@ export interface ProgramExercise {
 }
 
 export interface ProgramMetadata {
-  estimatedDuration: number; // in minutes
+  estimatedDuration?: number; // in minutes (optional)
   totalExercises: number;
   targetMuscleGroups: string[];
-  equipment: string[];
+  equipment?: string[]; // optional
   tags: string[];
   isPublic: boolean;
   version: string;
