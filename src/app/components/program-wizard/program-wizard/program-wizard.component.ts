@@ -56,7 +56,6 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
     this.programForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.maxLength(500)]],
-      difficulty: ['', [Validators.required]],
       targetMuscleGroups: [[], [Validators.required, Validators.minLength(1)]],
       tags: [[]]
     });
@@ -282,7 +281,6 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
     return {
       name: this.programForm.get('name')?.value,
       description: this.programForm.get('description')?.value,
-      difficulty: this.programForm.get('difficulty')?.value,
       targetMuscleGroups: this.programForm.get('targetMuscleGroups')?.value,
       tags: this.programForm.get('tags')?.value,
       exerciseCount: this.configuredExercises.length,
