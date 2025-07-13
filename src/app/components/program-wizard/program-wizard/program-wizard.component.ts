@@ -57,10 +57,7 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.maxLength(500)]],
       difficulty: ['beginner', [Validators.required]],
-      category: ['strength', [Validators.required]],
-      estimatedDuration: [30, [Validators.required, Validators.min(5), Validators.max(300)]],
       targetMuscleGroups: [[], [Validators.required, Validators.minLength(1)]],
-      equipment: [[]],
       tags: [[]]
     });
   }
@@ -188,23 +185,7 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
     return currentGroups.includes(muscle);
   }
 
-  toggleEquipment(equipment: string, event: any): void {
-    const currentEquipment = this.programForm.get('equipment')?.value || [];
-    if (event.target.checked) {
-      currentEquipment.push(equipment);
-    } else {
-      const index = currentEquipment.indexOf(equipment);
-      if (index > -1) {
-        currentEquipment.splice(index, 1);
-      }
-    }
-    this.programForm.patchValue({ equipment: currentEquipment });
-  }
 
-  isEquipmentSelected(equipment: string): boolean {
-    const currentEquipment = this.programForm.get('equipment')?.value || [];
-    return currentEquipment.includes(equipment);
-  }
 
   canNavigateToStep(step: number): boolean {
     switch (step) {
@@ -302,10 +283,7 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
       name: this.programForm.get('name')?.value,
       description: this.programForm.get('description')?.value,
       difficulty: this.programForm.get('difficulty')?.value,
-      category: this.programForm.get('category')?.value,
-      estimatedDuration: this.programForm.get('estimatedDuration')?.value,
       targetMuscleGroups: this.programForm.get('targetMuscleGroups')?.value,
-      equipment: this.programForm.get('equipment')?.value,
       tags: this.programForm.get('tags')?.value,
       exerciseCount: this.configuredExercises.length,
       totalSets: this.configuredExercises.reduce((total, exercise) => total + (exercise.sets || 0), 0),
