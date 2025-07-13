@@ -56,7 +56,7 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
     this.programForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.maxLength(500)]],
-      difficulty: ['beginner', [Validators.required]],
+      difficulty: ['', [Validators.required]],
       targetMuscleGroups: [[], [Validators.required, Validators.minLength(1)]],
       tags: [[]]
     });
