@@ -12,14 +12,14 @@ import { AuthService } from './services/auth.service';
 
 export class AppComponent implements OnInit {
   constructor(public gs: GeneralService, private exerciseService: ExerciseService, private auth: AuthService) {
-    this.user = this.auth.currentUser || {};
   }
-  user;
+  user: any;
   title = 'angular-starter';
   sidebarToggle = false;
   _=_;
 
   ngOnInit() {
+    this.auth.currentUser$.subscribe(u => this.user = u);
     this.exerciseService.getExercises().subscribe(data => {
       this.exerciseService.exercises = data.exercises;
       this.exerciseService.categories = _.uniq(_.map(this.exerciseService.exercises, 'category'));

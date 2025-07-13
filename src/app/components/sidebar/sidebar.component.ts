@@ -12,15 +12,13 @@ export class SidebarComponent implements OnInit {
   @Output() sidebarClose: EventEmitter<void> = new EventEmitter();
   user: any;
 
-  constructor(public gs: GeneralService, private auth: AuthService) {
-    this.user = this.auth.currentUser || {};
-  }
+  constructor(public gs: GeneralService, private auth: AuthService) {}
 
   weekWorkouts = 0;
   savedProgram = this.gs.savedPrograms.length;
 
   ngOnInit(): void {
-
+    this.auth.currentUser$.subscribe(u => this.user = u);
   }
 
   openCreateProgramPopup = () => {

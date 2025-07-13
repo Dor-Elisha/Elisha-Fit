@@ -6,6 +6,7 @@ import { RouteService } from './route.service';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<any>(null);
+  currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(
     private routeService: RouteService,

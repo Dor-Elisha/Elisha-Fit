@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { RouteService } from '../../services/route.service';
 
@@ -7,7 +7,7 @@ import { RouteService } from '../../services/route.service';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   user: any;
   editing = false;
   nameInput = '';
@@ -15,8 +15,10 @@ export class ProfileComponent {
   constructor(
     private auth: AuthService,
     private rs: RouteService,
-  ) {
-    this.user = this.auth.currentUser || {};
+  ) {}
+
+  ngOnInit(): void {
+    this.auth.currentUser$.subscribe(u => this.user = u);
   }
 
   enableEdit() {
