@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -8,7 +9,7 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class LoginComponent {
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   isSignup = false;
   loginData = { email: '', password: '' };
@@ -19,8 +20,18 @@ export class LoginComponent {
   }
 
   login() {
-    console.log('Logging in', this.loginData);
+    this.authService.login(this.loginData.email, this.loginData.password).subscribe({
+      next: (res: any) => {
+        console.log('Login successful', res);
+        this.router.navigate(['/'], { state: { user: res.data } });
+      },
+      error: (err: any) => {
+        console.error('Login failed', err);
+        alert(err.error?.message || 'Login failed');
+      },
+    });
   }
+
 
   signup() {
     if (this.signupData.password !== this.signupData.confirmPassword) {
@@ -34,6 +45,7 @@ export class LoginComponent {
         next: (res) => {
           console.log('Signup successful', res);
           alert('Signup successful!');
+          this.router.navigate(['/']);
         },
         error: (err) => {
           console.error('Signup failed', err);
