@@ -21,6 +21,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 import { RouteService } from './services/route.service';
+import { AuthService } from './services/auth.service';
+import { AuthGuard } from './auth.guard';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,13 @@ import { RouteService } from './services/route.service';
     }),
     FormsModule,
   ],
-  providers: [GeneralService, ExerciseService, RouteService],
+  providers: [
+    GeneralService,
+    ExerciseService,
+    RouteService,
+    AuthService,
+    AuthGuard,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

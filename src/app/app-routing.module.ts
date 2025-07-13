@@ -4,13 +4,26 @@ import { HomeComponent } from './components/home/home.component';
 import { ProgramsComponent } from './components/programs/programs.component';
 import { AnalyicComponent } from './components/analyic/analyic.component'; // Adjust path if needed
 import { LoginComponent } from './components/login/login.component';
+import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'programs', component: ProgramsComponent },
-  { path: 'analytic', component: AnalyicComponent },
   { path: 'login', component: LoginComponent },
-  // Add more routes here if needed
+  {
+    path: '',
+    component: HomeComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'programs',
+    component: ProgramsComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'analytic',
+    component: AnalyicComponent,
+    canActivate: [AuthGuard],
+  },
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({
