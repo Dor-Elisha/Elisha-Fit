@@ -58,6 +58,9 @@ export class ExerciseSelectorComponent implements OnInit, OnDestroy {
   itemsPerPage: number = 20;
   totalPages: number = 1;
   
+  // Image navigation
+  exerciseImageIndices: { [exerciseId: string]: number } = {};
+  
   private destroy$ = new Subject<void>();
 
   constructor(private exerciseService: ExerciseService) {}
@@ -347,5 +350,33 @@ export class ExerciseSelectorComponent implements OnInit, OnDestroy {
       imageContainer.style.display = 'none';
       iconContainer.style.display = 'flex';
     }
+  }
+
+  // Image navigation methods
+  getCurrentImageIndex(exercise: Exercise): number {
+    return this.exerciseImageIndices[exercise.id] || 0;
+  }
+
+  getCurrentImage(exercise: Exercise): string {
+    const index = this.getCurrentImageIndex(exercise);
+    return exercise.images[index] || exercise.images[0] || '';
+  }
+
+  hasMultipleImages(exercise: Exercise): boolean {
+    return exercise.images && exercise.images.length > 1;
+  }
+
+  nextImage(event: Event, exercise: Exercise): void {
+    event.stopPropagation(); // Prevent card selection
+    const currentIndex = this.getCurrentImageIndex(exercise);
+    const maxIndex = exercise.images.length - 1;
+    this.exerciseImageIndices[exercise.id] = currentIndex < maxIndex ? currentIndex + 1 : 0;
+  }
+
+  previousImage(event: Event, exercise: Exercise): void {
+    event.stopPropagation(); // Prevent card selection
+    const currentIndex = this.getCurrentImageIndex(exercise);
+    const maxIndex = exercise.images.length - 1;
+    this.exerciseImageIndices[exercise.id] = currentIndex > 0 ? currentIndex - 1 : maxIndex;
   }
 } 
