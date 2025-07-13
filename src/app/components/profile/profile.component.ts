@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
+import { RouteService } from '../../services/route.service';
 
 @Component({
   selector: 'app-profile',
@@ -11,7 +12,7 @@ export class ProfileComponent {
   editing = false;
   nameInput = '';
 
-  constructor(private auth: AuthService) {
+  constructor(private auth: AuthService, private rs: RouteService) {
     this.user = this.auth.currentUser || {};
   }
 
@@ -23,9 +24,10 @@ export class ProfileComponent {
   saveName() {
     const trimmed = this.nameInput.trim();
     if (trimmed) {
-      this.user.name = trimmed;
-      localStorage.setItem('currentUser', JSON.stringify(this.user));
-      this.editing = false;
+      this.rs.updateUserName(this.user.id, trimmed).subscribe(() => {
+        this.user.name = trimmed;
+        this.editing = false;
+      });
     }
   }
 }

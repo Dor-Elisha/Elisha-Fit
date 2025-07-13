@@ -18,6 +18,10 @@ export class RouteService {
     return this.http.post(`${this.baseUrl}auth/login`, { email, password });
   }
 
+  updateUserName(userId, newName) {
+    return this.http.put(`${this.baseUrl}users/${userId}/name`, { name: newName });
+  }
+
   saveProgram(program) {
     return this.http.post(`${this.baseUrl}/programs`, program);
   }

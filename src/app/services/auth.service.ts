@@ -10,7 +10,7 @@ export class AuthService {
   constructor(private routeService: RouteService, private router: Router) {
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
-      this.currentUserSubject.next(JSON.parse(storedUser));
+      this.currentUserSubject.next(JSON.parse(storedUser).data);
     }
   }
 
@@ -26,7 +26,7 @@ export class AuthService {
     return this.routeService.login(email, password).pipe(
       tap((res: any) => {
         localStorage.setItem('currentUser', JSON.stringify(res));
-        this.currentUserSubject.next(res);
+        this.currentUserSubject.next(res.data?.user);
       })
     );
   }
@@ -35,7 +35,7 @@ export class AuthService {
     return this.routeService.register(email, password).pipe(
       tap((res: any) => {
         localStorage.setItem('currentUser', JSON.stringify(res));
-        this.currentUserSubject.next(res);
+        this.currentUserSubject.next(res.data?.user);
       })
     );
   }
