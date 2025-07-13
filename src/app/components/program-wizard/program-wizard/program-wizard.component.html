@@ -1,5 +1,5 @@
-<div class="program-wizard">
-  <div class="wizard-header">
+<div class="program-wizard page-container">
+  <div class="component-header">
     <h2>Create Custom Workout Program</h2>
     
     <!-- Step Indicator -->
@@ -28,7 +28,7 @@
 
   <div class="wizard-content">
     <!-- Step 1: Program Details -->
-    <div *ngIf="currentStep === 1" class="step-content">
+    <div *ngIf="currentStep === 1" class="step-content section-container">
       <h3>Program Details</h3>
       <form [formGroup]="programForm" class="program-form">
         <div class="form-group">
@@ -40,7 +40,7 @@
             placeholder="Enter program name"
             class="form-control"
           />
-          <div class="error" *ngIf="programForm.get('name')?.touched && programForm.get('name')?.invalid">
+          <div class="error-message" *ngIf="programForm.get('name')?.touched && programForm.get('name')?.invalid">
             <span *ngIf="programForm.get('name')?.errors?.['required']">Program name is required.</span>
             <span *ngIf="programForm.get('name')?.errors?.['minlength']">Name must be at least 3 characters.</span>
             <span *ngIf="programForm.get('name')?.errors?.['maxlength']">Name must be at most 100 characters.</span>
@@ -56,7 +56,7 @@
             class="form-control"
             rows="3"
           ></textarea>
-          <div class="error" *ngIf="programForm.get('description')?.touched && programForm.get('description')?.invalid">
+          <div class="error-message" *ngIf="programForm.get('description')?.touched && programForm.get('description')?.invalid">
             <span *ngIf="programForm.get('description')?.errors?.['maxlength']">Description must be at most 500 characters.</span>
           </div>
         </div>
@@ -69,7 +69,7 @@
               <option value="intermediate">Intermediate</option>
               <option value="advanced">Advanced</option>
             </select>
-            <div class="error" *ngIf="programForm.get('difficulty')?.touched && programForm.get('difficulty')?.invalid">
+            <div class="error-message" *ngIf="programForm.get('difficulty')?.touched && programForm.get('difficulty')?.invalid">
               <span *ngIf="programForm.get('difficulty')?.errors?.['required']">Difficulty level is required.</span>
             </div>
           </div>
@@ -84,7 +84,7 @@
               <option value="yoga">Yoga</option>
               <option value="mixed">Mixed</option>
             </select>
-            <div class="error" *ngIf="programForm.get('category')?.touched && programForm.get('category')?.invalid">
+            <div class="error-message" *ngIf="programForm.get('category')?.touched && programForm.get('category')?.invalid">
               <span *ngIf="programForm.get('category')?.errors?.['required']">Category is required.</span>
             </div>
           </div>
@@ -100,7 +100,7 @@
             max="300"
             class="form-control"
           />
-          <div class="error" *ngIf="programForm.get('estimatedDuration')?.touched && programForm.get('estimatedDuration')?.invalid">
+          <div class="error-message" *ngIf="programForm.get('estimatedDuration')?.touched && programForm.get('estimatedDuration')?.invalid">
             <span *ngIf="programForm.get('estimatedDuration')?.errors?.['required']">Duration is required.</span>
             <span *ngIf="programForm.get('estimatedDuration')?.errors?.['min']">Duration must be at least 5 minutes.</span>
             <span *ngIf="programForm.get('estimatedDuration')?.errors?.['max']">Duration must be at most 300 minutes.</span>
@@ -110,7 +110,7 @@
     </div>
 
     <!-- Step 2: Exercise Selection -->
-    <div *ngIf="currentStep === 2" class="step-content">
+    <div *ngIf="currentStep === 2" class="step-content section-container">
       <h3>Select Exercises</h3>
       <app-exercise-selector 
         (selectedExercisesChange)="onExercisesSelected($event)"
@@ -118,7 +118,7 @@
     </div>
 
     <!-- Step 3: Exercise Configuration -->
-    <div *ngIf="currentStep === 3" class="step-content">
+    <div *ngIf="currentStep === 3" class="step-content section-container">
       <h3>Configure Exercises</h3>
       <app-exercise-config 
         [selectedExercises]="selectedExercises"
@@ -129,10 +129,10 @@
   </div>
 
   <!-- Navigation -->
-  <div class="wizard-navigation">
+  <div class="btn-group-actions">
     <button 
       type="button" 
-      class="btn btn-secondary" 
+      class="btn btn-secondary btn-icon" 
       (click)="previousStep()"
       [disabled]="currentStep === 1"
     >
@@ -146,7 +146,7 @@
     <button 
       *ngIf="currentStep < totalSteps"
       type="button" 
-      class="btn btn-primary" 
+      class="btn btn-primary btn-icon" 
       (click)="nextStep()"
       [disabled]="!canProceedToNextStep()"
     >
@@ -156,7 +156,7 @@
     <button 
       *ngIf="currentStep === totalSteps"
       type="button" 
-      class="btn btn-success" 
+      class="btn btn-success btn-icon" 
       (click)="createProgram()"
       [disabled]="!canProceedToNextStep()"
     >

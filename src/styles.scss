@@ -1,6 +1,9 @@
 // Global styles for Elisha-Fit
 // Bootstrap 5.3.7 is imported via angular.json
 
+// Import component-specific theming
+@import 'styles/components';
+
 // ============================================================================
 // CUSTOM CSS VARIABLES FOR CONSISTENT THEMING
 // ============================================================================
