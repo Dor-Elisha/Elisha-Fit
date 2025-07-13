@@ -6,13 +6,27 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class RouteService {
-  private readonly baseUrl = 'http://localhost:3000';
+  private readonly baseUrl = 'http://localhost:8080/api/v1/';
 
   constructor(private http: HttpClient) {}
 
-  login(data: unknown): Observable<unknown> {
-    return this.http.post<unknown>(`${this.baseUrl}/login`, data);
+  register =(email: string, password: string) => {
+    return this.http.post(`${this.baseUrl}auth/register`, { email, password });
   }
 
-  // additional backend calls can be placed here
+  login =(email: string, password: string) => {
+    return this.http.post(`${this.baseUrl}auth/login`, { email, password });
+  }
+
+  saveProgram(program) {
+    return this.http.post(`${this.baseUrl}/programs`, program);
+  }
+
+  getPrograms() {
+    return this.http.get(`${this.baseUrl}/programs`);
+  }
+
+  editProgram(programId, program){
+    return this.http.put(`${this.baseUrl}/programs/${programId}`, program);
+  }
 }

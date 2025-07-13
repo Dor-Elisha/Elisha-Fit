@@ -37,6 +37,7 @@ export class SelectProgramComponent implements OnInit {
           this.toaster.error('Please add at least one exercise to the program');
           return;
         }
+
         this.gs.saveProgram({name: this.newProgram.name, exercises: this.newProgram.exercises});
       }
     }

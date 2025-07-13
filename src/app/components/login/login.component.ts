@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
+import { RouteService } from '../../services/route.service';
 
 @Component({
   selector: 'app-login',
@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private router: Router, private rs: RouteService) {}
 
   isSignup = false;
   loginData = { email: '', password: '' };
@@ -20,7 +20,7 @@ export class LoginComponent {
   }
 
   login() {
-    this.authService.login(this.loginData.email, this.loginData.password).subscribe({
+    this.rs.login(this.loginData.email, this.loginData.password).subscribe({
       next: (res: any) => {
         console.log('Login successful', res);
         this.router.navigate(['/'], { state: { user: res.data } });
@@ -39,7 +39,7 @@ export class LoginComponent {
       return;
     }
 
-    this.authService
+    this.rs
       .register(this.signupData.email, this.signupData.password)
       .subscribe({
         next: (res) => {
