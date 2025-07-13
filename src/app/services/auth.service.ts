@@ -7,10 +7,13 @@ import { RouteService } from './route.service';
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<any>(null);
 
-  constructor(private routeService: RouteService, private router: Router) {
+  constructor(
+    private routeService: RouteService,
+    private router: Router,
+  ) {
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
-      this.currentUserSubject.next(JSON.parse(storedUser).data);
+      this.currentUserSubject.next(JSON.parse(storedUser));
     }
   }
 
@@ -25,18 +28,24 @@ export class AuthService {
   login(email: string, password: string): Observable<any> {
     return this.routeService.login(email, password).pipe(
       tap((res: any) => {
-        localStorage.setItem('currentUser', JSON.stringify(res));
-        this.currentUserSubject.next(res.data?.user);
-      })
+        const user = res?.data?.user;
+        if (user) {
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          this.currentUserSubject.next(user);
+        }
+      }),
     );
   }
 
   register(email: string, password: string): Observable<any> {
     return this.routeService.register(email, password).pipe(
       tap((res: any) => {
-        localStorage.setItem('currentUser', JSON.stringify(res));
-        this.currentUserSubject.next(res.data?.user);
-      })
+        const user = res?.data?.user;
+        if (user) {
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          this.currentUserSubject.next(user);
+        }
+      }),
     );
   }
 
