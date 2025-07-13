@@ -149,6 +149,17 @@
                 background: rgba(0, 123, 255, 0.05);
               }
 
+              &.selected {
+                border-color: #007bff;
+                background: rgba(0, 123, 255, 0.1);
+                
+                .muscle-group-label,
+                .equipment-label {
+                  color: #007bff;
+                  font-weight: 600;
+                }
+              }
+
               input[type="checkbox"] {
                 margin-right: 8px;
               }

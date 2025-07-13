@@ -74,7 +74,9 @@
           <label for="targetMuscleGroups">Target Muscle Groups<span class="required">*</span></label>
           <div class="muscle-groups-selector">
             <div class="muscle-group-options">
-              <label class="muscle-group-option" *ngFor="let muscle of ['Chest', 'Back', 'Shoulders', 'Arms', 'Legs', 'Core', 'Full Body']">
+              <label class="muscle-group-option" 
+                     [class.selected]="isMuscleGroupSelected(muscle)"
+                     *ngFor="let muscle of ['Chest', 'Back', 'Shoulders', 'Arms', 'Legs', 'Core', 'Full Body']">
                 <input 
                   type="checkbox" 
                   [value]="muscle"
