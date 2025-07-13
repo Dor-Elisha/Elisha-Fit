@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { RouteService } from '../../services/route.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -9,7 +9,7 @@ import { RouteService } from '../../services/route.service';
 })
 export class LoginComponent {
 
-  constructor(private router: Router, private rs: RouteService) {}
+  constructor(private router: Router, private auth: AuthService) {}
 
   isSignup = false;
   loginData = { email: '', password: '' };
@@ -20,10 +20,10 @@ export class LoginComponent {
   }
 
   login() {
-    this.rs.login(this.loginData.email, this.loginData.password).subscribe({
+    this.auth.login(this.loginData.email, this.loginData.password).subscribe({
       next: (res: any) => {
         console.log('Login successful', res);
-        this.router.navigate(['/'], { state: { user: res.data } });
+        this.router.navigate(['/']);
       },
       error: (err: any) => {
         console.error('Login failed', err);
@@ -39,7 +39,7 @@ export class LoginComponent {
       return;
     }
 
-    this.rs
+    this.auth
       .register(this.signupData.email, this.signupData.password)
       .subscribe({
         next: (res) => {
@@ -52,5 +52,10 @@ export class LoginComponent {
           alert(err.error?.message || 'Signup failed');
         },
       });
+  }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/login']);
   }
 }
