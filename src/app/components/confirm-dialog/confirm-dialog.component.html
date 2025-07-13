@@ -1,0 +1,39 @@
+<div class="dialog-overlay" *ngIf="isVisible" (click)="onBackdropClick($event)">
+  <div class="dialog-container">
+    <div class="dialog-header">
+      <div class="dialog-title">
+        <i 
+          *ngIf="data.showIcon" 
+          class="material-icons dialog-icon"
+          [style.color]="getIconColor()">
+          {{ getIcon() }}
+        </i>
+        <h2>{{ data.title }}</h2>
+      </div>
+      <button 
+        class="close-button" 
+        (click)="onClose()"
+        aria-label="Close dialog">
+        <i class="material-icons">close</i>
+      </button>
+    </div>
+
+    <div class="dialog-content">
+      <p class="dialog-message">{{ data.message }}</p>
+    </div>
+
+    <div class="dialog-actions">
+      <button 
+        class="btn btn-secondary"
+        (click)="onCancel()">
+        {{ data.cancelText }}
+      </button>
+      <button 
+        class="btn"
+        [class]="getConfirmButtonClass()"
+        (click)="onConfirm()">
+        {{ data.confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

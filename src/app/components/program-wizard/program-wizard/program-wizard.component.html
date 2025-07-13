@@ -1,0 +1,176 @@
+<div class="program-wizard">
+  <div class="wizard-header">
+    <h2>Create Custom Workout Program</h2>
+    
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div 
+        *ngFor="let step of [1, 2, 3]; let i = index" 
+        class="step"
+        [class]="getStepStatus(step)"
+        [class.valid]="getStepValidationStatus(step)"
+        (click)="goToStep(step)"
+      >
+        <div class="step-number">{{ step }}</div>
+        <div class="step-label">
+          <span *ngIf="step === 1">Program Details</span>
+          <span *ngIf="step === 2">Exercise Selection</span>
+          <span *ngIf="step === 3">Configuration</span>
+        </div>
+        <div class="step-status">
+          <i *ngIf="getStepStatus(step) === 'completed'" class="fas fa-check"></i>
+          <i *ngIf="getStepStatus(step) === 'current'" class="fas fa-circle"></i>
+          <i *ngIf="getStepStatus(step) === 'pending'" class="fas fa-circle-o"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wizard-content">
+    <!-- Step 1: Program Details -->
+    <div *ngIf="currentStep === 1" class="step-content">
+      <h3>Program Details</h3>
+      <form [formGroup]="programForm" class="program-form">
+        <div class="form-group">
+          <label for="name">Program Name<span class="required">*</span></label>
+          <input 
+            id="name" 
+            type="text" 
+            formControlName="name" 
+            placeholder="Enter program name"
+            class="form-control"
+          />
+          <div class="error" *ngIf="programForm.get('name')?.touched && programForm.get('name')?.invalid">
+            <span *ngIf="programForm.get('name')?.errors?.['required']">Program name is required.</span>
+            <span *ngIf="programForm.get('name')?.errors?.['minlength']">Name must be at least 3 characters.</span>
+            <span *ngIf="programForm.get('name')?.errors?.['maxlength']">Name must be at most 100 characters.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea 
+            id="description" 
+            formControlName="description" 
+            placeholder="Describe your program..."
+            class="form-control"
+            rows="3"
+          ></textarea>
+          <div class="error" *ngIf="programForm.get('description')?.touched && programForm.get('description')?.invalid">
+            <span *ngIf="programForm.get('description')?.errors?.['maxlength']">Description must be at most 500 characters.</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="difficulty">Difficulty Level<span class="required">*</span></label>
+            <select id="difficulty" formControlName="difficulty" class="form-control">
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+            <div class="error" *ngIf="programForm.get('difficulty')?.touched && programForm.get('difficulty')?.invalid">
+              <span *ngIf="programForm.get('difficulty')?.errors?.['required']">Difficulty level is required.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="category">Category<span class="required">*</span></label>
+            <select id="category" formControlName="category" class="form-control">
+              <option value="strength">Strength Training</option>
+              <option value="cardio">Cardio</option>
+              <option value="flexibility">Flexibility</option>
+              <option value="hiit">HIIT</option>
+              <option value="yoga">Yoga</option>
+              <option value="mixed">Mixed</option>
+            </select>
+            <div class="error" *ngIf="programForm.get('category')?.touched && programForm.get('category')?.invalid">
+              <span *ngIf="programForm.get('category')?.errors?.['required']">Category is required.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="estimatedDuration">Estimated Duration (minutes)<span class="required">*</span></label>
+          <input 
+            id="estimatedDuration" 
+            type="number" 
+            formControlName="estimatedDuration" 
+            min="5" 
+            max="300"
+            class="form-control"
+          />
+          <div class="error" *ngIf="programForm.get('estimatedDuration')?.touched && programForm.get('estimatedDuration')?.invalid">
+            <span *ngIf="programForm.get('estimatedDuration')?.errors?.['required']">Duration is required.</span>
+            <span *ngIf="programForm.get('estimatedDuration')?.errors?.['min']">Duration must be at least 5 minutes.</span>
+            <span *ngIf="programForm.get('estimatedDuration')?.errors?.['max']">Duration must be at most 300 minutes.</span>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 2: Exercise Selection -->
+    <div *ngIf="currentStep === 2" class="step-content">
+      <h3>Select Exercises</h3>
+      <app-exercise-selector 
+        (selectedExercisesChange)="onExercisesSelected($event)"
+      ></app-exercise-selector>
+    </div>
+
+    <!-- Step 3: Exercise Configuration -->
+    <div *ngIf="currentStep === 3" class="step-content">
+      <h3>Configure Exercises</h3>
+      <app-exercise-config 
+        [selectedExercises]="selectedExercises"
+        (configuredExercisesChange)="onExercisesConfigured($event)"
+        (validationStateChange)="onStep3ValidationChange($event)"
+      ></app-exercise-config>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="wizard-navigation">
+    <button 
+      type="button" 
+      class="btn btn-secondary" 
+      (click)="previousStep()"
+      [disabled]="currentStep === 1"
+    >
+      <i class="fas fa-arrow-left"></i> Previous
+    </button>
+
+    <div class="step-info">
+      Step {{ currentStep }} of {{ totalSteps }}
+    </div>
+
+    <button 
+      *ngIf="currentStep < totalSteps"
+      type="button" 
+      class="btn btn-primary" 
+      (click)="nextStep()"
+      [disabled]="!canProceedToNextStep()"
+    >
+      Next <i class="fas fa-arrow-right"></i>
+    </button>
+
+    <button 
+      *ngIf="currentStep === totalSteps"
+      type="button" 
+      class="btn btn-success" 
+      (click)="createProgram()"
+      [disabled]="!canProceedToNextStep()"
+    >
+      <i class="fas fa-check"></i> Create Program
+    </button>
+  </div>
+
+  <!-- Validation Summary -->
+  <div *ngIf="!canProceedToNextStep()" class="validation-summary">
+    <div class="alert alert-warning">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span *ngIf="currentStep === 1">Please complete all required fields to continue.</span>
+      <span *ngIf="currentStep === 2">Please select at least one exercise to continue.</span>
+      <span *ngIf="currentStep === 3">Please fix validation errors to create the program.</span>
+    </div>
+  </div>
+</div>

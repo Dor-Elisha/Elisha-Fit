@@ -1,0 +1,93 @@
+<div class="dialog-overlay" *ngIf="isVisible" (click)="onBackdropClick($event)">
+  <div class="dialog-container">
+    <div class="dialog-header">
+      <div class="dialog-title">
+        <i class="material-icons dialog-icon" style="color: #17a2b8;">content_copy</i>
+        <h2>Duplicate Program</h2>
+      </div>
+      <button 
+        class="close-button" 
+        (click)="onClose()"
+        aria-label="Close dialog">
+        <i class="material-icons">close</i>
+      </button>
+    </div>
+
+    <div class="dialog-content" *ngIf="data">
+      <div class="program-preview">
+        <div class="program-info">
+          <div class="program-icon">
+            <i [class]="getCategoryIcon(data.program)"></i>
+          </div>
+          <div class="program-details">
+            <h3>{{ data.program.name }}</h3>
+            <p *ngIf="data.program.description" class="description">{{ data.program.description }}</p>
+            <div class="program-stats">
+              <span class="stat">
+                <i class="fas fa-dumbbell"></i>
+                {{ getProgramStats().exercises }} exercises
+              </span>
+              <span class="stat">
+                <i class="fas fa-clock"></i>
+                {{ getProgramStats().duration }}
+              </span>
+              <span class="stat">
+                <i class="fas fa-signal"></i>
+                {{ getProgramStats().difficulty }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4>New Program Name</h4>
+        <p class="form-description">Enter a name for your duplicated program. The system will automatically add a suffix if the name already exists.</p>
+        
+        <form [formGroup]="duplicateForm" class="duplicate-form">
+          <div class="form-group">
+            <label for="programName">Program Name *</label>
+            <input 
+              type="text" 
+              id="programName"
+              formControlName="programName"
+              class="form-control"
+              placeholder="Enter program name"
+              [class.is-invalid]="duplicateForm.get('programName')?.invalid && duplicateForm.get('programName')?.touched"
+            />
+            <div class="invalid-feedback" *ngIf="duplicateForm.get('programName')?.invalid && duplicateForm.get('programName')?.touched">
+              <span *ngIf="duplicateForm.get('programName')?.errors?.['required']">Program name is required</span>
+              <span *ngIf="duplicateForm.get('programName')?.errors?.['minlength']">Program name must be at least 3 characters</span>
+              <span *ngIf="duplicateForm.get('programName')?.errors?.['maxlength']">Program name cannot exceed 100 characters</span>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="info-section">
+        <div class="info-item">
+          <i class="fas fa-info-circle"></i>
+          <span>All exercises and settings will be copied to the new program</span>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-clock"></i>
+          <span>The new program will have today's date as creation date</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <button 
+        class="btn btn-secondary"
+        (click)="onCancel()">
+        Cancel
+      </button>
+      <button 
+        class="btn btn-primary"
+        [disabled]="duplicateForm.invalid"
+        (click)="onConfirm()">
+        <i class="fas fa-copy"></i> Duplicate Program
+      </button>
+    </div>
+  </div>
+</div>

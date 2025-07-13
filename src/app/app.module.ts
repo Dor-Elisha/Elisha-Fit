@@ -19,11 +19,24 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { GeneralService } from './services/general.service';
 import { ExerciseService } from './services/exercise.service';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 import { RouteService } from './services/route.service';
 import { AuthService } from './services/auth.service';
 import { AuthGuard } from './auth.guard';
+import { ProgramWizardComponent } from './components/program-wizard/program-wizard/program-wizard.component';
+import { ExerciseSelectorComponent } from './components/program-wizard/exercise-selector/exercise-selector.component';
+import { ExerciseConfigComponent } from './components/program-wizard/exercise-config/exercise-config.component';
+import { ProgramListComponent } from './components/program-list/program-list.component';
+import { ProgramDetailComponent } from './components/program-detail/program-detail.component';
+import { ProgramEditComponent } from './components/program-edit/program-edit.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { DuplicateProgramDialogComponent } from './components/duplicate-program-dialog/duplicate-program-dialog.component';
+import { ProgressEntryComponent } from './components/progress-entry/progress-entry.component';
+import { ProgressHistoryComponent } from './components/progress-history/progress-history.component';
+import { ProgressAnalyticsComponent } from './components/progress-analytics/progress-analytics.component';
+import { ProgressDashboardComponent } from './components/progress-dashboard/progress-dashboard.component';
+import { GoalManagementComponent } from './components/goal-management/goal-management.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +51,19 @@ import { AuthGuard } from './auth.guard';
     DropdownComponent,
     LoginComponent,
     ProfileComponent,
+    ProgramWizardComponent,
+    ExerciseSelectorComponent,
+    ExerciseConfigComponent,
+    ProgramListComponent,
+    ProgramDetailComponent,
+    ProgramEditComponent,
+    ConfirmDialogComponent,
+    DuplicateProgramDialogComponent,
+    ProgressEntryComponent,
+    ProgressHistoryComponent,
+    ProgressAnalyticsComponent,
+    ProgressDashboardComponent,
+    GoalManagementComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,6 +80,7 @@ import { AuthGuard } from './auth.guard';
       useFactory: adapterFactory,
     }),
     FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [
     GeneralService,

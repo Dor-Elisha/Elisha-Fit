@@ -28,7 +28,7 @@
               <ng-container>
                 <div class="col-6">
                   <div class="row g-3 overflow-auto" style="max-height: 500px;">
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let exercise of exerciseService.exercises" [hidden]="exercise.show">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let exercise of exercises" [hidden]="exercise.show">
                       <div class="card exercise-card rounded overflow-hidden d-flex flex-column align-items-center" (click)="addExercise(exercise)" style="cursor: pointer;">
                         <div class="flex-fill w-100 d-flex align-items-center justify-content-center">
                           <button class="btn btn-link border position-absolute" style="left: 10px;" (click)="prevImage(exercise); $event.stopPropagation();">

@@ -1,19 +1,19 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { Exercise } from '../models/exercise.interface';
 
 @Injectable({ providedIn: 'root' })
 export class ExerciseService {
-  constructor(private http: HttpClient) {
+  categories: string[] = [];
+  muscleGroups: string[] = [];
+  exerciseLevels: string[] = [];
 
-  }
+  constructor(private http: HttpClient) {}
 
-  exercises: any;
-  categories: any;
-  muscleGroups: any;
-  exerciseLevels: any;
-
-  getExercises(): Observable<any> {
-    return this.http.get<any>('assets/data/exercises.json');
+  getExercises(): Observable<Exercise[]> {
+    return this.http.get<{exercises: Exercise[]}>('assets/data/exercises.json').pipe(
+      map(data => data.exercises)
+    );
   }
 }

@@ -1,0 +1,167 @@
+.exercise-config {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+
+  h3 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .no-exercises {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    background: #f9f9f9;
+    border-radius: 8px;
+  }
+
+  .config-container {
+    .config-summary {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #007bff;
+
+      p {
+        margin: 5px 0;
+        color: #495057;
+      }
+
+      .validation-status {
+        font-weight: 600;
+        margin-top: 10px !important;
+        
+        &.valid {
+          color: #28a745;
+        }
+        
+        &.invalid {
+          color: #dc3545;
+        }
+      }
+    }
+
+    .validation-errors {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+
+      h4 {
+        color: #721c24;
+        margin: 0 0 10px 0;
+        font-size: 16px;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 20px;
+        
+        li {
+          color: #721c24;
+          margin-bottom: 5px;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .exercise-forms {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .exercise-form-card {
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+        h4 {
+          color: #333;
+          margin: 0 0 15px 0;
+          padding-bottom: 10px;
+          border-bottom: 2px solid #007bff;
+        }
+
+        .config-form {
+          .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+
+            @media (max-width: 600px) {
+              grid-template-columns: 1fr;
+            }
+          }
+
+          .form-group {
+            display: flex;
+            flex-direction: column;
+
+            label {
+              font-weight: 600;
+              color: #495057;
+              margin-bottom: 5px;
+              
+              .required {
+                color: #dc3545;
+              }
+            }
+
+            .form-control {
+              padding: 10px;
+              border: 1px solid #ced4da;
+              border-radius: 4px;
+              font-size: 14px;
+              transition: border-color 0.15s ease-in-out;
+
+              &:focus {
+                outline: none;
+                border-color: #007bff;
+                box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+              }
+
+              &.ng-invalid.ng-touched {
+                border-color: #dc3545;
+              }
+
+              &.ng-valid.ng-touched {
+                border-color: #28a745;
+              }
+            }
+
+            textarea.form-control {
+              resize: vertical;
+              min-height: 60px;
+            }
+
+            .error {
+              color: #dc3545;
+              font-size: 12px;
+              margin-top: 5px;
+              padding: 5px;
+              background: #f8d7da;
+              border-radius: 4px;
+              border-left: 3px solid #dc3545;
+
+              span {
+                display: block;
+                margin-bottom: 2px;
+                
+                &:last-child {
+                  margin-bottom: 0;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

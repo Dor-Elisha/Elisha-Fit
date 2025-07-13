@@ -1,0 +1,296 @@
+<div class="program-list">
+  <!-- Header -->
+  <div class="list-header">
+    <h2>My Workout Programs</h2>
+    <p *ngIf="!loading">{{ filteredPrograms.length }} of {{ programs.length }} programs</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading programs...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && programs.length === 0" class="empty-state">
+    <i class="fas fa-dumbbell"></i>
+    <h3>No Programs Yet</h3>
+    <p>Create your first workout program to get started!</p>
+  </div>
+
+  <!-- No Results State -->
+  <div *ngIf="!loading && programs.length > 0 && filteredPrograms.length === 0" class="no-results">
+    <i class="fas fa-search"></i>
+    <h3>No Programs Found</h3>
+    <p>Try adjusting your search or filters.</p>
+    <button class="btn btn-secondary" (click)="clearFilters()">Clear Filters</button>
+  </div>
+
+  <!-- Filters and Search -->
+  <div *ngIf="!loading && programs.length > 0" class="filters-section">
+    <div class="search-bar">
+      <div class="search-input">
+        <i class="fas fa-search"></i>
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (input)="onSearchChange()"
+          placeholder="Search programs..."
+          class="form-control"
+        />
+      </div>
+    </div>
+
+    <div class="filter-controls">
+      <div class="filter-group">
+        <label for="difficulty-filter">Difficulty:</label>
+        <select 
+          id="difficulty-filter" 
+          [(ngModel)]="selectedDifficulty" 
+          (change)="onDifficultyChange()"
+          class="form-control"
+        >
+          <option *ngFor="let diff of difficulties" [value]="diff.value">
+            {{ diff.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="sort-by">Sort by:</label>
+        <select 
+          id="sort-by" 
+          [(ngModel)]="sortBy" 
+          (change)="onSortChange()"
+          class="form-control"
+        >
+          <option *ngFor="let option of sortOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="sort-order">
+        <button 
+          class="btn btn-outline-secondary" 
+          (click)="toggleSortOrder()"
+          [title]="sortOrder === 'asc' ? 'Sort Descending' : 'Sort Ascending'"
+        >
+          <i class="fas" [class.fa-sort-amount-down]="sortOrder === 'desc'" [class.fa-sort-amount-up]="sortOrder === 'asc'"></i>
+        </button>
+      </div>
+
+      <div class="clear-filters" *ngIf="hasActiveFilters()">
+        <button class="btn btn-outline-danger" (click)="clearFilters()">
+          <i class="fas fa-times"></i> Clear Filters ({{ getActiveFilterCount() }})
+        </button>
+      </div>
+
+      <div class="advanced-filters-toggle">
+        <button 
+          class="btn btn-outline-primary" 
+          (click)="toggleAdvancedFilters()"
+          [class.active]="showAdvancedFilters"
+        >
+          <i class="fas fa-filter"></i> 
+          {{ showAdvancedFilters ? 'Hide' : 'Show' }} Advanced Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Advanced Filters -->
+    <div *ngIf="showAdvancedFilters" class="advanced-filters">
+      <div class="advanced-filters-grid">
+        <!-- Duration Filter -->
+        <div class="filter-section">
+          <h4>Duration</h4>
+          <div class="filter-options">
+            <label *ngFor="let option of durationOptions" class="filter-option">
+              <input 
+                type="radio" 
+                name="duration" 
+                [value]="option.value"
+                [(ngModel)]="selectedDuration"
+                (change)="onDurationChange()"
+              />
+              <span>{{ option.label }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Muscle Groups Filter -->
+        <div class="filter-section" *ngIf="availableMuscleGroups.length > 0">
+          <h4>Target Muscle Groups</h4>
+          <div class="filter-options">
+            <label *ngFor="let muscle of availableMuscleGroups" class="filter-option">
+              <input 
+                type="checkbox" 
+                [value]="muscle"
+                [checked]="selectedMuscleGroups.includes(muscle)"
+                #mgInput
+                (change)="onMuscleGroupChange(muscle, mgInput.checked)"
+              />
+              <span>{{ muscle }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Tags Filter -->
+        <div class="filter-section" *ngIf="availableTags.length > 0">
+          <h4>Tags</h4>
+          <div class="filter-options">
+            <label *ngFor="let tag of availableTags" class="filter-option">
+              <input 
+                type="checkbox" 
+                [value]="tag"
+                [checked]="selectedTags.includes(tag)"
+                #tagInput
+                (change)="onTagChange(tag, tagInput.checked)"
+              />
+              <span>{{ tag }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Equipment Filter -->
+        <div class="filter-section" *ngIf="availableEquipment.length > 0">
+          <h4>Equipment</h4>
+          <div class="filter-options">
+            <label *ngFor="let equipment of availableEquipment" class="filter-option">
+              <input 
+                type="checkbox" 
+                [value]="equipment"
+                [checked]="selectedEquipment.includes(equipment)"
+                #eqInput
+                (change)="onEquipmentChange(equipment, eqInput.checked)"
+              />
+              <span>{{ equipment }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Programs Grid -->
+  <div *ngIf="!loading && filteredPrograms.length > 0" class="programs-grid">
+    <div *ngFor="let program of filteredPrograms" class="program-card">
+      <div class="card-header">
+        <div class="program-icon">
+          <i [class]="getCategoryIcon(program)"></i>
+        </div>
+        <div class="program-info">
+          <h3 class="program-name">{{ program.name }}</h3>
+          <p class="program-description" *ngIf="program.description">
+            {{ program.description }}
+          </p>
+        </div>
+        <div class="program-actions" *ngIf="showActions">
+          <div class="dropdown">
+            <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" (click)="onViewProgram(program)">
+                <i class="fas fa-eye"></i> View Details
+              </a></li>
+              <li><a class="dropdown-item" (click)="onEditProgram(program)">
+                <i class="fas fa-edit"></i> Edit Program
+              </a></li>
+              <li><a class="dropdown-item" (click)="onDuplicateProgram(program)">
+                <i class="fas fa-copy"></i> Duplicate
+              </a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" (click)="onDeleteProgram(program)">
+                <i class="fas fa-trash"></i> Delete
+              </a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="program-stats">
+          <div class="stat">
+            <i class="fas fa-dumbbell"></i>
+            <span>{{ getProgramStats(program).exercises }} exercises</span>
+          </div>
+          <div class="stat">
+            <i class="fas fa-clock"></i>
+            <span>{{ getProgramStats(program).duration }}</span>
+          </div>
+          <div class="stat">
+            <i class="fas fa-signal"></i>
+            <span>{{ getProgramStats(program).difficulty }}</span>
+          </div>
+        </div>
+
+        <div class="program-tags" *ngIf="program.metadata?.tags?.length">
+          <span *ngFor="let tag of program.metadata.tags.slice(0, 3)" class="tag">
+            {{ tag }}
+          </span>
+          <span *ngIf="program.metadata.tags.length > 3" class="tag more">
+            +{{ program.metadata.tags.length - 3 }} more
+          </span>
+        </div>
+
+        <div class="muscle-groups" *ngIf="program.metadata?.targetMuscleGroups?.length">
+          <span class="muscle-group-label">Targets:</span>
+          <span *ngFor="let muscle of program.metadata.targetMuscleGroups.slice(0, 2)" class="muscle-group">
+            {{ muscle }}
+          </span>
+          <span *ngIf="program.metadata.targetMuscleGroups.length > 2" class="muscle-group more">
+            +{{ program.metadata.targetMuscleGroups.length - 2 }} more
+          </span>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <div class="difficulty-badge" [style.background-color]="getDifficultyColor(program.difficulty)">
+          {{ program.difficulty }}
+        </div>
+        
+        <div class="action-buttons">
+          <button class="btn btn-primary btn-sm" (click)="onStartWorkout(program)">
+            <i class="fas fa-play"></i> Start Workout
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="onViewProgram(program)">
+            <i class="fas fa-eye"></i> View
+          </button>
+        </div>
+      </div>
+
+      <div class="card-meta">
+        <small class="text-muted">
+          Created {{ program.createdAt | date:'shortDate' }}
+          <span *ngIf="program.updatedAt && program.updatedAt !== program.createdAt">
+            • Updated {{ program.updatedAt | date:'shortDate' }}
+          </span>
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination (for future use) -->
+  <div *ngIf="!loading && filteredPrograms.length > 0" class="pagination-section">
+    <!-- Pagination controls can be added here when needed -->
+  </div>
+
+  <!-- Confirmation Dialog -->
+  <app-confirm-dialog
+    [isVisible]="showDeleteDialog"
+    [data]="deleteDialogData"
+    (confirm)="onConfirmDelete()"
+    (cancel)="onCancelDelete()"
+    (close)="closeDeleteDialog()">
+  </app-confirm-dialog>
+
+  <!-- Duplicate Program Dialog -->
+  <app-duplicate-program-dialog
+    [isVisible]="showDuplicateDialog"
+    [data]="duplicateDialogData"
+    (confirm)="onConfirmDuplicate($event)"
+    (cancel)="onCancelDuplicate()"
+    (close)="closeDuplicateDialog()">
+  </app-duplicate-program-dialog>
+</div>

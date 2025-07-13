@@ -1,0 +1,133 @@
+<div class="exercise-config">
+  <h3>Configure Exercises</h3>
+  
+  <div *ngIf="selectedExercises.length === 0" class="no-exercises">
+    <p>No exercises selected. Please go back to step 2 to select exercises.</p>
+  </div>
+
+  <div *ngIf="selectedExercises.length > 0" class="config-container">
+    <div class="config-summary">
+      <p>Configure {{ selectedExercises.length }} exercise(s)</p>
+      <p>Estimated total time: {{ formatTime(getTotalEstimatedTime()) }}</p>
+      <p class="validation-status" [class.valid]="validationErrors.length === 0" [class.invalid]="validationErrors.length > 0">
+        {{ getValidationSummary() }}
+      </p>
+    </div>
+
+    <!-- Validation Errors Summary -->
+    <div *ngIf="validationErrors.length > 0" class="validation-errors">
+      <h4>Validation Errors:</h4>
+      <ul>
+        <li *ngFor="let error of validationErrors">{{ error }}</li>
+      </ul>
+    </div>
+
+    <div class="exercise-forms">
+      <div *ngFor="let exercise of selectedExercises; let i = index" class="exercise-form-card">
+        <h4>{{ exercise.name }}</h4>
+        
+        <form [formGroup]="getFormGroup(i)" class="config-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="sets-{{i}}">Sets<span class="required">*</span></label>
+              <input 
+                id="sets-{{i}}" 
+                type="number" 
+                formControlName="sets" 
+                min="1" 
+                max="20"
+                class="form-control"
+              />
+              <div class="error" *ngIf="getFormGroup(i).get('sets')?.touched && getFormGroup(i).get('sets')?.invalid">
+                <span *ngIf="getFormGroup(i).get('sets')?.errors?.['required']">Sets is required.</span>
+                <span *ngIf="getFormGroup(i).get('sets')?.errors?.['min']">Minimum 1 set.</span>
+                <span *ngIf="getFormGroup(i).get('sets')?.errors?.['max']">Maximum 20 sets.</span>
+                <span *ngIf="getFormGroup(i).get('sets')?.errors?.['pattern']">Must be a whole number.</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="reps-{{i}}">Reps<span class="required">*</span></label>
+              <input 
+                id="reps-{{i}}" 
+                type="number" 
+                formControlName="reps" 
+                min="1" 
+                max="100"
+                class="form-control"
+              />
+              <div class="error" *ngIf="getFormGroup(i).get('reps')?.touched && getFormGroup(i).get('reps')?.invalid">
+                <span *ngIf="getFormGroup(i).get('reps')?.errors?.['required']">Reps is required.</span>
+                <span *ngIf="getFormGroup(i).get('reps')?.errors?.['min']">Minimum 1 rep.</span>
+                <span *ngIf="getFormGroup(i).get('reps')?.errors?.['max']">Maximum 100 reps.</span>
+                <span *ngIf="getFormGroup(i).get('reps')?.errors?.['pattern']">Must be a whole number.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="restTime-{{i}}">Rest Time (seconds)<span class="required">*</span></label>
+              <input 
+                id="restTime-{{i}}" 
+                type="number" 
+                formControlName="restTime" 
+                min="0" 
+                max="600"
+                class="form-control"
+              />
+              <div class="error" *ngIf="getFormGroup(i).get('restTime')?.touched && getFormGroup(i).get('restTime')?.invalid">
+                <span *ngIf="getFormGroup(i).get('restTime')?.errors?.['required']">Rest time is required.</span>
+                <span *ngIf="getFormGroup(i).get('restTime')?.errors?.['min']">Minimum 0 seconds.</span>
+                <span *ngIf="getFormGroup(i).get('restTime')?.errors?.['max']">Maximum 600 seconds.</span>
+                <span *ngIf="getFormGroup(i).get('restTime')?.errors?.['pattern']">Must be a whole number.</span>
+                <span *ngIf="getFormGroup(i).get('restTime')?.errors?.['negativeRestTime']">Rest time cannot be negative.</span>
+                <span *ngIf="getFormGroup(i).get('restTime')?.errors?.['excessiveRestTime']">Rest time cannot exceed 600 seconds.</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="weight-{{i}}">Weight (kg/lbs)<span class="required">*</span></label>
+              <input 
+                id="weight-{{i}}" 
+                type="number" 
+                formControlName="weight" 
+                min="0" 
+                max="1000"
+                step="0.5"
+                class="form-control"
+              />
+              <div class="error" *ngIf="getFormGroup(i).get('weight')?.touched && getFormGroup(i).get('weight')?.invalid">
+                <span *ngIf="getFormGroup(i).get('weight')?.errors?.['required']">Weight is required.</span>
+                <span *ngIf="getFormGroup(i).get('weight')?.errors?.['min']">Minimum 0.</span>
+                <span *ngIf="getFormGroup(i).get('weight')?.errors?.['max']">Maximum 1000.</span>
+                <span *ngIf="getFormGroup(i).get('weight')?.errors?.['pattern']">Must be a valid number (max 2 decimal places).</span>
+                <span *ngIf="getFormGroup(i).get('weight')?.errors?.['negativeWeight']">Weight cannot be negative.</span>
+                <span *ngIf="getFormGroup(i).get('weight')?.errors?.['excessiveWeight']">Weight cannot exceed 1000.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="notes-{{i}}">Notes</label>
+            <textarea 
+              id="notes-{{i}}" 
+              formControlName="notes" 
+              placeholder="Optional notes for this exercise..."
+              class="form-control"
+              rows="2"
+            ></textarea>
+            <div class="error" *ngIf="getFormGroup(i).get('notes')?.touched && getFormGroup(i).get('notes')?.invalid">
+              <span *ngIf="getFormGroup(i).get('notes')?.errors?.['maxlength']">Notes must be at most 500 characters.</span>
+            </div>
+          </div>
+
+          <!-- Cross-field validation error -->
+          <div class="error" *ngIf="getFormGroup(i).errors?.['excessiveVolume'] && getFormGroup(i).touched">
+            <span>Total volume (sets × reps × weight) is too high for this exercise.</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

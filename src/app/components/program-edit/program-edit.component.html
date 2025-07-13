@@ -1,0 +1,306 @@
+<div class="program-edit-container">
+  <!-- Header -->
+  <div class="edit-header">
+    <div class="header-content">
+      <button class="back-button" (click)="cancel()">
+        <i class="material-icons">arrow_back</i>
+        Back to Programs
+      </button>
+      <h1>Edit Program</h1>
+      <div class="header-actions">
+        <button 
+          class="btn btn-secondary" 
+          (click)="saveAsNew()" 
+          [disabled]="!isFormValid || saving">
+          <i class="material-icons">content_copy</i>
+          Save as New
+        </button>
+        <button 
+          class="btn btn-primary" 
+          (click)="saveProgram()" 
+          [disabled]="!isFormValid || saving">
+          <i class="material-icons">save</i>
+          {{ saving ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="edit-content">
+    <form [formGroup]="programForm" class="program-form">
+      
+      <!-- Program Details Section -->
+      <div class="form-section">
+        <h2>Program Details</h2>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="name">Program Name *</label>
+            <input 
+              id="name"
+              type="text" 
+              formControlName="name"
+              placeholder="Enter program name"
+              [class.error]="programForm.get('name')?.invalid && programForm.get('name')?.touched">
+            <div class="error-message" *ngIf="programForm.get('name')?.invalid && programForm.get('name')?.touched">
+              {{ getFieldError(programForm.get('name'), 'Program name') }}
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="difficulty">Difficulty Level *</label>
+            <select 
+              id="difficulty"
+              formControlName="difficulty"
+              [class.error]="programForm.get('difficulty')?.invalid && programForm.get('difficulty')?.touched">
+              <option value="">Select difficulty</option>
+              <option *ngFor="let level of difficultyLevels" [value]="level">
+                {{ level | titlecase }}
+              </option>
+            </select>
+            <div class="error-message" *ngIf="programForm.get('difficulty')?.invalid && programForm.get('difficulty')?.touched">
+              {{ getFieldError(programForm.get('difficulty'), 'Difficulty') }}
+            </div>
+          </div>
+
+          <div class="form-field full-width">
+            <label for="description">Description</label>
+            <textarea 
+              id="description"
+              formControlName="description"
+              placeholder="Describe your workout program"
+              rows="3"
+              [class.error]="programForm.get('description')?.invalid && programForm.get('description')?.touched"></textarea>
+            <div class="error-message" *ngIf="programForm.get('description')?.invalid && programForm.get('description')?.touched">
+              {{ getFieldError(programForm.get('description'), 'Description') }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exercise Selection Section -->
+      <div class="form-section">
+        <h2>Exercise Selection</h2>
+        
+        <!-- Search and Filter -->
+        <div class="exercise-filters">
+          <div class="search-box">
+            <i class="material-icons">search</i>
+            <input 
+              type="text" 
+              placeholder="Search exercises..."
+              [value]="searchTerm"
+              (input)="onSearchChange($event)">
+          </div>
+          
+          <div class="category-filters">
+            <button 
+              class="filter-btn" 
+              [class.active]="selectedCategory === 'all'"
+              (click)="onCategoryChange('all')">
+              All Categories
+            </button>
+            <button 
+              *ngFor="let category of exerciseCategories" 
+              class="filter-btn"
+              [class.active]="selectedCategory === category"
+              (click)="onCategoryChange(category)">
+              <i class="material-icons">{{ getCategoryIcon(category) }}</i>
+              {{ category | titlecase }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Exercise List -->
+        <div class="exercise-selection">
+          <div class="exercise-grid" *ngIf="!loading; else loadingExercises">
+            <div 
+              *ngFor="let exercise of filteredExercises" 
+              class="exercise-card"
+              (click)="selectExercise(exercise)">
+              <div class="exercise-icon">
+                <i class="material-icons">{{ getCategoryIcon(exercise.category) }}</i>
+              </div>
+              <div class="exercise-info">
+                <h3>{{ exercise.name }}</h3>
+                <p class="exercise-category">{{ exercise.category | titlecase }}</p>
+                <p class="exercise-muscles" *ngIf="exercise.primaryMuscles">
+                  {{ exercise.primaryMuscles.join(', ') }}
+                </p>
+              </div>
+              <div class="exercise-action">
+                <i class="material-icons">add</i>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #loadingExercises>
+            <div class="loading-state">
+              <i class="material-icons rotating">refresh</i>
+              <p>Loading exercises...</p>
+            </div>
+          </ng-template>
+
+          <div class="no-exercises" *ngIf="!loading && filteredExercises.length === 0">
+            <i class="material-icons">fitness_center</i>
+            <p>No exercises found matching your criteria</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Exercises Section -->
+      <div class="form-section" *ngIf="exercisesArray.length > 0">
+        <h2>Selected Exercises ({{ exercisesArray.length }})</h2>
+        
+        <div class="selected-exercises">
+          <div 
+            *ngFor="let exerciseGroup of exercisesArray.controls; let i = index" 
+            class="exercise-item"
+            [formGroup]="$any(exerciseGroup)">
+            
+            <div class="exercise-header">
+              <div class="exercise-order">{{ i + 1 }}</div>
+              <div class="exercise-name">
+                <input 
+                  type="text" 
+                  formControlName="name"
+                  placeholder="Exercise name"
+                  [class.error]="exerciseGroup.get('name')?.invalid && exerciseGroup.get('name')?.touched">
+              </div>
+              <div class="exercise-actions">
+                <button 
+                  type="button" 
+                  class="action-btn"
+                  (click)="moveExerciseUp(i)"
+                  [disabled]="i === 0"
+                  title="Move up">
+                  <i class="material-icons">keyboard_arrow_up</i>
+                </button>
+                <button 
+                  type="button" 
+                  class="action-btn"
+                  (click)="moveExerciseDown(i)"
+                  [disabled]="i === exercisesArray.length - 1"
+                  title="Move down">
+                  <i class="material-icons">keyboard_arrow_down</i>
+                </button>
+                <button 
+                  type="button" 
+                  class="action-btn"
+                  (click)="duplicateExercise(i)"
+                  title="Duplicate">
+                  <i class="material-icons">content_copy</i>
+                </button>
+                <button 
+                  type="button" 
+                  class="action-btn danger"
+                  (click)="removeExercise(i)"
+                  title="Remove">
+                  <i class="material-icons">delete</i>
+                </button>
+              </div>
+            </div>
+
+            <div class="exercise-config">
+              <div class="config-grid">
+                <div class="config-field">
+                  <label>Sets *</label>
+                  <input 
+                    type="number" 
+                    formControlName="sets"
+                    min="1" 
+                    max="20"
+                    [class.error]="exerciseGroup.get('sets')?.invalid && exerciseGroup.get('sets')?.touched">
+                  <div class="error-message" *ngIf="exerciseGroup.get('sets')?.invalid && exerciseGroup.get('sets')?.touched">
+                    {{ getExerciseFieldError(exerciseGroup.get('sets'), 'Sets') }}
+                  </div>
+                </div>
+
+                <div class="config-field">
+                  <label>Reps *</label>
+                  <input 
+                    type="number" 
+                    formControlName="reps"
+                    min="1" 
+                    max="1000"
+                    [class.error]="exerciseGroup.get('reps')?.invalid && exerciseGroup.get('reps')?.touched">
+                  <div class="error-message" *ngIf="exerciseGroup.get('reps')?.invalid && exerciseGroup.get('reps')?.touched">
+                    {{ getExerciseFieldError(exerciseGroup.get('reps'), 'Reps') }}
+                  </div>
+                </div>
+
+                <div class="config-field">
+                  <label>Rest Time (seconds) *</label>
+                  <input 
+                    type="number" 
+                    formControlName="restTime"
+                    min="0" 
+                    max="600"
+                    [class.error]="exerciseGroup.get('restTime')?.invalid && exerciseGroup.get('restTime')?.touched">
+                  <div class="error-message" *ngIf="exerciseGroup.get('restTime')?.invalid && exerciseGroup.get('restTime')?.touched">
+                    {{ getExerciseFieldError(exerciseGroup.get('restTime'), 'Rest time') }}
+                  </div>
+                </div>
+
+                <div class="config-field">
+                  <label>Weight (kg/lbs)</label>
+                  <input 
+                    type="number" 
+                    formControlName="weight"
+                    min="0" 
+                    max="1000"
+                    step="0.5"
+                    [class.error]="exerciseGroup.get('weight')?.invalid && exerciseGroup.get('weight')?.touched">
+                  <div class="error-message" *ngIf="exerciseGroup.get('weight')?.invalid && exerciseGroup.get('weight')?.touched">
+                    {{ getExerciseFieldError(exerciseGroup.get('weight'), 'Weight') }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="config-field full-width">
+                <label>Notes</label>
+                <textarea 
+                  formControlName="notes"
+                  placeholder="Add notes for this exercise..."
+                  rows="2"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Validation Summary -->
+      <div class="validation-summary" *ngIf="programForm.invalid && programForm.touched">
+        <h3>Please fix the following errors:</h3>
+        <ul>
+          <li *ngIf="programForm.get('name')?.invalid">Program name is required and must be 3-100 characters</li>
+          <li *ngIf="programForm.get('difficulty')?.invalid">Difficulty level is required</li>
+          <li *ngIf="exercisesArray.length === 0">At least one exercise is required</li>
+        </ul>
+      </div>
+    </form>
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="edit-footer">
+    <div class="footer-content">
+      <button class="btn btn-outline" (click)="cancel()">
+        Cancel
+      </button>
+      <div class="footer-actions">
+        <button 
+          class="btn btn-secondary" 
+          (click)="saveAsNew()" 
+          [disabled]="!isFormValid || saving">
+          Save as New
+        </button>
+        <button 
+          class="btn btn-primary" 
+          (click)="saveProgram()" 
+          [disabled]="!isFormValid || saving">
+          {{ saving ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

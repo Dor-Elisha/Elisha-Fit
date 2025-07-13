@@ -1,0 +1,449 @@
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dialog-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1.5rem 0 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 1rem;
+
+  .dialog-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+
+    .dialog-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #333;
+      line-height: 1.2;
+    }
+  }
+
+  .close-button {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+
+    &:hover {
+      background: #f8f9fa;
+      color: #495057;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    i {
+      font-size: 1.25rem;
+    }
+  }
+}
+
+.dialog-content {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  .program-preview {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e9ecef;
+
+    .program-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+
+      .program-icon {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        i {
+          font-size: 1.25rem;
+        }
+      }
+
+      .program-details {
+        flex: 1;
+
+        h3 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #333;
+        }
+
+        .description {
+          margin: 0 0 1rem 0;
+          color: #6c757d;
+          font-size: 0.9rem;
+          line-height: 1.4;
+        }
+
+        .program-stats {
+          display: flex;
+          gap: 1rem;
+          flex-wrap: wrap;
+
+          .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: #495057;
+            background: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            border: 1px solid #dee2e6;
+
+            i {
+              color: #667eea;
+              font-size: 0.8rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .form-section {
+    margin-bottom: 1.5rem;
+
+    h4 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-description {
+      margin: 0 0 1rem 0;
+      color: #6c757d;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .duplicate-form {
+      .form-group {
+        margin-bottom: 1rem;
+
+        label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+          color: #495057;
+        }
+
+        .form-control {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid #ced4da;
+          border-radius: 6px;
+          font-size: 1rem;
+          transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+          &:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+          }
+
+          &.is-invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+          }
+
+          &::placeholder {
+            color: #adb5bd;
+          }
+        }
+
+        .invalid-feedback {
+          display: block;
+          margin-top: 0.25rem;
+          font-size: 0.875rem;
+          color: #dc3545;
+        }
+      }
+    }
+  }
+
+  .info-section {
+    background: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 8px;
+    padding: 1rem;
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+      color: #0056b3;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      i {
+        color: #0056b3;
+        margin-top: 0.1rem;
+        flex-shrink: 0;
+      }
+
+      span {
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  border-top: 1px solid #e9ecef;
+  padding-top: 1.5rem;
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &.btn-secondary {
+      background: #f8f9fa;
+      color: #6c757d;
+      border: 1px solid #dee2e6;
+
+      &:hover:not(:disabled) {
+        background: #e9ecef;
+        border-color: #adb5bd;
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    &.btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .dialog-container {
+    width: 95%;
+    margin: 1rem;
+  }
+
+  .dialog-header {
+    padding: 1rem 1rem 0 1rem;
+
+    .dialog-title h2 {
+      font-size: 1.1rem;
+    }
+  }
+
+  .dialog-content {
+    padding: 0 1rem 1rem 1rem;
+
+    .program-preview {
+      padding: 1rem;
+
+      .program-info {
+        flex-direction: column;
+        text-align: center;
+
+        .program-icon {
+          align-self: center;
+        }
+
+        .program-stats {
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  .dialog-actions {
+    padding: 0 1rem 1rem 1rem;
+    padding-top: 1rem;
+    flex-direction: column-reverse;
+
+    .btn {
+      width: 100%;
+      min-width: auto;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .dialog-overlay {
+    padding: 0.5rem;
+  }
+
+  .dialog-container {
+    width: 100%;
+    margin: 0;
+  }
+
+  .dialog-header {
+    .dialog-title {
+      gap: 0.5rem;
+
+      .dialog-icon {
+        font-size: 1.25rem;
+      }
+
+      h2 {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .dialog-content {
+    .program-preview {
+      .program-info {
+        .program-stats {
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+// Accessibility
+@media (prefers-reduced-motion: reduce) {
+  .dialog-overlay,
+  .dialog-container {
+    animation: none;
+  }
+
+  .btn {
+    transition: none;
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .dialog-container {
+    border: 2px solid #000;
+  }
+
+  .dialog-header {
+    border-bottom: 2px solid #000;
+  }
+
+  .dialog-actions {
+    border-top: 2px solid #000;
+  }
+}

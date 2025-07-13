@@ -15,6 +15,7 @@ export class SelectProgramComponent implements OnInit {
   dayProgramName = '';
 
   imageIndexes: { [key: string]: number } = {};
+  exercises: any[] = [];
 
   _=_;
   searchText = '';
@@ -41,6 +42,12 @@ export class SelectProgramComponent implements OnInit {
         this.gs.saveProgram({name: this.newProgram.name, exercises: this.newProgram.exercises});
       }
     }
+
+    // Load exercises
+    this.exerciseService.getExercises().subscribe(exercises => {
+      this.exercises = exercises;
+      this.searchExercises();
+    });
   }
 
 
@@ -83,7 +90,7 @@ export class SelectProgramComponent implements OnInit {
 
     const search = this.searchText ? this.searchText.toLowerCase() : '';
 
-    this.exerciseService.exercises.forEach((exercise: any) => {
+    this.exercises.forEach((exercise: any) => {
       const matchesSearch = !search || exercise.name.toLowerCase().includes(search);
       const matchesFilter = !this.activeFilters.length || this.activeFilters.includes(exercise.category) || (exercise.primaryMuscles && exercise.primaryMuscles.some((muscle: string) => this.activeFilters.includes(muscle)));
       exercise.show = !(matchesSearch && matchesFilter);

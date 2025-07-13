@@ -1,0 +1,122 @@
+.progress-dashboard {
+  padding: 24px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .dashboard-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+      margin-bottom: 16px;
+    }
+    p {
+      color: var(--text-muted, #6c757d);
+      font-size: 1.2rem;
+    }
+  }
+
+  .dashboard-content {
+    .dashboard-summary {
+      .summary-card {
+        border-radius: var(--border-radius-lg, 1rem);
+        box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));
+        border: none;
+        transition: box-shadow 0.2s;
+        margin-bottom: 0;
+        &:hover {
+          box-shadow: var(--shadow, 0 4px 16px rgba(0,0,0,0.08));
+        }
+        .card-body {
+          padding: 1.5rem 1rem;
+          h4 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--dark-gray, #222);
+          }
+          p {
+            color: var(--text-muted, #6c757d);
+            font-size: 1rem;
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+    .card {
+      border-radius: var(--border-radius-lg, 1rem);
+      box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));
+      border: none;
+      margin-bottom: 0;
+    }
+    .achievements-card {
+      .card-body {
+        h5 {
+          font-size: 1.2rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+        }
+        .achievements-list {
+          li {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            i {
+              margin-right: 0.5rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .dashboard-empty {
+    text-align: center;
+    padding: 60px 20px;
+    i {
+      font-size: 3rem;
+      color: var(--medium-gray, #adb5bd);
+      margin-bottom: 20px;
+    }
+    h4 {
+      color: var(--dark-gray, #222);
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+    p {
+      color: var(--text-muted, #6c757d);
+      font-size: 1rem;
+      margin: 0;
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 992px) {
+    .dashboard-summary {
+      .col-md-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+      }
+    }
+  }
+  @media (max-width: 768px) {
+    padding: 12px 0;
+    .dashboard-summary {
+      .col-md-3 {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+    }
+    .dashboard-content {
+      .row {
+        margin-left: 0;
+        margin-right: 0;
+      }
+    }
+  }
+}

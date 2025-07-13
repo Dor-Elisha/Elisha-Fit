@@ -20,11 +20,11 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.auth.currentUser$.subscribe(u => this.user = u);
-    this.exerciseService.getExercises().subscribe(data => {
-      this.exerciseService.exercises = data.exercises;
-      this.exerciseService.categories = _.uniq(_.map(this.exerciseService.exercises, 'category'));
-      this.exerciseService.muscleGroups = _.uniq(_.flatMap(this.exerciseService.exercises, 'primaryMuscles'));
-      this.exerciseService.exerciseLevels = _.uniq(_.map(this.exerciseService.exercises, 'level'));
+    this.exerciseService.getExercises().subscribe(exercises => {
+      // Store exercises in a local property if needed
+      this.exerciseService.categories = _.uniq(_.map(exercises, 'category'));
+      this.exerciseService.muscleGroups = _.uniq(_.flatMap(exercises, 'primaryMuscles'));
+      this.exerciseService.exerciseLevels = _.uniq(_.map(exercises, 'level'));
     });
   }
 }

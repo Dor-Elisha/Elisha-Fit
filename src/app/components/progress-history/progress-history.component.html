@@ -1,0 +1,277 @@
+<div class="progress-history">
+  <!-- Header -->
+  <div class="history-header">
+    <h2>Workout History</h2>
+    <p *ngIf="!loading">{{ filteredEntries.length }} of {{ progressEntries.length }} workouts</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading workout history...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && progressEntries.length === 0" class="empty-state">
+    <i class="fas fa-history"></i>
+    <h3>No Workout History</h3>
+    <p>Complete your first workout to see your progress history here!</p>
+  </div>
+
+  <!-- No Results State -->
+  <div *ngIf="!loading && progressEntries.length > 0 && filteredEntries.length === 0" class="no-results">
+    <i class="fas fa-search"></i>
+    <h3>No Workouts Found</h3>
+    <p>Try adjusting your filters to see more results.</p>
+    <button class="btn btn-secondary" (click)="clearFilters()">Clear Filters</button>
+  </div>
+
+  <!-- Filters and Controls -->
+  <div *ngIf="!loading && progressEntries.length > 0" class="filters-section">
+    <div class="filter-controls">
+      <!-- Program Filter -->
+      <div class="filter-group">
+        <label for="program-filter">Program:</label>
+        <select 
+          id="program-filter" 
+          [(ngModel)]="selectedProgramId" 
+          (change)="onProgramFilterChange()"
+          class="form-control"
+        >
+          <option value="">All Programs</option>
+          <option *ngFor="let program of programs" [value]="program.id">
+            {{ program.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Date Range Filter -->
+      <div class="filter-group">
+        <label for="date-range-filter">Date Range:</label>
+        <select 
+          id="date-range-filter" 
+          [(ngModel)]="selectedDateRange" 
+          (change)="onDateRangeChange()"
+          class="form-control"
+        >
+          <option *ngFor="let option of dateRangeOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Rating Filter -->
+      <div class="filter-group">
+        <label for="rating-filter">Rating:</label>
+        <select 
+          id="rating-filter" 
+          [(ngModel)]="selectedRating" 
+          (change)="onRatingFilterChange()"
+          class="form-control"
+        >
+          <option [value]="0">All Ratings</option>
+          <option [value]="5">5 Stars</option>
+          <option [value]="4">4+ Stars</option>
+          <option [value]="3">3+ Stars</option>
+          <option [value]="2">2+ Stars</option>
+          <option [value]="1">1+ Stars</option>
+        </select>
+      </div>
+
+      <!-- Sort Options -->
+      <div class="filter-group">
+        <label for="sort-by">Sort by:</label>
+        <select 
+          id="sort-by" 
+          [(ngModel)]="sortBy" 
+          (change)="onSortChange()"
+          class="form-control"
+        >
+          <option *ngFor="let option of sortOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Sort Order -->
+      <div class="sort-order">
+        <button 
+          class="btn btn-outline-secondary" 
+          (click)="onSortOrderToggle()"
+          [title]="sortOrder === 'asc' ? 'Sort Descending' : 'Sort Ascending'"
+        >
+          <i class="fas" [class.fa-sort-amount-down]="sortOrder === 'desc'" [class.fa-sort-amount-up]="sortOrder === 'asc'"></i>
+        </button>
+      </div>
+
+      <!-- Completion Filter -->
+      <div class="filter-group">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="showCompletedOnly" 
+            (change)="onCompletionFilterChange()"
+          />
+          Completed Only
+        </label>
+      </div>
+
+      <!-- Clear Filters -->
+      <div class="clear-filters" *ngIf="hasActiveFilters">
+        <button class="btn btn-outline-danger" (click)="clearFilters()">
+          <i class="fas fa-times"></i> Clear Filters ({{ activeFilterCount }})
+        </button>
+      </div>
+
+      <!-- Export Data -->
+      <div class="export-data">
+        <button class="btn btn-outline-primary" (click)="onExportData()">
+          <i class="fas fa-download"></i> Export Data
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Entries List -->
+  <div *ngIf="!loading && filteredEntries.length > 0" class="entries-list">
+    <div *ngFor="let entry of paginatedEntries" class="entry-card">
+      <div class="entry-header">
+        <div class="entry-info">
+          <h4 class="program-name">{{ getProgramName(entry.programId) }}</h4>
+          <div class="entry-meta">
+            <span class="date">
+              <i class="fas fa-calendar"></i>
+              {{ getFormattedDate(entry.workoutDate) }}
+            </span>
+            <span class="time">
+              <i class="fas fa-clock"></i>
+              {{ getFormattedTime(entry.workoutDate) }}
+            </span>
+            <span class="difficulty" *ngIf="getProgramDifficulty(entry.programId)">
+              <i class="fas fa-signal"></i>
+              {{ getProgramDifficulty(entry.programId) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="entry-actions">
+          <button class="btn btn-link" (click)="onViewDetails(entry)" title="View Details">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button class="btn btn-link text-danger" (click)="onDeleteEntry(entry)" title="Delete Entry">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="entry-body">
+        <div class="entry-stats">
+          <div class="stat">
+            <i class="fas fa-dumbbell"></i>
+            <span>{{ getTotalExercises(entry) }} exercises</span>
+          </div>
+          <div class="stat">
+            <i class="fas fa-layer-group"></i>
+            <span>{{ getCompletedSets(entry) }}/{{ getTotalSets(entry) }} sets</span>
+          </div>
+          <div class="stat">
+            <i class="fas fa-clock"></i>
+            <span>{{ getFormattedDuration(entry.totalDuration) }}</span>
+          </div>
+          <div class="stat">
+            <i class="fas fa-weight-hanging"></i>
+            <span>{{ getAverageWeight(entry) }} kg avg</span>
+          </div>
+          <div class="stat">
+            <i class="fas fa-redo"></i>
+            <span>{{ getAverageReps(entry) }} reps avg</span>
+          </div>
+        </div>
+
+        <div class="entry-progress">
+          <div class="completion-bar">
+            <div class="completion-label">
+              Completion: {{ getCompletionPercentage(entry) }}%
+            </div>
+            <div class="progress">
+              <div 
+                class="progress-bar" 
+                [class]="'bg-' + getCompletionColor(getCompletionPercentage(entry))"
+                [style.width.%]="getCompletionPercentage(entry)"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="entry-rating" *ngIf="entry.rating">
+          <div class="rating-stars">
+            <i 
+              *ngFor="let star of getRatingStars(entry.rating); let i = index" 
+              class="fas fa-star"
+              [class.active]="star"
+            ></i>
+          </div>
+          <span class="rating-text">{{ entry.rating }}/5</span>
+        </div>
+
+        <div class="entry-notes" *ngIf="entry.notes">
+          <i class="fas fa-sticky-note"></i>
+          <span>{{ entry.notes }}</span>
+        </div>
+      </div>
+
+      <div class="entry-footer">
+        <div class="entry-status">
+          <span class="status-badge" [class]="entry.completed ? 'completed' : 'incomplete'">
+            <i class="fas" [class.fa-check-circle]="entry.completed" [class.fa-times-circle]="!entry.completed"></i>
+            {{ entry.completed ? 'Completed' : 'Incomplete' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading && totalPages > 1" class="pagination-section">
+    <nav aria-label="Progress history pagination">
+      <ul class="pagination justify-content-center">
+        <!-- Previous Page -->
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button 
+            class="page-link" 
+            (click)="onPageChange(currentPage - 1)"
+            [disabled]="currentPage === 1"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+        </li>
+
+        <!-- Page Numbers -->
+        <li 
+          *ngFor="let page of getPageNumbers()" 
+          class="page-item"
+          [class.active]="page === currentPage"
+        >
+          <button class="page-link" (click)="onPageChange(page)">
+            {{ page }}
+          </button>
+        </li>
+
+        <!-- Next Page -->
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button 
+            class="page-link" 
+            (click)="onPageChange(currentPage + 1)"
+            [disabled]="currentPage === totalPages"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="pagination-info">
+      Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ getMath().min(currentPage * itemsPerPage, filteredEntries.length) }} of {{ filteredEntries.length }} entries
+    </div>
+  </div>
+</div>

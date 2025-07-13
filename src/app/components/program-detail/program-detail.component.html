@@ -1,0 +1,346 @@
+<div class="program-detail">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading program details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading && !program" class="error-state">
+    <i class="fas fa-exclamation-triangle"></i>
+    <h3>Program Not Found</h3>
+    <p>The requested program could not be found or has been deleted.</p>
+    <button class="btn btn-primary" (click)="onBackToList()">
+      <i class="fas fa-arrow-left"></i> Back to Programs
+    </button>
+  </div>
+
+  <!-- Program Content -->
+  <div *ngIf="!loading && program" class="program-content">
+    <!-- Header -->
+    <div class="program-header">
+      <div class="header-left">
+        <button class="btn btn-outline-secondary back-btn" (click)="onBackToList()">
+          <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <div class="program-title">
+          <div class="program-icon">
+            <i [class]="getCategoryIcon(program)"></i>
+          </div>
+          <div class="title-content">
+            <h1>{{ program.name }}</h1>
+            <p *ngIf="program.description" class="description">{{ program.description }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="header-right" *ngIf="showActions">
+        <div class="action-buttons">
+          <button 
+            *ngIf="canStartWorkout()"
+            class="btn btn-primary" 
+            (click)="onStartWorkout()"
+          >
+            <i class="fas fa-play"></i> Start Workout
+          </button>
+          
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li *ngIf="canEdit()">
+                <a class="dropdown-item" (click)="onEditProgram()">
+                  <i class="fas fa-edit"></i> Edit Program
+                </a>
+              </li>
+              <li *ngIf="canDuplicate()">
+                <a class="dropdown-item" (click)="onDuplicateProgram()">
+                  <i class="fas fa-copy"></i> Duplicate
+                </a>
+              </li>
+              <li *ngIf="canDelete()">
+                <hr class="dropdown-divider">
+                <a class="dropdown-item text-danger" (click)="onDeleteProgram()">
+                  <i class="fas fa-trash"></i> Delete
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="quick-stats">
+      <div class="stat-card">
+        <i class="fas fa-dumbbell"></i>
+        <div class="stat-content">
+          <span class="stat-value">{{ getProgramStats()?.totalExercises }}</span>
+          <span class="stat-label">Exercises</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <i class="fas fa-clock"></i>
+        <div class="stat-content">
+          <span class="stat-value">{{ getProgramStats()?.totalDuration }}</span>
+          <span class="stat-label">Duration</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <i class="fas fa-signal"></i>
+        <div class="stat-content">
+          <span class="stat-value">{{ getProgramStats()?.difficulty }}</span>
+          <span class="stat-label">Difficulty</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <i class="fas fa-layer-group"></i>
+        <div class="stat-content">
+          <span class="stat-value">{{ getProgramStats()?.category }}</span>
+          <span class="stat-label">Category</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <nav class="tabs-nav">
+        <button 
+          class="tab-btn" 
+          [class.active]="selectedTab === 'overview'"
+          (click)="selectTab('overview')"
+        >
+          <i class="fas fa-info-circle"></i> Overview
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="selectedTab === 'exercises'"
+          (click)="selectTab('exercises')"
+        >
+          <i class="fas fa-list"></i> Exercises
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="selectedTab === 'stats'"
+          (click)="selectTab('stats')"
+        >
+          <i class="fas fa-chart-bar"></i> Statistics
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="selectedTab === 'history'"
+          (click)="selectTab('history')"
+        >
+          <i class="fas fa-history"></i> History
+        </button>
+      </nav>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Overview Tab -->
+        <div *ngIf="selectedTab === 'overview'" class="tab-pane">
+          <div class="overview-grid">
+            <div class="overview-section">
+              <h3>Program Information</h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">Difficulty:</span>
+                  <span class="difficulty-badge" [style.background-color]="getDifficultyColor(program.difficulty)">
+                    {{ program.difficulty }}
+                  </span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Category:</span>
+                  <span class="value">{{ getProgramStats()?.category }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Created:</span>
+                  <span class="value">{{ program.createdAt | date:'mediumDate' }}</span>
+                </div>
+                <div class="info-item" *ngIf="program.updatedAt && program.updatedAt !== program.createdAt">
+                  <span class="label">Updated:</span>
+                  <span class="value">{{ program.updatedAt | date:'mediumDate' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="overview-section" *ngIf="getProgramStats()?.muscleGroups?.length">
+              <h3>Target Muscle Groups</h3>
+              <div class="muscle-groups">
+                <span 
+                  *ngFor="let muscle of getProgramStats()?.muscleGroups" 
+                  class="muscle-group"
+                  [style.background-color]="getMuscleGroupColor(muscle)"
+                >
+                  {{ muscle }}
+                </span>
+              </div>
+            </div>
+
+            <div class="overview-section" *ngIf="getProgramStats()?.equipment?.length">
+              <h3>Equipment Needed</h3>
+              <div class="equipment-list">
+                <div 
+                  *ngFor="let item of getProgramStats()?.equipment" 
+                  class="equipment-item"
+                >
+                  <i [class]="getEquipmentIcon(item)"></i>
+                  <span>{{ item }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="overview-section" *ngIf="getProgramStats()?.tags?.length">
+              <h3>Tags</h3>
+              <div class="tags">
+                <span *ngFor="let tag of getProgramStats()?.tags" class="tag">
+                  {{ tag }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercises Tab -->
+        <div *ngIf="selectedTab === 'exercises'" class="tab-pane">
+          <div class="exercises-container">
+            <div *ngFor="let exercise of program.exercises; let i = index" class="exercise-card">
+              <div class="exercise-header" (click)="toggleExerciseExpansion(exercise.id)">
+                <div class="exercise-order">{{ exercise.order }}</div>
+                <div class="exercise-info">
+                  <h4>{{ exercise.name }}</h4>
+                  <div class="exercise-summary">
+                    <span>{{ exercise.sets }} sets</span>
+                    <span>•</span>
+                    <span>{{ exercise.reps }} reps</span>
+                    <span *ngIf="exercise.weight > 0">•</span>
+                    <span *ngIf="exercise.weight > 0">{{ exercise.weight }}kg</span>
+                  </div>
+                </div>
+                <div class="exercise-toggle">
+                  <i class="fas" [class.fa-chevron-down]="isExerciseExpanded(exercise.id)" [class.fa-chevron-right]="!isExerciseExpanded(exercise.id)"></i>
+                </div>
+              </div>
+              
+              <div *ngIf="isExerciseExpanded(exercise.id)" class="exercise-details">
+                <div class="exercise-stats">
+                  <div class="stat">
+                    <span class="label">Sets:</span>
+                    <span class="value">{{ exercise.sets }}</span>
+                  </div>
+                  <div class="stat">
+                    <span class="label">Reps:</span>
+                    <span class="value">{{ exercise.reps }}</span>
+                  </div>
+                  <div class="stat">
+                    <span class="label">Weight:</span>
+                    <span class="value">{{ exercise.weight }}kg</span>
+                  </div>
+                  <div class="stat">
+                    <span class="label">Rest Time:</span>
+                    <span class="value">{{ formatRestTime(exercise.restTime) }}</span>
+                  </div>
+                </div>
+                
+                <div *ngIf="exercise.notes" class="exercise-notes">
+                  <span class="label">Notes:</span>
+                  <p>{{ exercise.notes }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div *ngIf="selectedTab === 'stats'" class="tab-pane">
+          <div class="stats-grid">
+            <div class="stat-section">
+              <h3>Workout Summary</h3>
+              <div class="stats-cards">
+                <div class="stat-card">
+                  <i class="fas fa-dumbbell"></i>
+                  <div class="stat-content">
+                    <span class="stat-value">{{ getProgramStats()?.totalExercises }}</span>
+                    <span class="stat-label">Total Exercises</span>
+                  </div>
+                </div>
+                
+                <div class="stat-card">
+                  <i class="fas fa-clock"></i>
+                  <div class="stat-content">
+                    <span class="stat-value">{{ getProgramStats()?.totalDuration }}</span>
+                    <span class="stat-label">Total Duration</span>
+                  </div>
+                </div>
+                
+                <div class="stat-card">
+                  <i class="fas fa-layer-group"></i>
+                  <div class="stat-content">
+                    <span class="stat-value">{{ getProgramStats()?.totalSets }}</span>
+                    <span class="stat-label">Total Sets</span>
+                  </div>
+                </div>
+                
+                <div class="stat-card">
+                  <i class="fas fa-repeat"></i>
+                  <div class="stat-content">
+                    <span class="stat-value">{{ getProgramStats()?.totalReps }}</span>
+                    <span class="stat-label">Total Reps</span>
+                  </div>
+                </div>
+                
+                <div class="stat-card">
+                  <i class="fas fa-weight-hanging"></i>
+                  <div class="stat-content">
+                    <span class="stat-value">{{ getProgramStats()?.totalVolume }}</span>
+                    <span class="stat-label">Total Volume (kg)</span>
+                  </div>
+                </div>
+                
+                <div class="stat-card">
+                  <i class="fas fa-pause"></i>
+                  <div class="stat-content">
+                    <span class="stat-value">{{ getProgramStats()?.averageRestTime }}</span>
+                    <span class="stat-label">Avg Rest Time</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Tab -->
+        <div *ngIf="selectedTab === 'history'" class="tab-pane">
+          <div class="history-placeholder">
+            <i class="fas fa-chart-line"></i>
+            <h3>Workout History</h3>
+            <p>Track your progress and view workout history here.</p>
+            <p class="text-muted">This feature will be available in the progress tracking system.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Dialog -->
+  <app-confirm-dialog
+    [isVisible]="showDeleteDialog"
+    [data]="deleteDialogData"
+    (confirm)="onConfirmDelete()"
+    (cancel)="onCancelDelete()"
+    (close)="closeDeleteDialog()">
+  </app-confirm-dialog>
+
+  <!-- Duplicate Program Dialog -->
+  <app-duplicate-program-dialog
+    [isVisible]="showDuplicateDialog"
+    [data]="duplicateDialogData"
+    (confirm)="onConfirmDuplicate($event)"
+    (cancel)="onCancelDuplicate()"
+    (close)="closeDuplicateDialog()">
+  </app-duplicate-program-dialog>
+</div>

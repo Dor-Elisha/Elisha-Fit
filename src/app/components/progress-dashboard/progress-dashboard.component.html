@@ -1,0 +1,130 @@
+<div class="progress-dashboard">
+  <div class="dashboard-actions d-flex justify-content-end mb-3">
+    <div class="btn-group">
+      <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-file-export me-1"></i> Export
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" (click)="exportData('csv')"><i class="fas fa-file-csv me-2"></i>Export as CSV</a></li>
+        <li><a class="dropdown-item" (click)="exportData('json')"><i class="fas fa-file-code me-2"></i>Export as JSON</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="dashboard-loading">
+    <div class="spinner-border"></div>
+    <p>Loading dashboard...</p>
+  </div>
+
+  <div *ngIf="!loading && summary" class="dashboard-content">
+    <!-- Summary Cards -->
+    <div class="dashboard-summary row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="card summary-card">
+          <div class="card-body text-center">
+            <i class="fas fa-dumbbell fa-2x mb-2 text-primary"></i>
+            <h4>{{ summary.totalWorkouts }}</h4>
+            <p>Total Workouts</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card summary-card">
+          <div class="card-body text-center">
+            <i class="fas fa-fire fa-2x mb-2 text-danger"></i>
+            <h4>{{ summary.currentStreak }}</h4>
+            <p>Current Streak</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card summary-card">
+          <div class="card-body text-center">
+            <i class="fas fa-trophy fa-2x mb-2 text-warning"></i>
+            <h4>{{ summary.bestStreak }}</h4>
+            <p>Best Streak</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card summary-card">
+          <div class="card-body text-center">
+            <i class="fas fa-clock fa-2x mb-2 text-info"></i>
+            <h4>{{ getFormattedDuration(summary.totalDuration) }}</h4>
+            <p>Total Duration</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card summary-card">
+          <div class="card-body text-center">
+            <i class="fas fa-star fa-2x mb-2 text-warning"></i>
+            <h4>{{ summary.averageRating }}/5</h4>
+            <p>Avg. Rating</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card summary-card">
+          <div class="card-body text-center">
+            <i class="fas fa-bullseye fa-2x mb-2 text-success"></i>
+            <h4>{{ summary.completedGoals }}</h4>
+            <p>Goals Completed</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card summary-card">
+          <div class="card-body text-center">
+            <i class="fas fa-flag fa-2x mb-2 text-secondary"></i>
+            <h4>{{ summary.activeGoals }}</h4>
+            <p>Active Goals</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Best Week/Month -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-calendar-week text-primary"></i> Best Week</h5>
+            <p class="card-text">{{ summary.bestWeek || 'N/A' }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-calendar-alt text-success"></i> Best Month</h5>
+            <p class="card-text">{{ summary.bestMonth || 'N/A' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Achievements -->
+    <div class="row g-3">
+      <div class="col-12">
+        <div class="card achievements-card">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-medal text-warning"></i> Recent Achievements</h5>
+            <ul class="list-unstyled mb-0 achievements-list">
+              <li *ngIf="summary.recentAchievements.length === 0" class="text-muted">No recent achievements yet. Keep going!</li>
+              <li *ngFor="let achievement of summary.recentAchievements">
+                <i class="fas fa-check-circle text-success me-2"></i>{{ achievement }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !summary" class="dashboard-empty">
+    <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+    <h4>No progress data yet</h4>
+    <p>Start logging your workouts to see your dashboard summary!</p>
+  </div>
+</div>
