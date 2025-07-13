@@ -20,16 +20,18 @@ export class LoginComponent {
   }
 
   login() {
-    this.authService.login(this.loginData.email, this.loginData.password).subscribe({
-      next: (res: any) => {
-        console.log('Login successful', res);
-        this.router.navigate(['/'], { state: { user: res.data } });
-      },
-      error: (err: any) => {
-        console.error('Login failed', err);
-        alert(err.error?.message || 'Login failed');
-      },
-    });
+    this.authService
+      .login(this.loginData.email, this.loginData.password)
+      .subscribe({
+        next: (res: any) => {
+          console.log('Login successful', res);
+          this.router.navigate(['/']);
+        },
+        error: (err: any) => {
+          console.error('Login failed', err);
+          alert(err.error?.message || 'Login failed');
+        },
+      });
   }
 
 
@@ -52,5 +54,10 @@ export class LoginComponent {
           alert(err.error?.message || 'Signup failed');
         },
       });
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
