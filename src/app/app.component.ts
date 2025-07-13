@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GeneralService } from './services/general.service';
 import { ExerciseService } from './services/exercise.service';
 import * as _ from 'lodash';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +11,10 @@ import * as _ from 'lodash';
 })
 
 export class AppComponent implements OnInit {
-  constructor(public gs: GeneralService, private exerciseService: ExerciseService) { }
+  constructor(public gs: GeneralService, private exerciseService: ExerciseService, private auth: AuthService) {
+    this.user = this.auth.currentUser || {};
+  }
+  user;
   title = 'angular-starter';
   sidebarToggle = false;
   _=_;
