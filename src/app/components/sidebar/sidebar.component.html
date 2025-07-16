@@ -34,37 +34,6 @@
     </nav>
   </div>
 
-  <!-- Quick Stats Section -->
-  <div class="stats-section" [ngClass]="{'hidden': isCollapsed}">
-    <div class="section-header">
-      <span class="section-title">Quick Stats</span>
-    </div>
-    
-    <div class="stats-container">
-      <div class="stat-item">
-        <div class="stat-icon workout-icon">
-          <i class="fas fa-calendar-week"></i>
-        </div>
-        <div class="stat-content">
-          <span class="stat-label">This Week</span>
-          <span class="stat-sublabel">Workouts</span>
-        </div>
-        <span class="stat-value">{{ weekWorkouts }}</span>
-      </div>
-      
-      <div class="stat-item">
-        <div class="stat-icon program-icon">
-          <i class="fas fa-book-open"></i>
-        </div>
-        <div class="stat-content">
-          <span class="stat-label">Programs</span>
-          <span class="stat-sublabel">Active</span>
-        </div>
-        <span class="stat-value">{{ savedProgram }}</span>
-      </div>
-    </div>
-  </div>
-
   <!-- User Section -->
   <div class="user-section">
     <div class="user-info" [ngClass]="{'collapsed': isCollapsed}">

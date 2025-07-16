@@ -1,0 +1,60 @@
+<div class="programs-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Start a Workout</h1>
+      <p class="page-subtitle">Choose a program to begin your workout</p>
+    </div>
+  </div>
+
+  <div class="programs-content">
+    <app-loading 
+      *ngIf="loading"
+      type="skeleton"
+      size="lg"
+      text="Loading programs..."
+      [overlay]="false">
+    </app-loading>
+
+    <div *ngIf="!loading && programs.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <i class="fas fa-dumbbell"></i>
+      </div>
+      <h3>No programs found</h3>
+      <p>Create a workout program to get started</p>
+    </div>
+
+    <div *ngIf="!loading && programs.length > 0" class="programs-grid">
+      <div 
+        *ngFor="let program of programs" 
+        class="program-card">
+        <div class="program-header">
+          <div class="program-info">
+            <h3 class="program-name">{{ program.name }}</h3>
+            <p class="program-description" *ngIf="program.description">
+              {{ program.description }}
+            </p>
+          </div>
+        </div>
+        <div class="program-stats">
+          <div class="stat-item">
+            <i class="fas fa-dumbbell"></i>
+            <span>{{ getProgramStats(program).exercises }} exercises</span>
+          </div>
+          <div class="stat-item">
+            <i class="fas fa-clock"></i>
+            <span>{{ getProgramStats(program).estimatedDuration }} min</span>
+          </div>
+          <div class="stat-item">
+            <i class="fas fa-tag"></i>
+            <span>{{ getProgramCategory(program) }}</span>
+          </div>
+        </div>
+        <div class="program-actions">
+          <button class="btn btn-primary btn-sm w-100" (click)="startProgram(program)">
+            <i class="fas fa-play me-1"></i> Start
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

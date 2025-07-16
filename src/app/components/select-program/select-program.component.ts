@@ -46,8 +46,8 @@ export class SelectProgramComponent implements OnInit {
     }
 
     // Load exercises and filter options
-    this.exerciseService.getExercises().subscribe(exercises => {
-      this.exercises = exercises;
+    this.exerciseService.getExercises({}).subscribe(response => {
+      this.exercises = response.exercises;
       this.searchExercises();
     });
 

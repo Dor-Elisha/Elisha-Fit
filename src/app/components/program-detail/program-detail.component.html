@@ -25,7 +25,7 @@
         </button>
         <div class="program-title">
           <div class="program-icon">
-            <i [class]="getCategoryIcon(program)"></i>
+            <i class="fas fa-dumbbell"></i>
           </div>
           <div class="title-content">
             <h1>{{ program.name }}</h1>
@@ -46,611 +46,159 @@
       
       <div class="header-right" *ngIf="showActions">
         <div class="action-buttons">
-          <button 
-            *ngIf="canStartWorkout()"
-            class="btn btn-primary start-workout-btn" 
-            (click)="onStartWorkout()"
-          >
-            <i class="fas fa-play"></i> Start Workout
+          <button *ngIf="canStartWorkout()" class="start-workout-btn" 
+            (click)="!isStartMode ? onStartWorkout() : onFinishClick()">
+            <i class="fas fa-play" *ngIf="!isStartMode"></i>
+            <span *ngIf="!isStartMode">Start workout</span>
+            <span *ngIf="isStartMode">Finish</span>
           </button>
-          
-          <div class="dropdown">
-            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-              <i class="fas fa-ellipsis-v"></i>
-            </button>
-            <ul class="dropdown-menu">
-              <li *ngIf="canEdit()">
-                <a class="dropdown-item" (click)="onEditProgram()">
-                  <i class="fas fa-edit"></i> Edit Program
-                </a>
-              </li>
-              <li *ngIf="canDuplicate()">
-                <a class="dropdown-item" (click)="onDuplicateProgram()">
-                  <i class="fas fa-copy"></i> Duplicate
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" (click)="onExportProgram()">
-                  <i class="fas fa-download"></i> Export
-                </a>
-              </li>
-              <li *ngIf="canDelete()">
-                <hr class="dropdown-divider">
-                <a class="dropdown-item text-danger" (click)="onDeleteProgram()">
-                  <i class="fas fa-trash"></i> Delete
-                </a>
-              </li>
-            </ul>
-          </div>
+          <button *ngIf="isStartMode" class="btn btn-outline-secondary ms-2" (click)="onCancelStart()">Cancel</button>
         </div>
       </div>
     </div>
 
     <!-- Quick Stats -->
-    <div class="quick-stats">
+    <div class="quick-stats" *ngIf="!isStartMode">
       <div class="stat-card">
         <i class="fas fa-dumbbell"></i>
         <div class="stat-content">
-          <span class="stat-value">{{ getProgramStats()?.totalExercises }}</span>
+          <span class="stat-value">{{ program.exercises?.length || 0 }}</span>
           <span class="stat-label">Exercises</span>
         </div>
       </div>
-      
       <div class="stat-card">
-        <i class="fas fa-clock"></i>
+        <i class="fas fa-bullseye"></i>
         <div class="stat-content">
-          <span class="stat-value">{{ getProgramStats()?.totalDuration }}</span>
-          <span class="stat-label">Duration</span>
+          <span class="stat-value">
+            <ng-container *ngIf="program.targetMuscleGroups?.length; else noMuscles">
+              <span *ngFor="let muscle of program.targetMuscleGroups; let last = last">
+                {{ muscle }}<span *ngIf="!last">, </span>
+              </span>
+            </ng-container>
+            <ng-template #noMuscles>—</ng-template>
+          </span>
+          <span class="stat-label">Target Muscles</span>
         </div>
       </div>
-      
-      <div class="stat-card">
-        <i class="fas fa-signal"></i>
-        <div class="stat-content">
-          <span class="stat-value">{{ getProgramStats()?.difficulty }}</span>
-          <span class="stat-label">Difficulty</span>
-        </div>
-      </div>
-      
-      <div class="stat-card">
-        <i class="fas fa-layer-group"></i>
-        <div class="stat-content">
-          <span class="stat-value">{{ getProgramStats()?.category }}</span>
-          <span class="stat-label">Category</span>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <i class="fas fa-weight-hanging"></i>
-        <div class="stat-content">
-          <span class="stat-value">{{ getProgramStats()?.totalVolume }}kg</span>
-          <span class="stat-label">Total Volume</span>
-        </div>
-      </div>
-
       <div class="stat-card">
         <i class="fas fa-repeat"></i>
         <div class="stat-content">
-          <span class="stat-value">{{ getProgramStats()?.totalSets }}</span>
+          <span class="stat-value">{{ getTotalSets() }}</span>
           <span class="stat-label">Total Sets</span>
         </div>
       </div>
     </div>
 
-    <!-- Progress Overview -->
-    <div class="progress-overview" *ngIf="getWorkoutHistory().length > 0">
-      <div class="progress-header">
-        <h3><i class="fas fa-chart-line"></i> Recent Progress</h3>
-        <button class="btn btn-sm btn-outline-primary" (click)="selectTab('history')">
-          View All History
-        </button>
-      </div>
-      <div class="progress-cards">
-        <div class="progress-card">
-          <div class="progress-icon">
-            <i class="fas fa-fire"></i>
-          </div>
-          <div class="progress-content">
-            <span class="progress-value">{{ getLastWorkoutStats()?.completionRate }}%</span>
-            <span class="progress-label">Last Completion</span>
-          </div>
-        </div>
-        <div class="progress-card">
-          <div class="progress-icon">
-            <i class="fas fa-trophy"></i>
-          </div>
-          <div class="progress-content">
-            <span class="progress-value">{{ getWorkoutHistory().length }}</span>
-            <span class="progress-label">Times Completed</span>
-          </div>
-        </div>
-        <div class="progress-card">
-          <div class="progress-icon">
-            <i class="fas fa-calendar-check"></i>
-          </div>
-          <div class="progress-content">
-            <span class="progress-value">{{ getLastWorkoutDate() }}</span>
-            <span class="progress-label">Last Workout</span>
-          </div>
+    <!-- Exercises Section (always visible) -->
+    <div class="exercises-section-container">
+      <div class="exercises-header">
+        <div class="exercises-info">
+          <h3>Exercise Breakdown</h3>
+          <p>{{ program.exercises.length }} exercises • {{ getTotalSets() }} total sets</p>
         </div>
       </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="tabs-container">
-      <nav class="tabs-nav">
-        <button 
-          class="tab-btn" 
-          [class.active]="selectedTab === 'overview'"
-          (click)="selectTab('overview')"
-        >
-          <i class="fas fa-info-circle"></i> Overview
-        </button>
-        <button 
-          class="tab-btn" 
-          [class.active]="selectedTab === 'exercises'"
-          (click)="selectTab('exercises')"
-        >
-          <i class="fas fa-list"></i> Exercises
-        </button>
-        <button 
-          class="tab-btn" 
-          [class.active]="selectedTab === 'stats'"
-          (click)="selectTab('stats')"
-        >
-          <i class="fas fa-chart-bar"></i> Statistics
-        </button>
-        <button 
-          class="tab-btn" 
-          [class.active]="selectedTab === 'history'"
-          (click)="selectTab('history')"
-        >
-          <i class="fas fa-history"></i> History
-        </button>
-      </nav>
-
-      <!-- Tab Content -->
-      <div class="tab-content">
-        <!-- Overview Tab -->
-        <div *ngIf="selectedTab === 'overview'" class="tab-pane">
-          <div class="overview-grid">
-            <div class="overview-section">
-              <h3>Program Information</h3>
-              <div class="info-grid">
-                <div class="info-item">
-                  <span class="label">Difficulty:</span>
-                  <span class="difficulty-badge" [style.background-color]="getDifficultyColor(program.difficulty)">
-                    {{ program.difficulty }}
-                  </span>
-                </div>
-                <div class="info-item">
-                  <span class="label">Category:</span>
-                  <span class="value">{{ getProgramStats()?.category }}</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">Created:</span>
-                  <span class="value">{{ program.createdAt | date:'mediumDate' }}</span>
-                </div>
-                <div class="info-item" *ngIf="program.updatedAt && program.updatedAt !== program.createdAt">
-                  <span class="label">Updated:</span>
-                  <span class="value">{{ program.updatedAt | date:'mediumDate' }}</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">Estimated Duration:</span>
-                  <span class="value">{{ getProgramStats()?.totalDuration }}</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">Total Volume:</span>
-                  <span class="value">{{ getProgramStats()?.totalVolume }}kg</span>
-                </div>
-              </div>
+      <div class="exercises-container mt-2 d-flex flex-column gap-2">
+        <div *ngFor="let exercise of program.exercises; let idx = index" class="exercise-card">
+          <div class="exercise-card-row">
+            <div class="card-image-area">
+              <button class="nav-arrow left" (click)="prevImage(exercise, idx, $event)">&#8249;</button>
+              <img [src]="getCurrentImage(exercise, idx)" [alt]="exercise.name" class="exercise-image" (error)="onImageError($event, idx)" [attr.key]="getCurrentImage(exercise, idx)" />
+              <button class="nav-arrow right" (click)="nextImage(exercise, idx, $event)">&#8250;</button>
             </div>
-
-            <div class="overview-section" *ngIf="getProgramStats()?.muscleGroups?.length">
-              <h3>Target Muscle Groups</h3>
-              <div class="muscle-groups">
-                <span 
-                  *ngFor="let muscle of getProgramStats()?.muscleGroups" 
-                  class="muscle-group"
-                  [style.background-color]="getMuscleGroupColor(muscle)"
-                >
-                  {{ muscle }}
-                </span>
-              </div>
-              <div class="muscle-distribution" *ngIf="getMuscleGroupDistribution().length > 0">
-                <h4>Muscle Group Distribution</h4>
-                <div class="distribution-bars">
-                  <div 
-                    *ngFor="let group of getMuscleGroupDistribution()" 
-                    class="distribution-bar"
-                  >
-                    <div class="bar-label">{{ group.muscle }}</div>
-                    <div class="bar-container">
-                      <div class="bar-fill" [style.width.%]="group.percentage"></div>
-                    </div>
-                    <div class="bar-value">{{ group.count }} exercises</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="overview-section" *ngIf="getProgramStats()?.equipment?.length">
-              <h3>Equipment Needed</h3>
-              <div class="equipment-list">
-                <div 
-                  *ngFor="let item of getProgramStats()?.equipment" 
-                  class="equipment-item"
-                >
-                  <i [class]="getEquipmentIcon(item)"></i>
-                  <span>{{ item }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="overview-section" *ngIf="getProgramStats()?.tags?.length">
-              <h3>Tags</h3>
-              <div class="tags">
-                <span *ngFor="let tag of getProgramStats()?.tags" class="tag">
-                  {{ tag }}
-                </span>
-              </div>
-            </div>
-
-            <div class="overview-section">
-              <h3>Workout Structure</h3>
-              <div class="workout-structure">
-                <div class="structure-item">
-                  <i class="fas fa-list-ol"></i>
-                  <div class="structure-content">
-                    <span class="structure-value">{{ getProgramStats()?.totalExercises }}</span>
-                    <span class="structure-label">Exercises</span>
-                  </div>
-                </div>
-                <div class="structure-item">
-                  <i class="fas fa-layer-group"></i>
-                  <div class="structure-content">
-                    <span class="structure-value">{{ getProgramStats()?.totalSets }}</span>
-                    <span class="structure-label">Total Sets</span>
-                  </div>
-                </div>
-                <div class="structure-item">
-                  <i class="fas fa-repeat"></i>
-                  <div class="structure-content">
-                    <span class="structure-value">{{ getProgramStats()?.totalReps }}</span>
-                    <span class="structure-label">Total Reps</span>
-                  </div>
-                </div>
-                <div class="structure-item">
-                  <i class="fas fa-pause"></i>
-                  <div class="structure-content">
-                    <span class="structure-value">{{ getProgramStats()?.averageRestTime }}</span>
-                    <span class="structure-label">Avg Rest Time</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Exercises Tab -->
-        <div *ngIf="selectedTab === 'exercises'" class="tab-pane">
-          <div class="exercises-header">
-            <div class="exercises-info">
-              <h3>Exercise Breakdown</h3>
-              <p>{{ program.exercises.length }} exercises • {{ getProgramStats()?.totalSets }} total sets</p>
-            </div>
-            <div class="exercises-actions">
-              <button class="btn btn-sm btn-outline-secondary" (click)="expandAllExercises()">
-                <i class="fas fa-expand-arrows-alt"></i> Expand All
-              </button>
-              <button class="btn btn-sm btn-outline-secondary" (click)="collapseAllExercises()">
-                <i class="fas fa-compress-arrows-alt"></i> Collapse All
-              </button>
-            </div>
-          </div>
-
-          <div class="exercises-container">
-            <div *ngFor="let exercise of program.exercises; let i = index" class="exercise-card">
-              <div class="exercise-header" (click)="toggleExerciseExpansion(exercise.id)">
+            <div class="exercise-card-content">
+              <div class="exercise-header">
                 <div class="exercise-order">{{ exercise.order }}</div>
                 <div class="exercise-info">
                   <h4>{{ exercise.name }}</h4>
-                  <div class="exercise-summary">
-                    <span class="summary-item">
-                      <i class="fas fa-layer-group"></i>
-                      {{ exercise.sets }} sets
-                    </span>
-                    <span class="summary-item">
-                      <i class="fas fa-repeat"></i>
-                      {{ exercise.reps }} reps
-                    </span>
-                    <span class="summary-item" *ngIf="exercise.weight > 0">
-                      <i class="fas fa-weight-hanging"></i>
-                      {{ exercise.weight }}kg
-                    </span>
-                    <span class="summary-item">
-                      <i class="fas fa-pause"></i>
-                      {{ formatRestTime(exercise.restTime) }}
-                    </span>
-                  </div>
-                </div>
-                <div class="exercise-toggle">
-                  <i class="fas" [class.fa-chevron-down]="isExerciseExpanded(exercise.id)" [class.fa-chevron-right]="!isExerciseExpanded(exercise.id)"></i>
-                </div>
-              </div>
-              
-              <div *ngIf="isExerciseExpanded(exercise.id)" class="exercise-details">
-                <div class="exercise-stats">
-                  <div class="stat">
-                    <span class="label">Sets:</span>
-                    <span class="value">{{ exercise.sets }}</span>
-                  </div>
-                  <div class="stat">
-                    <span class="label">Reps:</span>
-                    <span class="value">{{ exercise.reps }}</span>
-                  </div>
-                  <div class="stat">
-                    <span class="label">Weight:</span>
-                    <span class="value">{{ exercise.weight }}kg</span>
-                  </div>
-                  <div class="stat">
-                    <span class="label">Rest Time:</span>
-                    <span class="value">{{ formatRestTime(exercise.restTime) }}</span>
-                  </div>
-                  <div class="stat">
-                    <span class="label">Volume:</span>
-                    <span class="value">{{ exercise.sets * exercise.reps * exercise.weight }}kg</span>
-                  </div>
-                  <div class="stat">
-                    <span class="label">Total Reps:</span>
-                    <span class="value">{{ exercise.sets * exercise.reps }}</span>
-                  </div>
-                </div>
-                
-                <div *ngIf="exercise.notes" class="exercise-notes">
-                  <span class="label">Notes:</span>
-                  <p>{{ exercise.notes }}</p>
-                </div>
-
-                <div class="exercise-progress" *ngIf="getExerciseProgress(exercise.id)">
-                  <span class="label">Recent Performance:</span>
-                  <div class="progress-stats">
-                    <div class="progress-stat">
-                      <span class="progress-label">Best Weight:</span>
-                      <span class="progress-value">{{ getExerciseProgress(exercise.id)?.bestWeight }}kg</span>
-                    </div>
-                    <div class="progress-stat">
-                      <span class="progress-label">Last Weight:</span>
-                      <span class="progress-value">{{ getExerciseProgress(exercise.id)?.lastWeight }}kg</span>
-                    </div>
-                    <div class="progress-stat">
-                      <span class="progress-label">Times Done:</span>
-                      <span class="progress-value">{{ getExerciseProgress(exercise.id)?.timesDone }}</span>
+                  <div class="exercise-summary flex-column gap-2">
+                    <span *ngIf="exercise.weight" class="bg-primary rounded bg-opacity-50 px-1">{{ exercise.weight }} kg</span>
+                    <div *ngFor="let set of [].constructor(exercise.sets); let i = index">
+                      <ng-container *ngIf="!isStartMode">
+                        <span class="bg-primary rounded bg-opacity-50 px-1">{{ exercise.reps }} reps - rest {{ exercise.rest }} seconds</span>
+                      </ng-container>
+                      <ng-container *ngIf="isStartMode">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                          <div class="form-check m-0">
+                            <input type="checkbox" class="form-check-input" id="setCheck{{idx}}-{{i}}" [(ngModel)]="exercise.setsCompleted[i]" (change)="onSetCheckboxChange()">
+                            <label class="form-check-label mb-0" [for]="'setCheck' + idx + '-' + i">
+                              <span class="bg-primary rounded bg-opacity-50 px-1">{{ exercise.reps }} reps - rest {{ exercise.rest }} seconds</span>
+                            </label>
+                          </div>
+                          <button *ngIf="!exercise.setsCompleted[i]" class="btn btn-outline-primary btn-sm px-2 py-0" style="font-size: 0.8rem; line-height: 1.2;" (click)="openRestTimer(idx, i, exercise.rest)">Start rest</button>
+                        </div>
+                      </ng-container>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Statistics Tab -->
-        <div *ngIf="selectedTab === 'stats'" class="tab-pane">
-          <div class="stats-grid">
-            <div class="stat-section">
-              <h3>Workout Summary</h3>
-              <div class="stats-cards">
-                <div class="stat-card">
-                  <i class="fas fa-dumbbell"></i>
-                  <div class="stat-content">
-                    <span class="stat-value">{{ getProgramStats()?.totalExercises }}</span>
-                    <span class="stat-label">Total Exercises</span>
-                  </div>
-                </div>
-                
-                <div class="stat-card">
-                  <i class="fas fa-clock"></i>
-                  <div class="stat-content">
-                    <span class="stat-value">{{ getProgramStats()?.totalDuration }}</span>
-                    <span class="stat-label">Total Duration</span>
-                  </div>
-                </div>
-                
-                <div class="stat-card">
-                  <i class="fas fa-layer-group"></i>
-                  <div class="stat-content">
-                    <span class="stat-value">{{ getProgramStats()?.totalSets }}</span>
-                    <span class="stat-label">Total Sets</span>
-                  </div>
-                </div>
-                
-                <div class="stat-card">
-                  <i class="fas fa-repeat"></i>
-                  <div class="stat-content">
-                    <span class="stat-value">{{ getProgramStats()?.totalReps }}</span>
-                    <span class="stat-label">Total Reps</span>
-                  </div>
-                </div>
-                
-                <div class="stat-card">
-                  <i class="fas fa-weight-hanging"></i>
-                  <div class="stat-content">
-                    <span class="stat-value">{{ getProgramStats()?.totalVolume }}</span>
-                    <span class="stat-label">Total Volume (kg)</span>
-                  </div>
-                </div>
-                
-                <div class="stat-card">
-                  <i class="fas fa-pause"></i>
-                  <div class="stat-content">
-                    <span class="stat-value">{{ getProgramStats()?.averageRestTime }}</span>
-                    <span class="stat-label">Avg Rest Time</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-section">
-              <h3>Exercise Distribution</h3>
-              <div class="distribution-charts">
-                <div class="chart-container">
-                  <h4>Sets per Exercise</h4>
-                  <div class="chart-bars">
-                    <div 
-                      *ngFor="let exercise of program.exercises; let i = index" 
-                      class="chart-bar"
-                      [style.height.px]="getBarHeight(exercise.sets, getMaxSets())"
-                      [style.background-color]="getBarColor(i)"
-                    >
-                      <span class="bar-value">{{ exercise.sets }}</span>
-                    </div>
-                  </div>
-                  <div class="chart-labels">
-                    <span *ngFor="let exercise of program.exercises" class="chart-label">
-                      {{ exercise.order }}
-                    </span>
-                  </div>
-                </div>
-
-                <div class="chart-container">
-                  <h4>Volume per Exercise</h4>
-                  <div class="chart-bars">
-                    <div 
-                      *ngFor="let exercise of program.exercises; let i = index" 
-                      class="chart-bar"
-                      [style.height.px]="getBarHeight(exercise.sets * exercise.reps * exercise.weight, getMaxVolume())"
-                      [style.background-color]="getBarColor(i)"
-                    >
-                      <span class="bar-value">{{ exercise.sets * exercise.reps * exercise.weight }}</span>
-                    </div>
-                  </div>
-                  <div class="chart-labels">
-                    <span *ngFor="let exercise of program.exercises" class="chart-label">
-                      {{ exercise.order }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-section" *ngIf="getWorkoutHistory().length > 0">
-              <h3>Performance Trends</h3>
-              <div class="performance-metrics">
-                <div class="metric-card">
-                  <div class="metric-header">
-                    <i class="fas fa-trending-up"></i>
-                    <span>Completion Rate</span>
-                  </div>
-                  <div class="metric-value">{{ getAverageCompletionRate() }}%</div>
-                  <div class="metric-trend">
-                    <span class="trend-label">Last 5 workouts</span>
-                  </div>
-                </div>
-                
-                <div class="metric-card">
-                  <div class="metric-header">
-                    <i class="fas fa-clock"></i>
-                    <span>Average Duration</span>
-                  </div>
-                  <div class="metric-value">{{ getAverageWorkoutDuration() }}</div>
-                  <div class="metric-trend">
-                    <span class="trend-label">Actual vs Estimated</span>
-                  </div>
-                </div>
-                
-                <div class="metric-card">
-                  <div class="metric-header">
-                    <i class="fas fa-calendar"></i>
-                    <span>Workout Frequency</span>
-                  </div>
-                  <div class="metric-value">{{ getWorkoutFrequency() }}</div>
-                  <div class="metric-trend">
-                    <span class="trend-label">Per week</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- History Tab -->
-        <div *ngIf="selectedTab === 'history'" class="tab-pane">
-          <div class="history-container" *ngIf="getWorkoutHistory().length > 0; else noHistory">
-            <div class="history-header">
-              <h3>Workout History</h3>
-              <div class="history-filters">
-                <select class="form-select" [(ngModel)]="historyFilter" (change)="filterHistory()">
-                  <option value="all">All Workouts</option>
-                  <option value="completed">Completed</option>
-                  <option value="partial">Partial</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="history-list">
-              <div *ngFor="let workout of filteredHistory" class="history-item">
-                <div class="history-date">
-                  <div class="date-main">{{ workout.date | date:'MMM dd' }}</div>
-                  <div class="date-year">{{ workout.date | date:'yyyy' }}</div>
-                </div>
-                <div class="history-content">
-                  <div class="history-stats">
-                    <span class="stat">
-                      <i class="fas fa-check-circle"></i>
-                      {{ workout.completedExercises }}/{{ workout.totalExercises }} exercises
-                    </span>
-                    <span class="stat">
-                      <i class="fas fa-clock"></i>
-                      {{ workout.duration }}
-                    </span>
-                    <span class="stat">
-                      <i class="fas fa-percentage"></i>
-                      {{ workout.completionRate }}% complete
-                    </span>
-                  </div>
-                  <div class="history-actions">
-                    <button class="btn btn-sm btn-outline-primary" (click)="viewWorkoutDetails(workout)">
-                      <i class="fas fa-eye"></i> Details
-                    </button>
-                  </div>
-                </div>
-                <div class="history-status" [class]="workout.status">
-                  <i class="fas" [class.fa-check-circle]="workout.status === 'completed'" [class.fa-clock]="workout.status === 'partial'"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <ng-template #noHistory>
-            <div class="history-placeholder">
-              <i class="fas fa-chart-line"></i>
-              <h3>No Workout History</h3>
-              <p>Start your first workout to begin tracking your progress.</p>
-              <button class="btn btn-primary" (click)="onStartWorkout()">
-                <i class="fas fa-play"></i> Start First Workout
-              </button>
-            </div>
-          </ng-template>
         </div>
       </div>
     </div>
+
+    <!-- History Tab -->
+    <!-- Removed: <div *ngIf="selectedTab === 'history'" class="tab-pane"> ... </div> -->
   </div>
 
-  <!-- Confirmation Dialog -->
-  <app-confirm-dialog
-    [isVisible]="showDeleteDialog"
-    [data]="deleteDialogData"
-    (confirm)="onConfirmDelete()"
-    (cancel)="onCancelDelete()"
-    (close)="closeDeleteDialog()">
-  </app-confirm-dialog>
-
-  <!-- Duplicate Program Dialog -->
-  <app-duplicate-program-dialog
-    [isVisible]="showDuplicateDialog"
-    [data]="duplicateDialogData"
-    (confirm)="onConfirmDuplicate($event)"
-    (cancel)="onCancelDuplicate()"
-    (close)="closeDuplicateDialog()">
-  </app-duplicate-program-dialog>
+  <app-timer *ngIf="activeRest" [seconds]="activeRest.seconds" (closed)="onRestComplete()"></app-timer>
+  <!-- Finish Confirmation Popup -->
+  <div *ngIf="showFinishConfirm" class="timer-modal-overlay">
+    <div class="timer-modal-content card shadow-lg text-center">
+      <div class="card-body">
+        <ng-container *ngIf="autoFinish; else confirmFinish">
+          <div class="mb-3">
+            <i class="fas fa-trophy fa-3x text-warning mb-2"></i>
+            <h3 class="mb-2">Congratulations!</h3>
+            <p class="lead">You completed all sets. You did it!</p>
+          </div>
+          <button class="btn btn-success" (click)="onConfirmFinish()">Finish</button>
+        </ng-container>
+        <ng-template #confirmFinish>
+          <h4 class="mb-3">Are you sure you want to finish this workout?</h4>
+          <div class="workout-summary card card-body bg-light text-start mx-auto my-3 shadow-sm border-0" style="max-width: 420px;">
+            <h5 class="mb-3 fw-bold d-flex align-items-center">
+              <i class="fas fa-clipboard-list me-2 text-primary"></i> Workout Summary
+            </h5>
+            <div *ngIf="workoutSummary">
+              <div *ngIf="workoutSummary.notStarted.length > 0" class="mb-3">
+                <div class="fw-semibold mb-1 text-danger d-flex align-items-center">
+                  <i class="fas fa-circle-xmark me-2"></i> Not Started
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li *ngFor="let ex of workoutSummary.notStarted" class="list-group-item ps-0">{{ ex.name }}</li>
+                </ul>
+              </div>
+              <div *ngIf="workoutSummary.partiallyCompleted.length > 0" class="mb-3">
+                <div class="fw-semibold mb-1 text-warning d-flex align-items-center">
+                  <i class="fas fa-hourglass-half me-2"></i> Partially Completed
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li *ngFor="let ex of workoutSummary.partiallyCompleted" class="list-group-item ps-0">
+                    <span class="badge bg-warning text-dark me-2">{{ ex.remaining }} left</span>
+                    <span>You still have to complete {{ ex.remaining }} set{{ ex.remaining > 1 ? 's' : '' }} in <strong>{{ ex.name }}</strong></span>
+                  </li>
+                </ul>
+              </div>
+              <div *ngIf="workoutSummary.completed.length > 0" class="mb-2">
+                <div class="fw-semibold mb-1 text-success d-flex align-items-center">
+                  <i class="fas fa-check-circle me-2"></i> Completed
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li *ngFor="let ex of workoutSummary.completed" class="list-group-item ps-0">
+                    <span class="badge bg-success me-2"><i class="fas fa-check"></i></span>{{ ex.name }}
+                  </li>
+                </ul>
+              </div>
+              <div *ngIf="workoutSummary.notStarted.length === 0 && workoutSummary.partiallyCompleted.length === 0 && workoutSummary.completed.length === 0">
+                <span>All exercises are fully completed!</span>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-success me-2" (click)="onConfirmFinish()">Yes, Finish</button>
+          <button class="btn btn-secondary" (click)="onCancelFinish()">Cancel</button>
+        </ng-template>
+      </div>
+    </div>
+  </div>
 </div>

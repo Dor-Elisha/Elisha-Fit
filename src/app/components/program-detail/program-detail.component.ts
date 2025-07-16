@@ -1,106 +1,270 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Program, ProgramDifficulty } from '../../models/program.interface';
-import { ConfirmDialogData } from '../confirm-dialog/confirm-dialog.component';
-import { DuplicateProgramData } from '../duplicate-program-dialog/duplicate-program-dialog.component';
-
-interface WorkoutHistory {
-  id: string;
-  date: Date;
-  completedExercises: number;
-  totalExercises: number;
-  completionRate: number;
-  duration: string;
-  status: 'completed' | 'partial';
-}
-
-interface ExerciseProgress {
-  exerciseId: string;
-  bestWeight: number;
-  lastWeight: number;
-  timesDone: number;
-}
-
-interface MuscleGroupDistribution {
-  muscle: string;
-  count: number;
-  percentage: number;
-}
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProgramService } from '../../services/program.service';
+import { ExerciseService } from '../../services/exercise.service';
+import { LogService } from '../../services/log.service';
 
 @Component({
   selector: 'app-program-detail',
   templateUrl: './program-detail.component.html',
-  styleUrls: ['./program-detail.component.scss']
+  styleUrls: ['./program-detail.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class ProgramDetailComponent implements OnInit {
-  @Input() program: Program | null = null;
+  @Input() program = null;
   @Input() loading = false;
   @Input() showActions = true;
   @Input() isReadOnly = false;
-  
-  @Output() editProgram = new EventEmitter<Program>();
-  @Output() deleteProgram = new EventEmitter<Program>();
-  @Output() duplicateProgram = new EventEmitter<Program>();
-  @Output() startWorkout = new EventEmitter<Program>();
+
+  @Output() editProgram = new EventEmitter<any>();
+  @Output() deleteProgram = new EventEmitter<any>();
+  @Output() duplicateProgram = new EventEmitter<any>();
+  @Output() startWorkout = new EventEmitter<any>();
   @Output() backToList = new EventEmitter<void>();
 
-  // Confirmation dialog properties
   showDeleteDialog = false;
-  deleteDialogData: ConfirmDialogData = {
+  deleteDialogData: any = {
     title: 'Delete Program',
     message: 'Are you sure you want to delete this program? This action cannot be undone.',
     confirmText: 'Delete',
     cancelText: 'Cancel',
-    type: 'danger',
-    showIcon: true
+    type: 'danger'
   };
 
-  // Duplicate dialog properties
   showDuplicateDialog = false;
-  duplicateDialogData: DuplicateProgramData | null = null;
+  duplicateDialogData: any | null = null;
 
   selectedTab: 'overview' | 'exercises' | 'stats' | 'history' = 'overview';
-  expandedExercises: Set<string> = new Set();
+  // Remove expandedExercises property
+  // Remove toggleExerciseExpansion, expandAllExercises, collapseAllExercises, isExerciseExpanded methods
+
+  // Data from services
+  imageIndexes: number[] = [];
+  imageError: boolean[] = [];
+  exerciseProgress: any[] = [];
   
-  // History and progress tracking
-  historyFilter: 'all' | 'completed' | 'partial' = 'all';
-  filteredHistory: WorkoutHistory[] = [];
+  loadingHistory = false;
+  error: string | null = null;
+  isStartMode = false;
 
-  constructor() {}
+  activeRest: { exerciseIdx: number, setIdx: number, seconds: number } | null = null;
+  restCompleted: { [key: string]: boolean } = {};
 
-  ngOnInit(): void {}
+  showFinishConfirm = false;
+  autoFinish = false;
+  logs: any[] = [];
+  programId: string | null = null;
+
+  onFinishClick() {
+    this.autoFinish = false;
+    this.showFinishConfirm = true;
+  }
+
+  onConfirmFinish() {
+    // Add workout log
+    const summary = this.getWorkoutLogSummary();
+    const log = {
+      date: new Date(),
+      programName: this.program?.name || 'Unknown',
+      completedAll: this.autoFinish || this.isAllSetsCompleted(),
+      summary,
+      programId: this.programId
+    };
+    this.logService.addLog(log).subscribe({
+      next: () => {
+        this.logs.unshift(log);
+      },
+      error: (err) => {
+        console.error('Failed to save log to backend', err);
+        this.logs.unshift(log); // fallback: still add locally
+      }
+    });
+    this.isStartMode = false;
+    this.showFinishConfirm = false;
+    // Optionally, reset any other state here
+  }
+
+  onCancelFinish() {
+    this.showFinishConfirm = false;
+  }
+
+  onCancelStart() {
+    this.isStartMode = false;
+  }
+
+  openRestTimer(exerciseIdx: number, setIdx: number, seconds: number) {
+    this.activeRest = { exerciseIdx, setIdx, seconds };
+  }
+
+  closeRestTimer() {
+    this.activeRest = null;
+  }
+
+  onRestComplete() {
+    if (this.activeRest) {
+      const key = `${this.activeRest.exerciseIdx}-${this.activeRest.setIdx}`;
+      this.restCompleted[key] = true;
+      // Automatically check the checkbox for this set
+      if (
+        this.program &&
+        this.program.exercises &&
+        this.program.exercises[this.activeRest.exerciseIdx] &&
+        Array.isArray(this.program.exercises[this.activeRest.exerciseIdx].setsCompleted)
+      ) {
+        this.program.exercises[this.activeRest.exerciseIdx].setsCompleted[this.activeRest.setIdx] = true;
+      }
+      this.closeRestTimer();
+    }
+  }
+
+  constructor(
+    private route: ActivatedRoute,
+    private programService: ProgramService,
+    private router: Router,
+    private exerciseService: ExerciseService,
+    private logService: LogService
+  ) {}
+
+  ngOnInit(): void {
+    console.log('ProgramDetailComponent loaded');
+    // If no program input, fetch from route param
+    if (!this.program) {
+      this.loading = true;
+      this.isReadOnly = true;
+      const id = this.route.snapshot.paramMap.get('id');
+      if (id) {
+        this.programId = id;
+        this.programService.getProgramById(id).subscribe({
+          next: (program) => {
+            if (program) {
+              // Map _id to id for LegacyProgram compatibility
+              const legacyProgram = {
+                name: program.name,
+                description: program.description,
+                targetMuscleGroups: program.targetMuscleGroups,
+                exercises: program.exercises.map((ex: any) => ({
+                  exerciseId: ex.exerciseId,
+                  name: ex.name,
+                  sets: ex.sets,
+                  reps: ex.reps,
+                  rest: ex.rest,
+                  weight: ex.weight,
+                  notes: ex.notes
+                }))
+              };
+              this.program = legacyProgram;
+              // Always initialize setsCompleted for each exercise
+              if (this.program && this.program.exercises) {
+                this.program.exercises.forEach((exercise: any) => {
+                  if (!Array.isArray(exercise.setsCompleted) || exercise.setsCompleted.length !== exercise.sets) {
+                    exercise.setsCompleted = Array(exercise.sets).fill(false);
+                  }
+                });
+                // If start mode is requested, reset all setsCompleted to false
+                if (this.isStartMode) {
+                  this.program.exercises.forEach((exercise: any) => {
+                    exercise.setsCompleted = Array(exercise.sets).fill(false);
+                  });
+                }
+              }
+            } else {
+              this.program = null;
+            }
+            this.loading = false;
+            if (this.program) {
+              this.loadExerciseProgress();
+            }
+          },
+          error: (err) => {
+            this.error = 'Failed to load program.';
+            this.loading = false;
+          }
+        });
+      } else {
+        this.error = 'No program ID provided.';
+        this.loading = false;
+      }
+    } else if (this.program && (this.program._id || this.program.id)) {
+      this.programId = this.program._id || this.program.id;
+    }
+    // Check for start mode from query params
+    const startParam = this.route.snapshot.queryParamMap.get('start');
+    if (startParam === 'true') {
+      this.isStartMode = true;
+      // Reset all checkboxes for a fresh start
+      if (this.program && this.program.exercises) {
+        this.program.exercises.forEach((exercise: any) => {
+          exercise.setsCompleted = Array(exercise.sets).fill(false);
+        });
+      }
+    }
+    // Load all exercises and inject images by name
+    this.exerciseService.getExercises({}).subscribe((data: any) => {
+      let allExercises: any[] = [];
+      if (Array.isArray(data)) {
+        allExercises = data;
+      } else if (data && Array.isArray(data.exercises)) {
+        allExercises = data.exercises;
+      }
+      if (this.program && this.program.exercises) {
+        this.program.exercises.forEach(ex => {
+          const match = allExercises.find(e => e.name === ex.name);
+          if (match && Array.isArray(match.images)) {
+            (ex as any).images = match.images;
+          } else {
+            (ex as any).images = [];
+          }
+        });
+      }
+    });
+    if (this.program && this.program.exercises) {
+      this.imageIndexes = this.program.exercises.map(() => 0);
+      this.imageError = this.program.exercises.map(() => false);
+      this.exerciseProgress = this.program.exercises.map(() => null);
+    }
+  }
 
   ngOnChanges(): void {
     if (this.program) {
-      // Expand first exercise by default
-      if (this.program.exercises.length > 0) {
-        this.expandedExercises.add(this.program.exercises[0].id);
-      }
-      this.filterHistory();
+      this.loadExerciseProgress();
     }
+  }
+
+  loadExerciseProgress(): void {
+    if (!this.program) return;
+    this.program.exercises.forEach((exercise: any, idx: number) => {
+      // This method is no longer available from progress.service.ts
+      // Assuming exerciseProgress is no longer needed or will be managed differently
+      // For now, we'll just log a placeholder message
+      console.log(`Loading progress for exercise at index ${idx}:`, exercise.name);
+      // In a real scenario, you would fetch progress from a different service or source
+      // this.progressService.getExerciseProgress(exercise.id)
+      //   .subscribe({
+      //     next: (progress) => {
+      //       this.exerciseProgress[idx] = progress;
+      //     },
+      //     error: (error) => {
+      //       console.error(`Error loading progress for exercise at index ${idx}:`, error);
+      //     }
+      //   });
+    });
   }
 
   onEditProgram(): void {
-    if (this.program) {
-      this.editProgram.emit(this.program);
-    }
+    this.editProgram.emit(this.program!);
   }
 
   onDeleteProgram(): void {
-    if (this.program) {
-      this.deleteDialogData.message = `Are you sure you want to delete "${this.program.name}"? This action cannot be undone.`;
-      this.showDeleteDialog = true;
-    }
+    this.showDeleteDialog = true;
   }
 
   onConfirmDelete(): void {
-    if (this.program) {
-      this.deleteProgram.emit(this.program);
-      this.closeDeleteDialog();
-    }
+    this.deleteProgram.emit(this.program!);
+    this.showDeleteDialog = false;
   }
 
   onCancelDelete(): void {
-    this.closeDeleteDialog();
+    this.showDeleteDialog = false;
   }
 
   closeDeleteDialog(): void {
@@ -108,324 +272,86 @@ export class ProgramDetailComponent implements OnInit {
   }
 
   onDuplicateProgram(): void {
-    if (this.program) {
-      this.duplicateDialogData = {
-        program: this.program,
-        suggestedName: `${this.program.name} (Copy)`
-      };
-      this.showDuplicateDialog = true;
-    }
+    if (!this.program) return;
+    
+    this.duplicateDialogData = {
+      program: this.program,
+      suggestedName: `${this.program.name} (Copy)`
+    };
+    this.showDuplicateDialog = true;
   }
 
   onConfirmDuplicate(programName: string): void {
-    if (this.program) {
-      this.duplicateProgram.emit(this.program);
-      this.closeDuplicateDialog();
-    }
+    this.duplicateProgram.emit(this.program!);
+    this.showDuplicateDialog = false;
   }
 
   onCancelDuplicate(): void {
-    this.closeDuplicateDialog();
+    this.showDuplicateDialog = false;
   }
 
   closeDuplicateDialog(): void {
     this.showDuplicateDialog = false;
-    this.duplicateDialogData = null;
   }
 
   onStartWorkout(): void {
-    if (this.program) {
-      this.startWorkout.emit(this.program);
+    this.isStartMode = true;
+    // Initialize setsCompleted for each exercise and reset all to false
+    if (this.program && this.program.exercises) {
+      this.program.exercises.forEach((exercise: any) => {
+        exercise.setsCompleted = Array(exercise.sets).fill(false);
+      });
     }
+    this.startWorkout.emit(this.program!);
   }
 
   onExportProgram(): void {
-    if (this.program) {
-      const dataStr = JSON.stringify(this.program, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${this.program.name.replace(/\s+/g, '_')}.json`;
-      link.click();
-      URL.revokeObjectURL(url);
-    }
+    if (!this.program) return;
+    
+    const programData = {
+      name: this.program.name,
+      description: this.program.description,
+      exercises: this.program.exercises,
+      estimatedDuration: this.program.estimatedDuration,
+      totalExercises: this.program.exercises?.length || 0,
+      targetMuscleGroups: this.program.targetMuscleGroups || [],
+      equipment: this.program.equipment || [],
+      tags: this.program.tags || [],
+      isPublic: this.program.isPublic || false,
+      version: this.program.version || '1.0',
+      exportDate: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(programData, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${this.program.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   }
 
   onBackToList(): void {
-    this.backToList.emit();
+    this.router.navigate(['/programs']);
   }
 
   selectTab(tab: 'overview' | 'exercises' | 'stats' | 'history'): void {
     this.selectedTab = tab;
   }
 
-  toggleExerciseExpansion(exerciseId: string): void {
-    if (this.expandedExercises.has(exerciseId)) {
-      this.expandedExercises.delete(exerciseId);
-    } else {
-      this.expandedExercises.add(exerciseId);
-    }
+  // Remove expandedExercises property
+  // Remove toggleExerciseExpansion, expandAllExercises, collapseAllExercises, isExerciseExpanded methods
+
+  getExerciseProgress(idx: number): any | null {
+    return this.exerciseProgress[idx] || null;
   }
 
-  expandAllExercises(): void {
-    if (this.program) {
-      this.program.exercises.forEach(exercise => {
-        this.expandedExercises.add(exercise.id);
-      });
-    }
-  }
-
-  collapseAllExercises(): void {
-    this.expandedExercises.clear();
-  }
-
-  isExerciseExpanded(exerciseId: string): boolean {
-    return this.expandedExercises.has(exerciseId);
-  }
-
-  filterHistory(): void {
-    const history = this.getWorkoutHistory();
-    if (this.historyFilter === 'all') {
-      this.filteredHistory = history;
-    } else {
-      this.filteredHistory = history.filter(workout => workout.status === this.historyFilter);
-    }
-  }
-
-  viewWorkoutDetails(workout: WorkoutHistory): void {
-    // This would open a detailed workout view modal
-    console.log('View workout details:', workout);
-  }
-
-  getDifficultyColor(difficulty: ProgramDifficulty): string {
-    switch (difficulty) {
-      case 'beginner': return '#28a745';
-      case 'intermediate': return '#ffc107';
-      case 'advanced': return '#dc3545';
-      default: return '#6c757d';
-    }
-  }
-
-  getCategoryIcon(program: Program): string {
-    const tags = program.metadata?.tags || [];
-    const muscleGroups = program.metadata?.targetMuscleGroups || [];
+  getMuscleGroupDistribution(): any[] {
+    if (!this.program?.targetMuscleGroups) return [];
     
-    if (tags.includes('strength') || muscleGroups.some(mg => mg.includes('chest') || mg.includes('back') || mg.includes('legs'))) {
-      return 'fas fa-dumbbell';
-    } else if (tags.includes('hiit') || tags.includes('interval')) {
-      return 'fas fa-fire';
-    } else if (tags.includes('cardio') || tags.includes('running') || tags.includes('cycling')) {
-      return 'fas fa-heartbeat';
-    } else if (tags.includes('flexibility') || tags.includes('stretching')) {
-      return 'fas fa-child';
-    } else if (tags.includes('yoga') || tags.includes('meditation')) {
-      return 'fas fa-pray';
-    } else {
-      return 'fas fa-layer-group';
-    }
-  }
-
-  getTotalDuration(): number {
-    if (!this.program || !this.program.exercises || this.program.exercises.length === 0) {
-      return this.program?.metadata?.estimatedDuration || 0;
-    }
-
-    return this.program.exercises.reduce((total, exercise) => {
-      const exerciseTime = (exercise.sets * exercise.reps * 3) + (exercise.sets * exercise.restTime);
-      return total + exerciseTime;
-    }, 0) / 60; // Convert to minutes
-  }
-
-  formatDuration(minutes: number): string {
-    if (minutes < 60) {
-      return `${Math.round(minutes)} minutes`;
-    } else {
-      const hours = Math.floor(minutes / 60);
-      const remainingMinutes = Math.round(minutes % 60);
-      if (remainingMinutes === 0) {
-        return `${hours} hour${hours > 1 ? 's' : ''}`;
-      }
-      return `${hours} hour${hours > 1 ? 's' : ''} ${remainingMinutes} minutes`;
-    }
-  }
-
-  getTotalVolume(): number {
-    if (!this.program || !this.program.exercises) return 0;
-    
-    return this.program.exercises.reduce((total, exercise) => {
-      return total + (exercise.sets * exercise.reps * exercise.weight);
-    }, 0);
-  }
-
-  getTotalSets(): number {
-    if (!this.program || !this.program.exercises) return 0;
-    
-    return this.program.exercises.reduce((total, exercise) => {
-      return total + exercise.sets;
-    }, 0);
-  }
-
-  getTotalReps(): number {
-    if (!this.program || !this.program.exercises) return 0;
-    
-    return this.program.exercises.reduce((total, exercise) => {
-      return total + (exercise.sets * exercise.reps);
-    }, 0);
-  }
-
-  getAverageRestTime(): number {
-    if (!this.program || !this.program.exercises || this.program.exercises.length === 0) return 0;
-    
-    const totalRestTime = this.program.exercises.reduce((total, exercise) => {
-      return total + exercise.restTime;
-    }, 0);
-    
-    return Math.round(totalRestTime / this.program.exercises.length);
-  }
-
-  formatRestTime(seconds: number): string {
-    if (seconds < 60) {
-      return `${seconds}s`;
-    } else {
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
-      if (remainingSeconds === 0) {
-        return `${minutes}m`;
-      }
-      return `${minutes}m ${remainingSeconds}s`;
-    }
-  }
-
-  getProgramStats() {
-    if (!this.program) return null;
-
-    return {
-      totalExercises: this.program.exercises?.length || 0,
-      totalDuration: this.formatDuration(this.getTotalDuration()),
-      totalVolume: this.getTotalVolume(),
-      totalSets: this.getTotalSets(),
-      totalReps: this.getTotalReps(),
-      averageRestTime: this.formatRestTime(this.getAverageRestTime()),
-      difficulty: this.program.difficulty.charAt(0).toUpperCase() + this.program.difficulty.slice(1),
-      category: this.getCategoryFromTags(),
-      equipment: this.program.metadata?.equipment || [],
-      muscleGroups: this.program.metadata?.targetMuscleGroups || [],
-      tags: this.program.metadata?.tags || []
-    };
-  }
-
-  getCategoryFromTags(): string {
-    if (!this.program?.metadata?.tags) return 'Mixed';
-    
-    const tags = this.program.metadata.tags;
-    
-    if (tags.includes('strength')) return 'Strength Training';
-    if (tags.includes('hiit')) return 'HIIT';
-    if (tags.includes('cardio')) return 'Cardio';
-    if (tags.includes('flexibility')) return 'Flexibility';
-    if (tags.includes('yoga')) return 'Yoga';
-    
-    return 'Mixed';
-  }
-
-  getMuscleGroupColor(muscleGroup: string): string {
-    const colors = [
-      '#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1',
-      '#fd7e14', '#20c997', '#e83e8c', '#6c757d', '#17a2b8'
-    ];
-    
-    const index = muscleGroup.length % colors.length;
-    return colors[index];
-  }
-
-  getEquipmentIcon(equipment: string): string {
-    const iconMap: { [key: string]: string } = {
-      'bodyweight': 'fas fa-user',
-      'dumbbell': 'fas fa-dumbbell',
-      'barbell': 'fas fa-weight-hanging',
-      'kettlebell': 'fas fa-circle',
-      'resistance band': 'fas fa-elastic',
-      'treadmill': 'fas fa-running',
-      'bike': 'fas fa-bicycle',
-      'rower': 'fas fa-water',
-      'bench': 'fas fa-couch',
-      'mat': 'fas fa-square',
-      'pull-up bar': 'fas fa-grip-lines',
-      'cable machine': 'fas fa-cogs'
-    };
-    
-    return iconMap[equipment.toLowerCase()] || 'fas fa-dumbbell';
-  }
-
-  // New methods for enhanced features
-
-  getWorkoutHistory(): WorkoutHistory[] {
-    // Mock data - in real app this would come from a service
-    if (!this.program) return [];
-    
-    return [
-      {
-        id: '1',
-        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-        completedExercises: 8,
-        totalExercises: 10,
-        completionRate: 80,
-        duration: '45 minutes',
-        status: 'partial'
-      },
-      {
-        id: '2',
-        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-        completedExercises: 10,
-        totalExercises: 10,
-        completionRate: 100,
-        duration: '52 minutes',
-        status: 'completed'
-      },
-      {
-        id: '3',
-        date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 days ago
-        completedExercises: 7,
-        totalExercises: 10,
-        completionRate: 70,
-        duration: '38 minutes',
-        status: 'partial'
-      }
-    ];
-  }
-
-  getLastWorkoutStats() {
-    const history = this.getWorkoutHistory();
-    return history.length > 0 ? history[0] : null;
-  }
-
-  getLastWorkoutDate(): string {
-    const lastWorkout = this.getLastWorkoutStats();
-    if (!lastWorkout) return 'Never';
-    
-    const daysAgo = Math.floor((Date.now() - lastWorkout.date.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysAgo === 0) return 'Today';
-    if (daysAgo === 1) return 'Yesterday';
-    if (daysAgo < 7) return `${daysAgo} days ago`;
-    return lastWorkout.date.toLocaleDateString();
-  }
-
-  getExerciseProgress(exerciseId: string): ExerciseProgress | null {
-    // Mock data - in real app this would come from a service
-    const mockProgress: { [key: string]: ExerciseProgress } = {
-      'exercise1': { exerciseId: 'exercise1', bestWeight: 80, lastWeight: 75, timesDone: 5 },
-      'exercise2': { exerciseId: 'exercise2', bestWeight: 60, lastWeight: 60, timesDone: 3 },
-      'exercise3': { exerciseId: 'exercise3', bestWeight: 100, lastWeight: 95, timesDone: 7 }
-    };
-    
-    return mockProgress[exerciseId] || null;
-  }
-
-  getMuscleGroupDistribution(): MuscleGroupDistribution[] {
-    if (!this.program?.metadata?.targetMuscleGroups) return [];
-    
-    const muscleGroups = this.program.metadata.targetMuscleGroups;
+    const muscleGroups = this.program.targetMuscleGroups || [];
     const totalExercises = this.program.exercises.length;
     
     const distribution = muscleGroups.map(muscle => {
@@ -457,31 +383,6 @@ export class ProgramDetailComponent implements OnInit {
     return colors[index % colors.length];
   }
 
-  getAverageCompletionRate(): number {
-    const history = this.getWorkoutHistory();
-    if (history.length === 0) return 0;
-    
-    const totalRate = history.reduce((sum, workout) => sum + workout.completionRate, 0);
-    return Math.round(totalRate / history.length);
-  }
-
-  getAverageWorkoutDuration(): string {
-    const history = this.getWorkoutHistory();
-    if (history.length === 0) return '0 minutes';
-    
-    // Mock calculation - in real app would parse actual durations
-    const avgMinutes = 45;
-    return this.formatDuration(avgMinutes);
-  }
-
-  getWorkoutFrequency(): string {
-    const history = this.getWorkoutHistory();
-    if (history.length === 0) return '0';
-    
-    // Mock calculation - in real app would calculate actual frequency
-    return '2.3';
-  }
-
   canEdit(): boolean {
     return this.showActions && !this.isReadOnly;
   }
@@ -496,5 +397,126 @@ export class ProgramDetailComponent implements OnInit {
 
   canStartWorkout(): boolean {
     return this.showActions && this.program?.exercises?.length > 0;
+  }
+
+  onViewProgram(program: any): void {
+    console.log('onViewProgram called', program);
+    this.router.navigate(['/program-detail', program.id]);
+  }
+
+  // Add this method to compute total sets
+  getTotalSets(): number {
+    return this.program?.exercises?.reduce((sum, ex) => sum + (ex.sets || 0), 0) || 0;
+  }
+
+  // Add this method to get a display category (fallback to N/A)
+  getCategory(): string {
+    // If you have a category in metadata or tags, adjust accordingly
+    return (this.program as any)?.category || (this.program as any)?.metadata?.tags?.[0] || 'N/A';
+  }
+
+  getTotalReps(): number {
+    return this.program?.exercises?.reduce((sum, ex) => sum + ((ex.sets || 0) * (ex.reps || 0)), 0) || 0;
+  }
+
+  getTotalVolume(): number {
+    return this.program?.exercises?.reduce((sum, ex) => sum + ((ex.sets || 0) * (ex.reps || 0) * (ex.weight || 0)), 0) || 0;
+  }
+
+  getCurrentImage(exercise: any, idx: number): string {
+    if (this.imageError[idx]) {
+      return 'assets/logo.png'; // fallback image
+    }
+    const images = Array.isArray(exercise.images) && exercise.images.length > 0 ? exercise.images : [];
+    if (images.length === 0) {
+      return 'assets/logo.png';
+    }
+    const imageIdx = this.imageIndexes[idx] || 0;
+    return images[imageIdx];
+  }
+
+  prevImage(exercise: any, idx: number, event: Event) {
+    event.stopPropagation();
+    const images = Array.isArray(exercise.images) && exercise.images.length > 0 ? exercise.images : [];
+    if (images.length < 2) return;
+    const currentIdx = typeof this.imageIndexes[idx] === 'number' ? this.imageIndexes[idx] : 0;
+    const newIdx = (currentIdx - 1 + images.length) % images.length;
+    this.imageIndexes = [...this.imageIndexes];
+    this.imageIndexes[idx] = newIdx;
+  }
+
+  nextImage(exercise: any, idx: number, event: Event) {
+    event.stopPropagation();
+    const images = Array.isArray(exercise.images) && exercise.images.length > 0 ? exercise.images : [];
+    if (images.length < 2) return;
+    const currentIdx = typeof this.imageIndexes[idx] === 'number' ? this.imageIndexes[idx] : 0;
+    const newIdx = (currentIdx + 1) % images.length;
+    this.imageIndexes = [...this.imageIndexes];
+    this.imageIndexes[idx] = newIdx;
+  }
+
+  onImageError(event: Event, idx: number) {
+    this.imageError = [...this.imageError];
+    this.imageError[idx] = true;
+    (event.target as HTMLImageElement).src = 'assets/logo.png';
+  }
+
+  // Helper to check if all sets are completed
+  checkAllSetsCompleted() {
+    if (!this.isStartMode || !this.program || !this.program.exercises) return;
+    const allCompleted = this.program.exercises.every((exercise: any) =>
+      Array.isArray(exercise.setsCompleted) && exercise.setsCompleted.every((v: boolean) => v)
+    );
+    if (allCompleted) {
+      this.autoFinish = true;
+      this.showFinishConfirm = true;
+    }
+  }
+
+  // Call this after any checkbox change
+  onSetCheckboxChange() {
+    this.checkAllSetsCompleted();
+  }
+
+  get workoutSummary() {
+    if (!this.program) return null;
+    const exercises = this.program.exercises || [];
+    const notStarted = exercises.filter((ex: any) => !ex.setsCompleted || ex.setsCompleted.every((v: boolean) => !v));
+    const partiallyCompleted = exercises
+      .map((ex: any) => {
+        if (!ex.setsCompleted) return null;
+        const total = ex.setsCompleted.length;
+        const completed = ex.setsCompleted.filter((v: boolean) => v).length;
+        if (completed > 0 && completed < total) {
+          return { name: ex.name, remaining: total - completed };
+        }
+        return null;
+      })
+      .filter((x: any) => x);
+    const completed = exercises.filter((ex: any) => Array.isArray(ex.setsCompleted) && ex.setsCompleted.length > 0 && ex.setsCompleted.every((v: boolean) => v));
+    return {
+      notStarted,
+      partiallyCompleted,
+      completed
+    };
+  }
+
+  isAllSetsCompleted(): boolean {
+    if (!this.program || !this.program.exercises) return false;
+    return this.program.exercises.every((exercise: any) =>
+      Array.isArray(exercise.setsCompleted) && exercise.setsCompleted.every((v: boolean) => v)
+    );
+  }
+
+  getWorkoutLogSummary(): string {
+    if (!this.program || !this.program.exercises) return '';
+    const totalExercises = this.program.exercises.length;
+    const totalSets = this.program.exercises.reduce((sum: number, ex: any) => sum + (ex.sets || 0), 0);
+    const completedSets = this.program.exercises.reduce((sum: number, ex: any) => sum + (ex.setsCompleted ? ex.setsCompleted.filter((v: boolean) => v).length : 0), 0);
+    if (this.isAllSetsCompleted()) {
+      return `Completed all ${totalSets} sets in ${totalExercises} exercises.`;
+    } else {
+      return `Completed ${completedSets} out of ${totalSets} sets in ${totalExercises} exercises.`;
+    }
   }
 }

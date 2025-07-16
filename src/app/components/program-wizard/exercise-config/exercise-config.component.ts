@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { ProgramExerciseFormData } from '../../../models/program.interface';
 
 @Component({
   selector: 'app-exercise-config',
@@ -9,11 +8,11 @@ import { ProgramExerciseFormData } from '../../../models/program.interface';
 })
 export class ExerciseConfigComponent implements OnInit {
   @Input() selectedExercises: any[] = [];
-  @Output() configuredExercisesChange = new EventEmitter<ProgramExerciseFormData[]>();
+  @Output() configuredExercisesChange = new EventEmitter<any[]>();
   @Output() validationStateChange = new EventEmitter<boolean>();
 
-  exerciseForms: FormGroup[] = [];
-  configuredExercises: ProgramExerciseFormData[] = [];
+  exerciseForms: any[] = [];
+  configuredExercises: any[] = [];
   validationErrors: string[] = [];
 
   constructor(private fb: FormBuilder) {}
@@ -77,68 +76,15 @@ export class ExerciseConfigComponent implements OnInit {
     this.configuredExercises = [];
     this.validationErrors = [];
     
-    this.selectedExercises.forEach((exercise, index) => {
+    this.selectedExercises.forEach((exercise: any, index: number) => {
       const form = this.fb.group({
-        name: [
-          exercise.name, 
-          [
-            Validators.required, 
-            Validators.minLength(2), 
-            Validators.maxLength(100)
-          ]
-        ],
-        sets: [
-          3, 
-          [
-            Validators.required, 
-            Validators.min(1), 
-            Validators.max(20),
-            Validators.pattern(/^\d+$/)
-          ]
-        ],
-        reps: [
-          10, 
-          [
-            Validators.required, 
-            Validators.min(1), 
-            Validators.max(100),
-            Validators.pattern(/^\d+$/)
-          ]
-        ],
-        restTime: [
-          60, 
-          [
-            Validators.required, 
-            Validators.min(0), 
-            Validators.max(600),
-            Validators.pattern(/^\d+$/),
-            this.restTimeValidator.bind(this)
-          ]
-        ],
-        weight: [
-          0, 
-          [
-            Validators.required, 
-            Validators.min(0), 
-            Validators.max(1000),
-            Validators.pattern(/^\d+(\.\d{1,2})?$/),
-            this.weightValidator.bind(this)
-          ]
-        ],
-        order: [
-          index + 1, 
-          [
-            Validators.required, 
-            Validators.min(1),
-            Validators.pattern(/^\d+$/)
-          ]
-        ],
-        notes: [
-          '', 
-          [
-            Validators.maxLength(500)
-          ]
-        ]
+        name: [exercise.name, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+        sets: [exercise.sets ?? 3, [Validators.required, Validators.min(1), Validators.max(20), Validators.pattern(/^[0-9]+$/)]],
+        reps: [exercise.reps ?? 10, [Validators.required, Validators.min(1), Validators.max(100), Validators.pattern(/^[0-9]+$/)]],
+        rest: [exercise.rest ?? 60, [Validators.required, Validators.min(0), Validators.max(600), Validators.pattern(/^[0-9]+$/), this.restTimeValidator.bind(this)]],
+        weight: [exercise.weight ?? 0, [Validators.required, Validators.min(0), Validators.max(1000), Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/), this.weightValidator.bind(this)]],
+        order: [exercise.order ?? (index + 1), [Validators.required, Validators.min(1), Validators.pattern(/^[0-9]+$/)]],
+        notes: [exercise.notes ?? '', [Validators.maxLength(500)]]
       }, { validators: this.exerciseIntensityValidator.bind(this) });
 
       this.exerciseForms.push(form);
@@ -161,7 +107,7 @@ export class ExerciseConfigComponent implements OnInit {
         name: values.name,
         sets: values.sets,
         reps: values.reps,
-        restTime: values.restTime,
+        rest: values.rest,
         weight: values.weight,
         order: values.order,
         notes: values.notes
@@ -258,7 +204,7 @@ export class ExerciseConfigComponent implements OnInit {
 
   getTotalEstimatedTime(): number {
     return this.configuredExercises.reduce((total, exercise) => {
-      const exerciseTime = (exercise.sets * exercise.reps * 3) + (exercise.sets * exercise.restTime);
+      const exerciseTime = (exercise.sets * exercise.reps * 3) + (exercise.sets * exercise.rest);
       return total + exerciseTime;
     }, 0);
   }

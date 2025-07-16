@@ -1,17 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DuplicateProgramDialogComponent, DuplicateProgramData } from './duplicate-program-dialog.component';
-import { Program, ProgramDifficulty } from '../../models/program.interface';
 
 describe('DuplicateProgramDialogComponent', () => {
   let component: DuplicateProgramDialogComponent;
   let fixture: ComponentFixture<DuplicateProgramDialogComponent>;
 
-  const mockProgram: Program = {
+  const mockProgram = {
     id: '1',
     name: 'Full Body Strength',
     description: 'Complete full body workout targeting all major muscle groups',
-    difficulty: ProgramDifficulty.INTERMEDIATE,
     exercises: [
       {
         id: 'ex1',
@@ -108,7 +106,6 @@ describe('DuplicateProgramDialogComponent', () => {
   it('should display program stats correctly', () => {
     const stats = component.getProgramStats();
     expect(stats.exercises).toBe(2);
-    expect(stats.difficulty).toBe('Intermediate');
     expect(stats.duration).toContain('m');
   });
 

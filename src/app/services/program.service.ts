@@ -1,184 +1,122 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
-import { delay } from 'rxjs/operators';
-import { Program, ProgramDifficulty } from '../models/program.interface';
+import { HttpClient } from '@angular/common/http';
+import { Observable, catchError, of, throwError, map, switchMap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProgramService {
-  private programs: Program[] = [];
+  private readonly baseUrl = `${environment.apiUrl}/programs`;
 
-  constructor() {
-    // Initialize with some sample programs
-    this.initializeSamplePrograms();
+  constructor(private http: HttpClient) {}
+
+  /**
+   * Get all programs for the current user
+   * HTTP Method: GET
+   */
+  getPrograms(): Observable<any[]> {
+    return this.http.get<any[]>(this.baseUrl).pipe(
+      catchError(error => {
+        console.error('Error fetching programs:', error);
+        return of([]);
+      })
+    );
   }
 
-  private initializeSamplePrograms(): void {
-    this.programs = [
-      {
-        id: '1',
-        name: 'Full Body Strength',
-        description: 'Complete full body workout targeting all major muscle groups',
-        difficulty: ProgramDifficulty.INTERMEDIATE,
-        exercises: [
-          {
-            id: 'ex1',
-            name: 'Barbell Squat',
-            order: 1,
-            sets: 3,
-            reps: 8,
-            weight: 60,
-            restTime: 120,
-            notes: 'Focus on form and depth'
-          },
-          {
-            id: 'ex2',
-            name: 'Bench Press',
-            order: 2,
-            sets: 3,
-            reps: 8,
-            weight: 50,
-            restTime: 120,
-            notes: 'Keep shoulders back and down'
-          }
-        ],
-        metadata: {
-          tags: ['strength', 'full-body'],
-          targetMuscleGroups: ['legs', 'chest', 'back'],
-          equipment: ['barbell', 'bench'],
-          estimatedDuration: 45,
-          totalExercises: 2,
-          isPublic: false,
-          version: '1.0.0'
-        },
-        createdAt: new Date('2024-01-15'),
-        updatedAt: new Date('2024-01-15'),
-        userId: 'user1'
-      },
-      {
-        id: '2',
-        name: 'Upper Body Focus',
-        description: 'Intensive upper body workout for strength and definition',
-        difficulty: ProgramDifficulty.ADVANCED,
-        exercises: [
-          {
-            id: 'ex3',
-            name: 'Pull-ups',
-            order: 1,
-            sets: 4,
-            reps: 10,
-            weight: 0,
-            restTime: 90,
-            notes: 'Full range of motion'
-          }
-        ],
-        metadata: {
-          tags: ['strength', 'upper-body'],
-          targetMuscleGroups: ['back', 'biceps', 'shoulders'],
-          equipment: ['pull-up bar'],
-          estimatedDuration: 30,
-          totalExercises: 1,
-          isPublic: false,
-          version: '1.0.0'
-        },
-        createdAt: new Date('2024-01-10'),
-        updatedAt: new Date('2024-01-12'),
-        userId: 'user1'
-      }
-    ];
+  /**
+   * Get a specific program by ID
+   * HTTP Method: GET
+   */
+  getProgramById(id: string): Observable<any | null> {
+    return this.http.get<any>(`${this.baseUrl}/${id}`).pipe(
+      catchError(error => {
+        console.error(`Error fetching program ${id}:`, error);
+        return of(null);
+      })
+    );
   }
 
-  getPrograms(): Observable<Program[]> {
-    return of([...this.programs]).pipe(delay(500)); // Simulate API delay
+  /**
+   * Create a new program
+   * HTTP Method: POST
+   */
+  createProgram(program: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl, program).pipe(
+      catchError(error => {
+        console.error('Error creating program:', error);
+        return throwError(() => new Error('Failed to create program'));
+      })
+    );
   }
 
-  getProgramById(id: string): Observable<Program | null> {
-    const program = this.programs.find(p => p.id === id);
-    return of(program || null).pipe(delay(300));
+  /**
+   * Update an existing program
+   * HTTP Method: PUT
+   */
+  updateProgram(id: string, updates: Partial<any>): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/${id}`, updates).pipe(
+      catchError(error => {
+        console.error(`Error updating program ${id}:`, error);
+        return throwError(() => new Error('Failed to update program'));
+      })
+    );
   }
 
-  createProgram(program: Omit<Program, 'id' | 'createdAt' | 'updatedAt'>): Observable<Program> {
-    const newProgram: Program = {
-      ...program,
-      id: this.generateId(),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    
-    this.programs.push(newProgram);
-    return of(newProgram).pipe(delay(500));
-  }
-
-  updateProgram(id: string, updates: Partial<Program>): Observable<Program> {
-    const index = this.programs.findIndex(p => p.id === id);
-    if (index === -1) {
-      return throwError(() => new Error('Program not found'));
-    }
-
-    this.programs[index] = {
-      ...this.programs[index],
-      ...updates,
-      updatedAt: new Date()
-    };
-
-    return of(this.programs[index]).pipe(delay(500));
-  }
-
+  /**
+   * Delete a program
+   * HTTP Method: DELETE
+   */
   deleteProgram(id: string): Observable<boolean> {
-    const index = this.programs.findIndex(p => p.id === id);
-    if (index === -1) {
-      return throwError(() => new Error('Program not found'));
-    }
-
-    this.programs.splice(index, 1);
-    return of(true).pipe(delay(300));
+    return this.http.delete(`${this.baseUrl}/${id}`).pipe(
+      catchError(error => {
+        console.error(`Error deleting program ${id}:`, error);
+        return throwError(() => new Error('Failed to delete program'));
+      }),
+      map(() => true)
+    );
   }
 
-  duplicateProgram(id: string, customName?: string): Observable<Program> {
-    const originalProgram = this.programs.find(p => p.id === id);
-    if (!originalProgram) {
-      return throwError(() => new Error('Program not found'));
-    }
+  /**
+   * Duplicate a program (creates a copy)
+   * HTTP Method: POST (creates new resource)
+   */
+  duplicateProgram(id: string, customName?: string): Observable<any> {
+    return this.getProgramById(id).pipe(
+      catchError(error => {
+        console.error(`Error fetching program ${id} for duplication:`, error);
+        return throwError(() => new Error('Program not found'));
+      }),
+      map(originalProgram => {
+        if (!originalProgram) {
+          throw new Error('Program not found');
+        }
 
-    // Generate a unique name for the duplicated program
-    const baseName = customName || originalProgram.name;
-    const duplicatedName = this.generateUniqueName(baseName);
+        // Deep clone to avoid mutating the original
+        const duplicatedProgram = JSON.parse(JSON.stringify(originalProgram));
 
-    const duplicatedProgram: Program = {
-      ...originalProgram,
-      id: this.generateId(),
-      name: duplicatedName,
-      description: originalProgram.description ? `${originalProgram.description} (Duplicated)` : undefined,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+        // Remove top-level fields
+        delete duplicatedProgram._id;
+        delete duplicatedProgram.createdAt;
+        delete duplicatedProgram.updatedAt;
 
-    // Generate new IDs for exercises to avoid conflicts
-    duplicatedProgram.exercises = originalProgram.exercises.map((exercise, index) => ({
-      ...exercise,
-      id: this.generateId(),
-      order: index + 1
-    }));
+        // Remove unwanted fields from nested exercises, if present
+        if (Array.isArray(duplicatedProgram.exercises)) {
+          duplicatedProgram.exercises = duplicatedProgram.exercises.map((ex: any) => {
+            const { _id, createdAt, updatedAt, ...rest } = ex;
+            return rest;
+          });
+        }
 
-    this.programs.push(duplicatedProgram);
-    return of(duplicatedProgram).pipe(delay(500));
-  }
+        // Set new name and description
+        duplicatedProgram.name = customName || `${originalProgram.name} (Copy)`;
+        duplicatedProgram.description = originalProgram.description
+          ? `${originalProgram.description} (Duplicated)`
+          : undefined;
 
-  private generateUniqueName(baseName: string): string {
-    let name = baseName;
-    let counter = 1;
-    
-    // Check if name already exists
-    while (this.programs.some(p => p.name === name)) {
-      name = `${baseName} (Copy ${counter})`;
-      counter++;
-    }
-    
-    return name;
-  }
-
-  private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        return duplicatedProgram;
+      }),
+      switchMap(duplicatedProgram => this.createProgram(duplicatedProgram))
+    );
   }
 } 

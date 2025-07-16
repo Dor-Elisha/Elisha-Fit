@@ -1,0 +1,356 @@
+<div class="exercise-selector">
+  <!-- Header -->
+  <div class="selector-header">
+    <div class="header-left">
+      <h3 class="selector-title">Exercise Selector</h3>
+      <p *ngIf="!loading" class="text-muted">
+        {{ filteredExercises.length }} exercises found
+        <span *ngIf="config.multiple && selectedExercises.length > 0">
+          • {{ selectedExercises.length }} selected
+        </span>
+      </p>
+    </div>
+    
+    <div class="header-actions">
+      <button 
+        class="btn btn-outline-secondary btn-icon" 
+        (click)="toggleViewMode()"
+        [title]="viewMode === 'grid' ? 'Switch to List View' : 'Switch to Grid View'"
+      >
+        <i class="fas" [class.fa-th]="viewMode === 'list'" [class.fa-list]="viewMode === 'grid'"></i>
+      </button>
+      
+      <button 
+        class="btn btn-outline-primary btn-icon" 
+        (click)="toggleFilters()"
+        [class.active]="showFilters"
+        title="Toggle Filters"
+      >
+        <i class="fas fa-filter"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+    </div>
+    <p class="loading-text">Loading exercises...</p>
+  </div>
+
+  <!-- Search Bar -->
+  <div *ngIf="!loading" class="search-section">
+    <div class="search-bar">
+      <div class="search-input">
+        <i class="fas fa-search"></i>
+        <input 
+          type="text" 
+          [formControl]="searchControl"
+          [placeholder]="placeholder"
+          class="form-control"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div *ngIf="!loading && showFilters" class="filters-section">
+    <div class="filters-grid">
+      <!-- Category Filter -->
+      <div class="filter-group">
+        <label for="category-filter">Category:</label>
+        <select 
+          id="category-filter" 
+          [(ngModel)]="selectedCategory" 
+          (change)="onCategoryChange($event)"
+          class="form-control"
+        >
+          <option value="">All Categories</option>
+          <option *ngFor="let category of categories" [value]="category">
+            {{ category | titlecase }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Muscle Group Filter -->
+      <div class="filter-group">
+        <label for="muscle-filter">Muscle Group:</label>
+        <select 
+          id="muscle-filter" 
+          [(ngModel)]="selectedMuscleGroup" 
+          (change)="onMuscleGroupChange($event)"
+          class="form-control"
+        >
+          <option value="">All Muscle Groups</option>
+          <option *ngFor="let muscle of muscleGroups" [value]="muscle">
+            {{ muscle | titlecase }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Equipment Filter -->
+      <div class="filter-group">
+        <label for="equipment-filter">Equipment:</label>
+        <select 
+          id="equipment-filter" 
+          [(ngModel)]="selectedEquipment" 
+          (change)="onEquipmentChange($event)"
+          class="form-control"
+        >
+          <option value="">All Equipment</option>
+          <option *ngFor="let eq of equipment" [value]="eq">
+            {{ eq | titlecase }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Sort Controls -->
+    <div class="sort-controls">
+      <div class="sort-group">
+        <label for="sort-by">Sort by:</label>
+        <select 
+          id="sort-by" 
+          [(ngModel)]="sortBy" 
+          (change)="onSortChange($event)"
+          class="form-control"
+        >
+          <option value="name">Name</option>
+          <option value="category">Category</option>
+        </select>
+      </div>
+
+      <div class="sort-order">
+        <button 
+          class="btn btn-outline-secondary btn-icon" 
+          (click)="toggleSortOrder()"
+          [title]="sortOrder === 'asc' ? 'Sort Descending' : 'Sort Ascending'"
+        >
+          <i class="fas" [class.fa-sort-amount-down]="sortOrder === 'desc'" [class.fa-sort-amount-up]="sortOrder === 'asc'"></i>
+        </button>
+      </div>
+
+      <div class="clear-filters">
+        <button class="btn btn-outline-danger btn-icon" (click)="clearFilters()">
+          <i class="fas fa-times"></i> Clear Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selected Exercises (Multiple Mode) -->
+  <div *ngIf="!loading && config.multiple && selectedExercises.length > 0" class="selected-exercises">
+    <h4 class="selected-title">Selected Exercises ({{ selectedExercises.length }})</h4>
+    <div class="selected-grid">
+      <div *ngFor="let exercise of selectedExercises" class="selected-item">
+        <div class="selected-content">
+          <div class="exercise-image" *ngIf="exercise.images && exercise.images.length > 0">
+            <img 
+              [src]="exercise.images[0]" 
+              [alt]="exercise.name + ' exercise demonstration'"
+              class="exercise-img"
+              (error)="onImageError($event, exercise)"
+            />
+          </div>
+          <div class="exercise-icon" *ngIf="!exercise.images || exercise.images.length === 0">
+            <i [class]="getCategoryIcon(exercise.category)"></i>
+          </div>
+          <div class="exercise-info">
+            <h5 class="exercise-name">{{ exercise.name }}</h5>
+            <p class="exercise-meta">{{ exercise.category | titlecase }} • {{ exercise.level | titlecase }}</p>
+          </div>
+        </div>
+        <button 
+          class="btn btn-sm btn-outline-danger btn-icon" 
+          (click)="removeSelectedExercise(exercise)"
+          title="Remove Exercise"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && filteredExercises.length === 0" class="empty-state">
+    <i class="fas fa-search empty-icon"></i>
+    <h3 class="empty-title">No Exercises Found</h3>
+    <p class="empty-description">Try adjusting your search or filters to find exercises.</p>
+    <button class="btn btn-secondary" (click)="clearFilters()">Clear Filters</button>
+  </div>
+
+  <!-- Exercise Grid/List -->
+  <div *ngIf="!loading && filteredExercises.length > 0" class="exercises-container">
+    <!-- Grid View -->
+    <div *ngIf="viewMode === 'grid'" class="exercise-grid">
+      <div 
+        *ngFor="let exercise of paginatedExercises" 
+        class="exercise-card two-col"
+        [class.selected]="isExerciseSelected(exercise)"
+        (click)="toggleExerciseSelection(exercise)"
+      >
+        <!-- Left: Image -->
+        <div class="exercise-card-image">
+          <div class="image-bg"
+               *ngIf="exercise.images && exercise.images.length > 0"
+               [style.background-image]="'url(' + getCurrentImage(exercise) + ')'">
+          </div>
+          <div class="exercise-icon" *ngIf="!exercise.images || exercise.images.length === 0">
+            <i [class]="getCategoryIcon(exercise.category)"></i>
+          </div>
+          <!-- Image Navigation Buttons -->
+          <div class="image-navigation" *ngIf="hasMultipleImages(exercise)">
+            <button 
+              class="nav-btn nav-btn-left" 
+              (click)="previousImage($event, exercise)"
+              title="Previous image"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button 
+              class="nav-btn nav-btn-right" 
+              (click)="nextImage($event, exercise)"
+              title="Next image"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        <!-- Right: Details -->
+        <div class="exercise-card-details">
+          <h4 class="exercise-name">{{ exercise.name }}</h4>
+          <p class="exercise-category">{{ exercise.category | titlecase }}</p>
+          <div class="exercise-meta">
+            <div class="meta-item" *ngIf="exercise.equipment">
+              <i class="fas fa-tools"></i>
+              <span>{{ exercise.equipment | titlecase }}</span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-dumbbell"></i>
+              <span>{{ getMuscleGroupsText(exercise) }}</span>
+            </div>
+          </div>
+          <div class="exercise-tags">
+            <span *ngFor="let muscle of exercise.primaryMuscles.slice(0, 2)" class="badge badge-primary badge-sm">
+              {{ muscle | titlecase }}
+            </span>
+            <span *ngIf="exercise.secondaryMuscles.length > 0" class="badge badge-secondary badge-sm">
+              +{{ exercise.secondaryMuscles.length }} more
+            </span>
+          </div>
+          <div class="selection-indicator">
+            <i *ngIf="isExerciseSelected(exercise)" class="fas fa-check-circle text-success"></i>
+            <i *ngIf="!isExerciseSelected(exercise)" class="fas fa-plus-circle text-muted"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- List View -->
+    <div *ngIf="viewMode === 'list'" class="exercise-list">
+      <div 
+        *ngFor="let exercise of paginatedExercises" 
+        class="exercise-item"
+        [class.selected]="isExerciseSelected(exercise)"
+        (click)="toggleExerciseSelection(exercise)"
+      >
+        <div class="item-image-container" *ngIf="exercise.images && exercise.images.length > 0">
+          <div class="item-image"
+               [style.background-image]="'url(' + getCurrentImage(exercise) + ')'">
+          </div>
+          
+          <!-- Image Navigation Buttons for List View -->
+          <div class="image-navigation-list" *ngIf="hasMultipleImages(exercise)">
+            <button 
+              class="nav-btn nav-btn-left" 
+              (click)="previousImage($event, exercise)"
+              title="Previous image"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button 
+              class="nav-btn nav-btn-right" 
+              (click)="nextImage($event, exercise)"
+              title="Next image"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        <div class="item-icon" *ngIf="!exercise.images || exercise.images.length === 0">
+          <i [class]="getCategoryIcon(exercise.category)"></i>
+        </div>
+
+        <div class="item-content">
+          <div class="item-header">
+            <h4 class="exercise-name">{{ exercise.name }}</h4>
+            <div class="item-badges">
+              <span class="badge" [class]="'badge-' + getDifficultyColor(exercise.level)">
+                {{ exercise.level | titlecase }}
+              </span>
+              <span class="badge badge-secondary">{{ exercise.category | titlecase }}</span>
+            </div>
+          </div>
+
+          <div class="item-meta">
+            <div class="meta-item" *ngIf="exercise.equipment">
+              <i class="fas fa-tools"></i>
+              <span>{{ exercise.equipment | titlecase }}</span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-dumbbell"></i>
+              <span>{{ getMuscleGroupsText(exercise) }}</span>
+            </div>
+          </div>
+
+          <div class="item-tags">
+            <span *ngFor="let muscle of exercise.primaryMuscles.slice(0, 3)" class="badge badge-primary badge-sm">
+              {{ muscle | titlecase }}
+            </span>
+            <span *ngIf="exercise.secondaryMuscles.length > 0" class="badge badge-secondary badge-sm">
+              +{{ exercise.secondaryMuscles.length }} secondary
+            </span>
+          </div>
+        </div>
+
+        <div class="item-actions">
+          <div class="selection-indicator">
+            <i *ngIf="isExerciseSelected(exercise)" class="fas fa-check-circle text-success"></i>
+            <i *ngIf="!isExerciseSelected(exercise)" class="fas fa-plus-circle text-muted"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="pagination-container">
+      <nav aria-label="Exercise pagination">
+        <ul class="pagination">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+          </li>
+          
+          <li *ngFor="let page of getPageNumbers()" class="page-item" [class.active]="page === currentPage">
+            <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+          </li>
+          
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="pagination-info">
+        <small class="text-muted">
+          Page {{ currentPage }} of {{ totalPages }} 
+          ({{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, filteredExercises.length) }} of {{ filteredExercises.length }})
+        </small>
+      </div>
+    </div>
+  </div>
+</div> 

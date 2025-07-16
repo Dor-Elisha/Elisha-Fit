@@ -53,20 +53,6 @@
     <div class="filter-controls">
       <div class="form-row">
         <div class="form-group">
-          <label for="difficulty-filter">Difficulty:</label>
-          <select 
-            id="difficulty-filter" 
-            [(ngModel)]="selectedDifficulty" 
-            (change)="onDifficultyChange()"
-            class="form-control"
-          >
-            <option *ngFor="let diff of difficulties" [value]="diff.value">
-              {{ diff.label }}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-group">
           <label for="sort-by">Sort by:</label>
           <select 
             id="sort-by" 
@@ -228,7 +214,7 @@
         <div class="program-meta">
           <div class="meta-item">
             <i class="fas fa-signal"></i>
-            <span [class]="getDifficultyBadgeClass(program.difficulty)">{{ program.difficulty | titlecase }}</span>
+            <!-- Removed difficulty badge -->
           </div>
           <div class="meta-item">
             <i class="fas fa-clock"></i>
@@ -238,14 +224,14 @@
             <i class="fas fa-dumbbell"></i>
             <span>{{ getExerciseCount(program) }} exercises</span>
           </div>
-          <div class="meta-item" *ngIf="program.metadata?.targetMuscleGroups?.length">
+          <div class="meta-item" *ngIf="program.targetMuscleGroups?.length">
             <i class="fas fa-bullseye"></i>
-            <span>{{ program.metadata.targetMuscleGroups.length }} muscle groups</span>
+            <span>{{ program.targetMuscleGroups.length }} muscle groups</span>
           </div>
         </div>
 
-        <div class="program-tags" *ngIf="program.metadata.tags && program.metadata.tags.length > 0">
-          <span *ngFor="let tag of program.metadata.tags" class="badge badge-primary">{{ tag }}</span>
+        <div class="program-tags" *ngIf="program.tags && program.tags.length > 0">
+          <span *ngFor="let tag of program.tags" class="badge badge-primary">{{ tag }}</span>
         </div>
       </div>
 

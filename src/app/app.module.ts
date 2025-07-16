@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -7,7 +8,6 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HomeComponent } from './components/home/home.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ProgramsComponent } from './components/programs/programs.component';
-import { AnalyicComponent } from './components/analyic/analyic.component';
 import { SelectProgramComponent } from './components/select-program/select-program.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
@@ -24,22 +24,21 @@ import { ToastrModule } from 'ngx-toastr';
 import { RouteService } from './services/route.service';
 import { AuthService } from './services/auth.service';
 import { AuthGuard } from './auth.guard';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { LoadingService } from './services/loading.service';
 import { ProgramWizardComponent } from './components/program-wizard/program-wizard/program-wizard.component';
-import { ExerciseSelectorComponent } from './components/exercise-selector/exercise-selector.component';
+import { ExerciseSelectorComponent } from './components/program-wizard/program-wizard/exercise-selector/exercise-selector.component';
 import { ExerciseConfigComponent } from './components/program-wizard/exercise-config/exercise-config.component';
 import { ProgramListComponent } from './components/program-list/program-list.component';
 import { ProgramDetailComponent } from './components/program-detail/program-detail.component';
-import { ProgramEditComponent } from './components/program-edit/program-edit.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { DuplicateProgramDialogComponent } from './components/duplicate-program-dialog/duplicate-program-dialog.component';
-import { ProgressEntryComponent } from './components/progress-entry/progress-entry.component';
-import { ProgressHistoryComponent } from './components/progress-history/progress-history.component';
-import { ProgressAnalyticsComponent } from './components/progress-analytics/progress-analytics.component';
-import { ProgressDashboardComponent } from './components/progress-dashboard/progress-dashboard.component';
-import { GoalManagementComponent } from './components/goal-management/goal-management.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { LoadingComponent } from './components/loading/loading.component';
+import { CommonModule } from '@angular/common';
+import { TimerComponent } from './components/timer/timer.component';
+import { LogComponent } from './components/log/log.component';
+import { StartWorkoutComponent } from './components/start-workout/start-workout.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +47,6 @@ import { LoadingComponent } from './components/loading/loading.component';
     SidebarComponent,
     HomeComponent,
     ProgramsComponent,
-    AnalyicComponent,
     CalanderComponent,
     SelectProgramComponent,
     DropdownComponent,
@@ -59,19 +57,17 @@ import { LoadingComponent } from './components/loading/loading.component';
     ExerciseConfigComponent,
     ProgramListComponent,
     ProgramDetailComponent,
-    ProgramEditComponent,
     ConfirmDialogComponent,
     DuplicateProgramDialogComponent,
-    ProgressEntryComponent,
-    ProgressHistoryComponent,
-    ProgressAnalyticsComponent,
-    ProgressDashboardComponent,
-    GoalManagementComponent,
     BreadcrumbComponent,
     LoadingComponent,
+    TimerComponent,
+    LogComponent,
+    StartWorkoutComponent,
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
@@ -94,6 +90,11 @@ import { LoadingComponent } from './components/loading/loading.component';
     AuthService,
     AuthGuard,
     LoadingService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent],
 })

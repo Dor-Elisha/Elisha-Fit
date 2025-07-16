@@ -1,11 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Program } from '../../models/program.interface';
-
-export interface DuplicateProgramData {
-  program: Program;
-  suggestedName: string;
-}
 
 @Component({
   selector: 'app-duplicate-program-dialog',
@@ -14,7 +8,7 @@ export interface DuplicateProgramData {
 })
 export class DuplicateProgramDialogComponent {
   @Input() isVisible = false;
-  @Input() data: DuplicateProgramData | null = null;
+  @Input() data: any | null = null;
   
   @Output() confirm = new EventEmitter<string>();
   @Output() cancel = new EventEmitter<void>();
@@ -57,37 +51,27 @@ export class DuplicateProgramDialogComponent {
     }
   }
 
-  getProgramStats(): { exercises: number; duration: string; difficulty: string } {
-    if (!this.data?.program) {
-      return { exercises: 0, duration: '0m', difficulty: 'Unknown' };
-    }
-
+  getProgramStats(): { exercises: number; duration: string } {
     const program = this.data.program;
     const exerciseCount = program.exercises?.length || 0;
-    
-    // Calculate duration
     let totalMinutes = 0;
     if (program.exercises && program.exercises.length > 0) {
       totalMinutes = program.exercises.reduce((total, exercise) => {
-        const exerciseTime = (exercise.sets * exercise.reps * 3) + (exercise.sets * exercise.restTime);
+        const exerciseTime = (exercise.sets * exercise.reps * 3) + (exercise.sets * exercise.rest);
         return total + exerciseTime;
       }, 0) / 60;
     } else {
-      totalMinutes = program.metadata?.estimatedDuration || 0;
+      totalMinutes = program.estimatedDuration || 0;
     }
-
     const duration = totalMinutes < 60 
       ? `${Math.round(totalMinutes)}m` 
       : `${Math.floor(totalMinutes / 60)}h ${Math.round(totalMinutes % 60)}m`;
-
-    const difficulty = program.difficulty.charAt(0).toUpperCase() + program.difficulty.slice(1);
-
-    return { exercises: exerciseCount, duration, difficulty };
+    return { exercises: exerciseCount, duration };
   }
 
-  getCategoryIcon(program: Program): string {
-    const tags = program.metadata?.tags || [];
-    const muscleGroups = program.metadata?.targetMuscleGroups || [];
+  getCategoryIcon(program: any): string {
+    const tags = program.tags || [];
+    const muscleGroups = program.targetMuscleGroups || [];
     
     if (tags.includes('strength') || muscleGroups.some(mg => mg.includes('chest') || mg.includes('back') || mg.includes('legs'))) {
       return 'fas fa-dumbbell';

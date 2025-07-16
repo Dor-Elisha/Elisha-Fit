@@ -1,0 +1,52 @@
+<div class="log-dashboard container py-4">
+  <div class="d-flex align-items-center mb-4">
+    <i class="fas fa-clipboard-list fa-2x text-primary me-3"></i>
+    <h2 class="mb-0">Workout Logs Dashboard</h2>
+  </div>
+  <div class="row mb-4">
+    <div class="col-md-4 mb-3 mb-md-0">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <div class="fw-bold display-6">{{ totalLogs }}</div>
+          <div class="text-muted">Total Logs</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3 mb-md-0">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <div class="fw-bold display-6 text-success">{{ completedLogs }}</div>
+          <div class="text-muted">Completed Workouts</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <div class="fw-bold display-6 text-warning">{{ incompleteLogs }}</div>
+          <div class="text-muted">Incomplete Workouts</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="log-list mt-4">
+    <h4 class="mb-3">Recent Activity</h4>
+    <div *ngIf="logs.length === 0" class="text-muted text-center py-4">No workout logs yet.</div>
+    <div class="row g-3">
+      <div *ngFor="let log of logs" class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0 log-card" [routerLink]="['/program-detail', log.programId]" style="cursor:pointer;">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div class="d-flex align-items-center mb-2">
+              <span [ngClass]="log.completedAll ? 'text-success' : 'text-warning'">
+                <i class="fas" [ngClass]="log.completedAll ? 'fa-check-circle' : 'fa-exclamation-circle'"></i>
+              </span>
+              <span class="fw-bold ms-2">{{ log.programName }}</span>
+            </div>
+            <div class="small text-muted mb-2">{{ log.date | date:'medium' }}</div>
+            <div class="small flex-grow-1">{{ log.summary }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

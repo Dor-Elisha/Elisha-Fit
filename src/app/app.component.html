@@ -1,45 +1,51 @@
 <div class="app-container">
   <!-- Header -->
-  <app-header [sidebarOpen]="sidebarToggle" (sidebarToggle)="onSidebarToggle()"></app-header>
+  <app-header *ngIf="!isLoginRoute" [sidebarOpen]="sidebarToggle" (sidebarToggle)="onSidebarToggle()"></app-header>
   
-  <!-- Main Content Area -->
-  <div class="main-content">
-    <!-- Sidebar -->
-    <app-sidebar 
-      *ngIf="user" 
-      [sidebarOpen]="sidebarToggle" 
-      (sidebarClose)="onSidebarClose()"
-      (sidebarCollapse)="onSidebarCollapse($event)">
-    </app-sidebar>
-    
-    <!-- Content Container -->
-    <div [ngClass]="getContentWrapperClasses()">
-      <div class="content-area">
-        <router-outlet></router-outlet>
+  <!-- Main Content Area (all except login) -->
+  <ng-container *ngIf="!isLoginRoute">
+    <div class="main-content">
+      <!-- Sidebar -->
+      <app-sidebar 
+        *ngIf="user" 
+        [sidebarOpen]="sidebarToggle" 
+        (sidebarClose)="onSidebarClose()"
+        (sidebarCollapse)="onSidebarCollapse($event)">
+      </app-sidebar>
+      <!-- Content Container -->
+      <div [ngClass]="getContentWrapperClasses()">
+        <div class="content-area">
+          <router-outlet></router-outlet>
+        </div>
       </div>
     </div>
-  </div>
+  </ng-container>
+
+  <!-- Login Route: render only the login page, full width -->
+  <ng-container *ngIf="isLoginRoute">
+    <router-outlet></router-outlet>
+  </ng-container>
 </div>
 
 <!-- Mobile Sidebar Backdrop -->
 <div 
-  *ngIf="isMobile && sidebarToggle" 
+  *ngIf="isMobile && sidebarToggle && !isLoginRoute" 
   class="sidebar-backdrop visible"
   (click)="onSidebarClose()">
 </div>
 
 <!-- Global Loading -->
 <app-loading 
-  *ngIf="isLoading"
+  *ngIf="isLoading && !isLoginRoute"
   [config]="loadingConfig"
   [visible]="isLoading">
 </app-loading>
 
 <!-- Global Fullscreen Loading -->
 <app-loading 
-  *ngIf="isFullscreenLoading"
+  *ngIf="isFullscreenLoading && !isLoginRoute"
   [config]="fullscreenLoadingConfig"
   [visible]="isFullscreenLoading">
 </app-loading>
 
-<app-select-program *ngIf="gs.createProgramPopupShow"></app-select-program>
+<app-select-program *ngIf="gs.createProgramPopupShow && !isLoginRoute"></app-select-program>

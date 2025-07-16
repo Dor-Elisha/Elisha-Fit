@@ -7,6 +7,7 @@ import { LoadingService } from './services/loading.service';
 import { LoadingConfig } from './components/loading/loading.component';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,8 @@ export class AppComponent implements OnInit, OnDestroy {
     public gs: GeneralService, 
     private exerciseService: ExerciseService, 
     private auth: AuthService,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private router: Router // Inject Router
   ) { }
   
   user: any;
@@ -34,6 +36,8 @@ export class AppComponent implements OnInit, OnDestroy {
   isFullscreenLoading = false;
   loadingConfig: LoadingConfig = { type: 'spinner' };
   fullscreenLoadingConfig: LoadingConfig = { type: 'spinner', fullscreen: true };
+  
+  isLoginRoute = false;
   
   private destroy$ = new Subject<void>();
 
@@ -60,6 +64,15 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(isFullscreenLoading => {
         this.isFullscreenLoading = isFullscreenLoading;
       });
+
+    // Track route changes to determine if on login page
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.isLoginRoute = event.urlAfterRedirects === '/login';
+      }
+    });
+    // Set initial value
+    this.isLoginRoute = this.router.url === '/login';
 
     // Check initial screen size
     this.checkScreenSize();

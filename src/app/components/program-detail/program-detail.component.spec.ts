@@ -1,16 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProgramDetailComponent } from './program-detail.component';
-import { Program, ProgramDifficulty } from '../../models/program.interface';
 
 describe('ProgramDetailComponent', () => {
   let component: ProgramDetailComponent;
   let fixture: ComponentFixture<ProgramDetailComponent>;
 
-  const mockProgram: Program = {
+  const mockProgram = {
     id: '1',
     name: 'Advanced Strength Training',
     description: 'A comprehensive strength training program for advanced users',
-    difficulty: ProgramDifficulty.ADVANCED,
     exercises: [
       {
         id: '1',
@@ -76,10 +74,6 @@ describe('ProgramDetailComponent', () => {
     expect(component.selectedTab).toBe('overview');
   });
 
-  it('should expand first exercise by default', () => {
-    expect(component.expandedExercises.has('1')).toBe(true);
-  });
-
   it('should select different tabs', () => {
     component.selectTab('exercises');
     expect(component.selectedTab).toBe('exercises');
@@ -89,26 +83,6 @@ describe('ProgramDetailComponent', () => {
 
     component.selectTab('history');
     expect(component.selectedTab).toBe('history');
-  });
-
-  it('should toggle exercise expansion', () => {
-    expect(component.isExerciseExpanded('2')).toBe(false);
-    
-    component.toggleExerciseExpansion('2');
-    expect(component.isExerciseExpanded('2')).toBe(true);
-    
-    component.toggleExerciseExpansion('2');
-    expect(component.isExerciseExpanded('2')).toBe(false);
-  });
-
-  it('should get difficulty color correctly', () => {
-    expect(component.getDifficultyColor(ProgramDifficulty.BEGINNER)).toBe('#28a745');
-    expect(component.getDifficultyColor(ProgramDifficulty.INTERMEDIATE)).toBe('#ffc107');
-    expect(component.getDifficultyColor(ProgramDifficulty.ADVANCED)).toBe('#dc3545');
-  });
-
-  it('should get category icon based on tags', () => {
-    expect(component.getCategoryIcon(mockProgram)).toBe('fas fa-dumbbell'); // strength tag
   });
 
   it('should calculate total duration correctly', () => {
@@ -141,12 +115,6 @@ describe('ProgramDetailComponent', () => {
     expect(reps).toBe(90);
   });
 
-  it('should calculate average rest time correctly', () => {
-    const avgRest = component.getAverageRestTime();
-    // (120 + 180 + 240) / 3 = 540 / 3 = 180
-    expect(avgRest).toBe(180);
-  });
-
   it('should format rest time correctly', () => {
     expect(component.formatRestTime(30)).toBe('30s');
     expect(component.formatRestTime(90)).toBe('1m 30s');
@@ -162,7 +130,6 @@ describe('ProgramDetailComponent', () => {
     expect(stats?.totalSets).toBe(11);
     expect(stats?.totalReps).toBe(90);
     expect(stats?.averageRestTime).toBe('3m');
-    expect(stats?.difficulty).toBe('Advanced');
     expect(stats?.category).toBe('Strength Training');
     expect(stats?.equipment).toEqual(['barbell', 'bench', 'rack']);
     expect(stats?.muscleGroups).toEqual(['chest', 'legs', 'back']);
@@ -311,7 +278,6 @@ describe('ProgramDetailComponent', () => {
   it('should handle different difficulty levels in category detection', () => {
     const beginnerProgram = {
       ...mockProgram,
-      difficulty: ProgramDifficulty.BEGINNER,
       metadata: {
         ...mockProgram.metadata,
         tags: ['beginner', 'strength']

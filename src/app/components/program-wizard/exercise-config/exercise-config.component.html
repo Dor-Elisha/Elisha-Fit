@@ -67,22 +67,22 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="restTime-{{i}}">Rest Time (seconds)<span class="required">*</span></label>
+              <label for="rest-{{i}}">Rest (seconds)<span class="required">*</span></label>
               <input 
-                id="restTime-{{i}}" 
+                id="rest-{{i}}" 
                 type="number" 
-                formControlName="restTime" 
+                formControlName="rest" 
                 min="0" 
                 max="600"
                 class="form-control"
               />
-              <div class="error" *ngIf="getFormGroup(i).get('restTime')?.touched && getFormGroup(i).get('restTime')?.invalid">
-                <span *ngIf="getFormGroup(i).get('restTime')?.errors?.['required']">Rest time is required.</span>
-                <span *ngIf="getFormGroup(i).get('restTime')?.errors?.['min']">Minimum 0 seconds.</span>
-                <span *ngIf="getFormGroup(i).get('restTime')?.errors?.['max']">Maximum 600 seconds.</span>
-                <span *ngIf="getFormGroup(i).get('restTime')?.errors?.['pattern']">Must be a whole number.</span>
-                <span *ngIf="getFormGroup(i).get('restTime')?.errors?.['negativeRestTime']">Rest time cannot be negative.</span>
-                <span *ngIf="getFormGroup(i).get('restTime')?.errors?.['excessiveRestTime']">Rest time cannot exceed 600 seconds.</span>
+              <div class="error" *ngIf="getFormGroup(i).get('rest')?.touched && getFormGroup(i).get('rest')?.invalid">
+                <span *ngIf="getFormGroup(i).get('rest')?.errors?.['required']">Rest is required.</span>
+                <span *ngIf="getFormGroup(i).get('rest')?.errors?.['min']">Minimum 0 seconds.</span>
+                <span *ngIf="getFormGroup(i).get('rest')?.errors?.['max']">Maximum 600 seconds.</span>
+                <span *ngIf="getFormGroup(i).get('rest')?.errors?.['pattern']">Must be a whole number.</span>
+                <span *ngIf="getFormGroup(i).get('rest')?.errors?.['negativeRestTime']">Rest cannot be negative.</span>
+                <span *ngIf="getFormGroup(i).get('rest')?.errors?.['excessiveRestTime']">Rest cannot exceed 600 seconds.</span>
               </div>
             </div>
 

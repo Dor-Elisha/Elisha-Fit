@@ -1,6 +1,6 @@
 <div class="programs-page">
   <!-- Breadcrumb Navigation -->
-  <app-breadcrumb></app-breadcrumb>
+  <app-breadcrumb *ngIf="showBreadcrumbs"></app-breadcrumb>
   
   <!-- Page Header -->
   <div class="page-header">
@@ -15,7 +15,7 @@
   </div>
 
   <!-- Filters and Search -->
-  <div class="filters-section">
+  <div class="filters-section" *ngIf="!loading && filteredPrograms.length > 0">
     <div class="search-container">
       <div class="input-group">
         <span class="input-group-text">
@@ -44,15 +44,6 @@
         <option value="mixed">Mixed</option>
       </select>
       
-      <select 
-        class="form-select" 
-        [(ngModel)]="selectedDifficulty"
-        (change)="onDifficultyChange()">
-        <option value="all">All Difficulties</option>
-        <option value="beginner">Beginner</option>
-        <option value="intermediate">Intermediate</option>
-        <option value="advanced">Advanced</option>
-      </select>
     </div>
   </div>
 
@@ -71,10 +62,10 @@
         <i class="fas fa-dumbbell"></i>
       </div>
       <h3>No programs found</h3>
-      <p *ngIf="searchTerm || selectedCategory !== 'all' || selectedDifficulty !== 'all'">
+      <p *ngIf="searchTerm || selectedCategory !== 'all'">
         Try adjusting your search or filters
       </p>
-      <p *ngIf="!searchTerm && selectedCategory === 'all' && selectedDifficulty === 'all'">
+      <p *ngIf="!searchTerm && selectedCategory === 'all'">
         Create your first workout program to get started
       </p>
       <button class="btn btn-fitness" (click)="createNewProgram()">
@@ -95,9 +86,7 @@
               {{ program.description }}
             </p>
           </div>
-          <div class="program-badge" [ngClass]="'badge-' + (program.difficulty || 'beginner')">
-            {{ program.difficulty || 'beginner' }}
-          </div>
+          <!-- Removed program.difficulty badge -->
         </div>
         
         <div class="program-stats">
@@ -140,7 +129,7 @@
 
 <!-- Confirmation Dialogs -->
 <app-confirm-dialog
-  *ngIf="showDeleteDialog"
+  [isVisible]="showDeleteDialog"
   [data]="deleteDialogData"
   (confirm)="onConfirmDelete()"
   (cancel)="onCancelDelete()">

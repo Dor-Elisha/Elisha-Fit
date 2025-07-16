@@ -2,25 +2,18 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { filter, map, startWith } from 'rxjs/operators';
 
-export interface BreadcrumbItem {
-  label: string;
-  url?: string;
-  icon?: string;
-  active?: boolean;
-}
-
 @Component({
   selector: 'app-breadcrumb',
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss']
 })
 export class BreadcrumbComponent implements OnInit {
-  @Input() items: BreadcrumbItem[] = [];
+  @Input() items: any[] = [];
   @Input() showHome: boolean = true;
   @Input() maxItems: number = 5;
-  @Output() itemClick = new EventEmitter<BreadcrumbItem>();
+  @Output() itemClick = new EventEmitter<any>();
 
-  breadcrumbs: BreadcrumbItem[] = [];
+  breadcrumbs: any[] = [];
   collapsed: boolean = false;
 
   constructor(
@@ -40,8 +33,8 @@ export class BreadcrumbComponent implements OnInit {
     });
   }
 
-  private buildBreadcrumbs(): BreadcrumbItem[] {
-    const breadcrumbs: BreadcrumbItem[] = [];
+  private buildBreadcrumbs(): any[] {
+    const breadcrumbs: any[] = [];
     
     if (this.showHome) {
       breadcrumbs.push({
@@ -98,7 +91,7 @@ export class BreadcrumbComponent implements OnInit {
     this.collapsed = this.breadcrumbs.length > this.maxItems;
   }
 
-  onItemClick(item: BreadcrumbItem, event: Event): void {
+  onItemClick(item: any, event: Event): void {
     event.preventDefault();
     
     if (item.url && !item.active) {
@@ -108,7 +101,7 @@ export class BreadcrumbComponent implements OnInit {
     this.itemClick.emit(item);
   }
 
-  getVisibleBreadcrumbs(): BreadcrumbItem[] {
+  getVisibleBreadcrumbs(): any[] {
     if (!this.collapsed) {
       return this.breadcrumbs;
     }
@@ -132,7 +125,7 @@ export class BreadcrumbComponent implements OnInit {
     return visible;
   }
 
-  getCollapsedBreadcrumbs(): BreadcrumbItem[] {
+  getCollapsedBreadcrumbs(): any[] {
     if (!this.collapsed) {
       return [];
     }

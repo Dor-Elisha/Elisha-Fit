@@ -1,21 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
-export interface ConfirmDialogData {
-  title: string;
-  message: string;
-  confirmText?: string;
-  cancelText?: string;
-  type?: 'danger' | 'warning' | 'info';
-  showIcon?: boolean;
-}
-
 @Component({
   selector: 'app-confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
   styleUrls: ['./confirm-dialog.component.scss']
 })
 export class ConfirmDialogComponent {
-  @Input() data: ConfirmDialogData = {
+  @Input() data: any = {
     title: 'Confirm Action',
     message: 'Are you sure you want to proceed?',
     confirmText: 'Confirm',

@@ -1,0 +1,25 @@
+.list-group-item {
+  padding: 1rem 1.25rem;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+}
+.list-group-item:last-child {
+  border-bottom: none;
+}
+.fw-bold {
+  font-size: 1.1rem;
+}
+.text-success {
+  font-weight: 600;
+}
+.text-warning {
+  font-weight: 600;
+}
+.log-card {
+  transition: box-shadow 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.log-card:hover {
+  box-shadow: 0 4px 24px rgba(0, 123, 255, 0.15);
+  border-color: #007bff;
+} 

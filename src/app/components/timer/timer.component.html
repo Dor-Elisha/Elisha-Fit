@@ -1,0 +1,8 @@
+<div *ngIf="isVisible" class="timer-modal-overlay">
+  <div class="timer-modal-content card shadow-lg text-center">
+    <div class="card-body">
+      <h2 class="display-4 mb-3">{{ formattedTime }}</h2>
+      <button class="btn btn-danger" (click)="closePopup()">Close</button>
+    </div>
+  </div>
+</div> 

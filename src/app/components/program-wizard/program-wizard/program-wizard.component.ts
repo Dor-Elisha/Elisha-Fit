@@ -1,9 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { ProgramFormData, ProgramExerciseFormData } from '../../../models/program.interface';
-import { BreadcrumbItem } from '../../breadcrumb/breadcrumb.component';
+import { Router } from '@angular/router';
 import { LoadingService } from '../../../services/loading.service';
-import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
+import { ProgramService } from '../../../services/program.service';
+import { ToastrService } from 'ngx-toastr';
+import { Subject, takeUntil, debounceTime, distinctUntilChanged, forkJoin } from 'rxjs';
+import { AdapterService } from '../../../services/adapter.service';
+import { ActivatedRoute } from '@angular/router';
+import { ExerciseService } from '../../../services/exercise.service';
 
 @Component({
   selector: 'app-program-wizard',
@@ -16,7 +20,7 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
   
   programForm: FormGroup;
   selectedExercises: any[] = [];
-  configuredExercises: ProgramExerciseFormData[] = [];
+  configuredExercises: any[] = [];
   
   // Validation states
   step1Valid = false;
@@ -37,7 +41,7 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // Breadcrumb navigation
-  wizardBreadcrumbs: BreadcrumbItem[] = [
+  wizardBreadcrumbs: any[] = [
     {
       label: 'Programs',
       url: '/programs',
@@ -49,9 +53,35 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
     }
   ];
 
+  get mainActionLabel(): string {
+    return this.editMode ? 'Save Changes' : 'Create Program';
+  }
+
+  updateBreadcrumbForEdit() {
+    if (this.editMode) {
+      this.wizardBreadcrumbs = [
+        {
+          label: 'Programs',
+          url: '/programs',
+          icon: 'fas fa-dumbbell'
+        },
+        {
+          label: 'Edit Program',
+          icon: 'fas fa-edit'
+        }
+      ];
+    }
+  }
+
   constructor(
     private fb: FormBuilder,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private programService: ProgramService,
+    private router: Router,
+    private toastr: ToastrService,
+    private adapter: AdapterService,
+    private route: ActivatedRoute,
+    private exerciseService: ExerciseService
   ) {
     this.programForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
@@ -61,7 +91,22 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
     });
   }
 
+  editMode = false;
+  programId: string | null = null;
+
   ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.editMode = true;
+        this.programId = id;
+        this.updateBreadcrumbForEdit();
+        this.loadProgramForEdit(id);
+      } else {
+        this.editMode = false;
+        this.updateBreadcrumbForEdit();
+      }
+    });
     this.initializeFormValidation();
   }
 
@@ -86,6 +131,49 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
     this.validateStep1();
   }
 
+  loadProgramForEdit(id: string): void {
+    this.stepLoading = true;
+    this.programService.getProgramById(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (program) => {
+          if (!program) {
+            this.toastr.error('Program not found');
+            this.router.navigate(['/programs']);
+            return;
+          }
+          this.programForm.patchValue({
+            name: program.name,
+            description: program.description,
+            targetMuscleGroups: program.targetMuscleGroups || [],
+            tags: program.tags || []
+          });
+          // Hydrate exercises with full data for images
+          const exercises = program.exercises || [];
+          const exerciseIds = exercises.map((ex: any) => ex.exerciseId || ex.id);
+          if (exerciseIds.length > 0) {
+            forkJoin(exerciseIds.map(id => this.exerciseService.getExerciseById(id))).pipe(takeUntil(this.destroy$)).subscribe((fullExercises) => {
+              const fullExercisesArr = fullExercises as any[];
+              this.selectedExercises = fullExercisesArr.map((fullEx: any, i: number) => ({ ...fullEx, ...exercises[i] }));
+              this.configuredExercises = this.selectedExercises.map(ex => ({ ...ex }));
+              this.step1Valid = this.programForm.valid;
+              this.step2Valid = this.selectedExercises.length > 0;
+              this.step3Valid = this.configuredExercises.length > 0;
+              this.stepLoading = false;
+            });
+          } else {
+            this.selectedExercises = [];
+            this.configuredExercises = [];
+            this.stepLoading = false;
+          }
+        },
+        error: (error) => {
+          this.toastr.error('Failed to load program');
+          this.router.navigate(['/programs']);
+          this.stepLoading = false;
+        }
+      });
+  }
 
 
   onExercisesSelected(exercises: any[]) {
@@ -101,7 +189,7 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
     }
   }
 
-  onExercisesConfigured(exercises: ProgramExerciseFormData[]) {
+  onExercisesConfigured(exercises: any[]) {
     this.configuredExercises = exercises;
   }
 
@@ -201,6 +289,7 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Remove step4Valid and update canProceedToNextStep to always return true for step 4 if previous steps are valid
   canProceedToNextStep(): boolean {
     switch (this.currentStep) {
       case 1:
@@ -210,7 +299,7 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
       case 3:
         return this.step3Valid;
       case 4:
-        return this.step4Valid;
+        return this.step1Valid && this.step2Valid && this.step3Valid;
       default:
         return false;
     }
@@ -242,38 +331,56 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
 
 
   createProgram() {
-    if (this.programForm.valid && this.configuredExercises.length > 0) {
-      this.loadingService.showForFormSubmission('Creating your program...');
-      this.creatingProgram = true;
-      
-      const programData: ProgramFormData = {
-        ...this.programForm.value,
-        exercises: this.configuredExercises
-      };
-      
-      console.log('Creating program:', programData);
-      // TODO: Send to backend service
-      
-      // Simulate API call
-      setTimeout(() => {
-        this.creatingProgram = false;
-        this.loadingService.hide();
-        // TODO: Navigate to program detail page or show success message
-        alert('Program created successfully! (Check console for details)');
-      }, 2000);
+    if (!this.step1Valid || !this.step2Valid || !this.step3Valid) {
+      this.toastr.error('Please complete all steps before saving the program.');
+      return;
+    }
+    this.creatingProgram = true;
+    const formValue = this.programForm.value;
+    const payload = {
+      name: formValue.name,
+      description: formValue.description,
+      targetMuscleGroups: formValue.targetMuscleGroups,
+      tags: formValue.tags,
+      exercises: this.configuredExercises.map((ex, index) => ({
+        exerciseId: ex.exerciseId || ex.id || this.selectedExercises[index]?.exerciseId || this.selectedExercises[index]?.id,
+        name: ex.name,
+        sets: ex.sets,
+        reps: ex.reps,
+        rest: ex.rest,
+        weight: ex.weight,
+        notes: ex.notes,
+        order: ex.order
+      }))
+    };
+    if (this.editMode && this.programId) {
+      this.programService.updateProgram(this.programId, payload)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.creatingProgram = false;
+            this.toastr.success('Program updated successfully');
+            this.router.navigate(['/programs']);
+          },
+          error: (error) => {
+            this.creatingProgram = false;
+            this.toastr.error('Failed to update program');
+          }
+        });
     } else {
-      // Mark all forms as touched to show validation errors
-      this.programForm.markAllAsTouched();
-      this.updateFormErrors();
-      
-      // Navigate to the first step with errors
-      if (!this.step1Valid) {
-        this.currentStep = 1;
-      } else if (!this.step2Valid) {
-        this.currentStep = 2;
-      } else if (!this.step3Valid) {
-        this.currentStep = 3;
-      }
+      this.programService.createProgram(payload)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.creatingProgram = false;
+            this.toastr.success('Program created successfully');
+            this.router.navigate(['/programs']);
+          },
+          error: (error) => {
+            this.creatingProgram = false;
+            this.toastr.error('Failed to create program');
+          }
+        });
     }
   }
 
@@ -285,14 +392,33 @@ export class ProgramWizardComponent implements OnInit, OnDestroy {
       tags: this.programForm.get('tags')?.value,
       exerciseCount: this.configuredExercises.length,
       totalSets: this.configuredExercises.reduce((total, exercise) => total + (exercise.sets || 0), 0),
-      totalDuration: this.configuredExercises.reduce((total, exercise) => total + (exercise.restTime || 0), 0)
+      totalRestTime: this.configuredExercises.reduce((total, exercise) => total + ((exercise.sets || 0) * (exercise.restTime || 0)), 0)
     };
   }
 
-  getFormData(): ProgramFormData {
+  getFormData(): any {
     return {
       ...this.programForm.value,
       exercises: this.configuredExercises
     };
+  }
+
+  private generateId(): string {
+    return Math.random().toString(36).substr(2, 9);
+  }
+  private calculateEstimatedDuration(exercises: any[]): number {
+    return exercises.reduce((total, exercise) => {
+      const exerciseTime = (exercise.sets * exercise.reps * 3) + (exercise.sets * exercise.restTime);
+      return total + exerciseTime;
+    }, 0) / 60; // Convert to minutes
+  }
+  private extractEquipment(exercises: any[]): string[] {
+    const equipment = new Set<string>();
+    exercises.forEach(exercise => {
+      if (exercise.equipment) {
+        equipment.add(exercise.equipment);
+      }
+    });
+    return Array.from(equipment);
   }
 }

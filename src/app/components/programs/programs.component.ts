@@ -4,9 +4,7 @@ import { ProgramService } from '../../services/program.service';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
-import { Program, ProgramDifficulty } from '../../models/program.interface';
-import { ConfirmDialogData } from '../confirm-dialog/confirm-dialog.component';
-import { DuplicateProgramData } from '../duplicate-program-dialog/duplicate-program-dialog.component';
+import { AdapterService } from '../../services/adapter.service';
 
 @Component({
   selector: 'app-programs',
@@ -14,19 +12,19 @@ import { DuplicateProgramData } from '../duplicate-program-dialog/duplicate-prog
   styleUrls: ['./programs.component.scss']
 })
 export class ProgramsComponent implements OnInit, OnDestroy {
-  programs: Program[] = [];
-  filteredPrograms: Program[] = [];
+  programs: any[] = [];
+  filteredPrograms: any[] = [];
   searchTerm = '';
   selectedCategory = 'all';
-  selectedDifficulty = 'all';
   loading = false;
+  showBreadcrumbs = true;
 
   categories = ['all', 'strength', 'cardio', 'flexibility', 'hiit', 'yoga', 'mixed'];
   difficulties = ['all', 'beginner', 'intermediate', 'advanced'];
 
   // Confirmation dialog properties
   showDeleteDialog = false;
-  deleteDialogData: ConfirmDialogData = {
+  deleteDialogData: any = {
     title: 'Delete Program',
     message: 'Are you sure you want to delete this program? This action cannot be undone.',
     confirmText: 'Delete',
@@ -34,11 +32,11 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     type: 'danger',
     showIcon: true
   };
-  programToDelete: Program | null = null;
+  programToDelete: any | null = null;
 
   // Duplicate dialog properties
   showDuplicateDialog = false;
-  duplicateDialogData: DuplicateProgramData | null = null;
+  duplicateDialogData: any | null = null;
 
   private destroy$ = new Subject<void>();
 
@@ -46,10 +44,13 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     public gs: GeneralService,
     private programService: ProgramService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private adapter: AdapterService
   ) { }
 
   ngOnInit(): void {
+    // Hide breadcrumbs if on the root/home page
+    this.showBreadcrumbs = this.router.url !== '/';
     this.loadPrograms();
   }
 
@@ -64,7 +65,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (programs) => {
-          this.programs = programs;
+          this.programs = this.adapter.toLegacyProgramArray(programs);
           this.filteredPrograms = [...this.programs];
           this.loading = false;
         },
@@ -81,10 +82,8 @@ export class ProgramsComponent implements OnInit, OnDestroy {
       const matchesSearch = program.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
                            program.description?.toLowerCase().includes(this.searchTerm.toLowerCase());
       const matchesCategory = this.selectedCategory === 'all' || 
-                             program.metadata?.tags?.some((tag: string) => tag === this.selectedCategory);
-      const matchesDifficulty = this.selectedDifficulty === 'all' || program.difficulty === this.selectedDifficulty;
-      
-      return matchesSearch && matchesCategory && matchesDifficulty;
+                             program.tags?.some((tag: string) => tag === this.selectedCategory);
+      return matchesSearch && matchesCategory;
     });
   }
 
@@ -96,24 +95,20 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     this.filterPrograms();
   }
 
-  onDifficultyChange(): void {
-    this.filterPrograms();
-  }
-
   createNewProgram(): void {
     this.router.navigate(['/program-wizard']);
   }
 
-  viewProgram(program: Program): void {
-    // Navigate to program detail view
-    this.router.navigate(['/programs', program.id]);
+  viewProgram(program: any): void {
+    console.log('Navigating to program detail:', program._id);
+    this.router.navigate(['/program-detail', program._id]);
   }
 
-  editProgram(program: Program): void {
-    this.router.navigate(['/program-edit', program.id]);
+  editProgram(program: any): void {
+    this.router.navigate(['/program-wizard', program._id]);
   }
 
-  duplicateProgram(program: Program): void {
+  duplicateProgram(program: any): void {
     this.duplicateDialogData = {
       program: program,
       suggestedName: `${program.name} (Copy)`
@@ -124,7 +119,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
   onConfirmDuplicate(programName: string): void {
     if (!this.duplicateDialogData?.program) return;
 
-    this.programService.duplicateProgram(this.duplicateDialogData.program.id, programName)
+    this.programService.duplicateProgram(this.adapter.getProgramId(this.duplicateDialogData.program), programName)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (duplicatedProgram) => {
@@ -148,7 +143,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     this.duplicateDialogData = null;
   }
 
-  deleteProgram(program: Program): void {
+  deleteProgram(program: any): void {
     this.programToDelete = program;
     this.deleteDialogData.message = `Are you sure you want to delete "${program.name}"? This action cannot be undone.`;
     this.showDeleteDialog = true;
@@ -157,7 +152,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
   onConfirmDelete(): void {
     if (!this.programToDelete) return;
 
-    this.programService.deleteProgram(this.programToDelete.id)
+    this.programService.deleteProgram(this.programToDelete._id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -181,35 +176,20 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     this.programToDelete = null;
   }
 
-  getProgramStats(program: Program): any {
+  getProgramStats(program: any): any {
     return {
       exercises: program.exercises?.length || 0,
-      estimatedDuration: program.metadata?.estimatedDuration || 0,
-      difficulty: program.difficulty || 'beginner'
+      estimatedDuration: program.estimatedDuration || 0,
     };
   }
 
-  getDifficultyColor(difficulty: ProgramDifficulty): string {
-    switch (difficulty) {
-      case 'beginner': return '#28a745';
-      case 'intermediate': return '#ffc107';
-      case 'advanced': return '#dc3545';
-      default: return '#6c757d';
-    }
+  getDifficultyColor(difficulty: string): string {
+    // Remove this function if not used elsewhere
+    return '#6c757d';
   }
 
-  getCategoryIcon(program: Program): string {
-    const tags = program.metadata?.tags || [];
-    if (tags.includes('strength')) return 'fas fa-dumbbell';
-    if (tags.includes('cardio')) return 'fas fa-heartbeat';
-    if (tags.includes('flexibility')) return 'fas fa-child';
-    if (tags.includes('hiit')) return 'fas fa-fire';
-    if (tags.includes('yoga')) return 'fas fa-pray';
-    return 'fas fa-dumbbell';
-  }
-
-  getProgramCategory(program: Program): string {
-    const tags = program.metadata?.tags || [];
+  getProgramCategory(program: any): string {
+    const tags = program.tags || [];
     if (tags.includes('strength')) return 'strength';
     if (tags.includes('cardio')) return 'cardio';
     if (tags.includes('flexibility')) return 'flexibility';

@@ -17,19 +17,7 @@
       <h1 class="profile-name">{{ profileData.name || 'Your Name' }}</h1>
       <p class="profile-email">{{ profileData.email }}</p>
       <div class="profile-badges">
-        <div class="profile-badge" [ngClass]="'badge-' + getFitnessLevelColor(profileData.fitnessLevel)">
-          {{ profileData.fitnessLevel }} level
-        </div>
-        <div class="achievement-summary">
-          <div class="achievement-count">
-            <i class="fas fa-trophy"></i>
-            <span>{{ getEarnedAchievementsCount() }}/{{ achievements.length }}</span>
-          </div>
-          <div class="badge-count">
-            <i class="fas fa-medal"></i>
-            <span>{{ getEarnedBadgesCount() }}/{{ userBadges.length }}</span>
-          </div>
-        </div>
+        <!-- Removed achievement summary and badge count -->
       </div>
     </div>
     
@@ -77,7 +65,8 @@
           Statistics
         </button>
       </li>
-      <li class="nav-item" role="presentation">
+      <!-- Removed Achievements tab -->
+      <!-- <li class="nav-item" role="presentation">
         <button 
           class="nav-link" 
           [class.active]="activeTab === 'achievements'"
@@ -86,7 +75,7 @@
           <i class="fas fa-trophy me-2"></i>
           Achievements
         </button>
-      </li>
+      </li> -->
       <li class="nav-item" role="presentation">
         <button 
           class="nav-link" 

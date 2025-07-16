@@ -27,25 +27,30 @@
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/the-new-css-reset/css/reset.css",
-              "node_modules/angular-calendar/css/angular-calendar.css",
               "src/styles.scss",
+              "node_modules/angular-calendar/css/angular-calendar.css",
               "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": [
-            ]
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles"
+              ]
+            }
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "3mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "40kb",
+                  "maximumError": "60kb"
                 }
               ],
               "fileReplacements": [

@@ -2,14 +2,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { ProgramsComponent } from './components/programs/programs.component';
-import { AnalyicComponent } from './components/analyic/analyic.component'; // Adjust path if needed
 import { LoginComponent } from './components/login/login.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ProgramWizardComponent } from './components/program-wizard/program-wizard/program-wizard.component';
-import { ProgramEditComponent } from './components/program-edit/program-edit.component';
-import { ProgressEntryComponent } from './components/progress-entry/progress-entry.component';
-import { ProgressDashboardComponent } from './components/progress-dashboard/progress-dashboard.component';
 import { AuthGuard } from './auth.guard';
+import { ProgramDetailComponent } from './components/program-detail/program-detail.component';
+import { LogComponent } from './components/log/log.component';
+import { StartWorkoutComponent } from './components/start-workout/start-workout.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -29,28 +28,28 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'program-edit/:id',
-    component: ProgramEditComponent,
+    path: 'program-wizard/:id',
+    component: ProgramWizardComponent,
     canActivate: [AuthGuard],
   },
   {
-    path: 'progress-entry',
-    component: ProgressEntryComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'progress-dashboard',
-    component: ProgressDashboardComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'analytic',
-    component: AnalyicComponent,
+    path: 'program-detail/:id',
+    component: ProgramDetailComponent,
     canActivate: [AuthGuard],
   },
   {
     path: 'profile',
     component: ProfileComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'logs',
+    component: LogComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'start-workout',
+    component: StartWorkoutComponent,
     canActivate: [AuthGuard],
   },
   { path: '**', redirectTo: '' },

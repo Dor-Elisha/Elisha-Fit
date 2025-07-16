@@ -36,35 +36,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
       badge: null
     },
     {
-      label: 'Create Program',
-      icon: 'fas fa-plus-circle',
-      route: '/program-wizard',
-      badge: null
-    },
-    {
-      label: 'Log Progress',
-      icon: 'fas fa-chart-line',
-      route: '/progress-entry',
-      badge: null
-    },
-    {
-      label: 'Progress Dashboard',
-      icon: 'fas fa-tachometer-alt',
-      route: '/progress-dashboard',
-      badge: null
-    },
-    {
-      label: 'Goals',
-      icon: 'fas fa-bullseye',
-      route: '/goals',
-      badge: null
-    },
-    {
-      label: 'Analytics',
-      icon: 'fas fa-chart-bar',
-      route: '/analytic',
+      label: 'Workout Logs',
+      icon: 'fas fa-clipboard-list',
+      route: '/logs',
       badge: null
     }
+    // Progress-related items remain removed
   ];
 
   private destroy$ = new Subject<void>();

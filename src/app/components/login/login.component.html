@@ -9,7 +9,7 @@
     <!-- Logo and Brand -->
     <div class="auth-header">
       <div class="brand-logo">
-        <i class="fas fa-dumbbell"></i>
+        <img src="assets/logo.png" alt="Elisha-Fit Logo" style="width: 60px; height: 60px; object-fit: contain;" />
       </div>
       <h1 class="brand-name">Elisha-Fit</h1>
       <p class="brand-tagline">Transform your fitness journey</p>
@@ -19,10 +19,8 @@
     <div class="auth-card">
       <!-- Card Header -->
       <div class="card-header">
-        <h2 class="auth-title">{{ isSignup ? 'Create Account' : 'Welcome Back' }}</h2>
-        <p class="auth-subtitle">
-          {{ isSignup ? 'Join us and start your fitness journey today' : 'Sign in to continue your progress' }}
-        </p>
+        <h2 class="auth-title">{{ isSignup ? '' : '' }}</h2>
+        <p class="auth-subtitle"></p>
       </div>
 
       <!-- Error/Success Messages -->

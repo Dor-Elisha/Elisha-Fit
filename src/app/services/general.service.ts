@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
 
-export interface SavedProgram {
-  name: string;
-  exercises: any[];
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -14,7 +9,7 @@ export class GeneralService {
 
   constructor() {}
 
-  saveProgram (program: SavedProgram) {
+  saveProgram (program: any) {
     this.savedPrograms.push(program);
     this.createProgramPopupShow = false;
   }

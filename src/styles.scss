@@ -541,3 +541,153 @@ a {
     text-decoration: underline !important;
   }
 }
+
+// === Redesigned Calendar Styles (global) ===
+::ng-deep mwl-calendar-month-view {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  font-family: inherit;
+  font-size: 16px;
+  width: 100%;
+  min-width: 320px;
+
+  .cal-month-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background: transparent;
+
+    .cal-header {
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #222;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.5rem;
+      background: transparent;
+    }
+
+    .cal-days {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      border: none;
+      font-weight: 600;
+      color: #444;
+      background: transparent;
+
+      .ng-star-inserted {
+        flex-grow: 1;
+        border: none;
+
+        .cal-cell-row {
+          height: 100%;
+          border: none;
+          background: transparent;
+
+          .cal-cell {
+            border-radius: 12px;
+            transition: box-shadow 0.18s, background 0.18s;
+            box-shadow: none;
+          }
+        }
+      }
+
+      .cal-day-cell {
+        border: none;
+        background: #fff;
+        text-align: center;
+        vertical-align: middle;
+        min-height: 48px;
+        cursor: pointer;
+        border-radius: 12px;
+        transition: background 0.18s, box-shadow 0.18s;
+        box-shadow: none;
+        position: relative;
+
+        &:hover, &:focus {
+          background: #eaf3ff;
+          box-shadow: 0 2px 8px rgba(0,123,255,0.07);
+        }
+
+        &.cal-today {
+          background: #007bff1a;
+          font-weight: bold;
+          border-radius: 12px;
+          box-shadow: 0 0 0 2px #007bff;
+
+          .cal-day-number {
+            color: #007bff !important;
+            font-weight: 700;
+          }
+        }
+
+        &.cal-weekend .cal-day-number {
+          color: #e55353;
+        }
+
+        &.cal-out-month {
+          color: #ccc;
+          background: #f8f9fa;
+        }
+      }
+
+      .cal-cell-top {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: unset;
+        background: transparent;
+
+        .cal-day-number {
+          color: #222;
+          opacity: 1;
+        }
+      }
+
+      .cal-day-number {
+        font-size: 1.05rem !important;
+        font-weight: 600;
+        margin: 0 !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px;
+        transition: background-color 0.2s, color 0.2s;
+        width: 2.2em;
+        height: 2.2em;
+        line-height: 2.2em;
+        background: transparent;
+        color: #222;
+        user-select: none;
+      }
+    }
+
+    .cal-events {
+      display: none;
+    }
+  }
+}
+
+// Highlight for selected days (e.g., via .scheduled-day)
+::ng-deep .scheduled-day.cal-day-cell {
+  background: #eaf3ff !important;
+  border: 2px solid #007bff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.07) !important;
+}
+
+.custom-week-day.active {
+  background: linear-gradient(135deg, var(--fitness-primary) 0%, var(--fitness-secondary) 100%);
+  color: #fff !important;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+  border: 2px solid #667eea;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}

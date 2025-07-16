@@ -1,7 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { GeneralService } from '../../services/general.service';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { GeneralService } from '../../services/general.service';
+import { GoalService } from '../../services/goal.service';
+import { ProgramService } from '../../services/program.service';
+import { UserStatsService, StatsCard, QuickAction, RecentActivity, WeeklyProgressData } from '../../services/user-stats.service';
 import * as _ from 'lodash';
 
 @Component({
@@ -12,129 +15,26 @@ import * as _ from 'lodash';
 export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     public gs: GeneralService,
-    private router: Router
+    private router: Router,
+    private goalService: GoalService,
+    private programService: ProgramService,
+    private userStatsService: UserStatsService
   ) { }
 
-  activeTab: 'overview' | 'calendar' | 'programs' = 'overview';
+  activeTab: 'overview' | 'calendar' | 'programs' = 'programs';
   today = new Date();
-  workoutsThisWeek = 3;
-  activeProgram = 1;
-  totalSessions = 24;
-  caloriesBurned = 1543;
-  weeklyGoal = 5;
-  currentStreak = 7;
+  
+  // Data from services
+  statsCards: StatsCard[] = [];
+  quickActions: QuickAction[] = [];
+  recentActivity: RecentActivity[] = [];
+  weeklyProgress: WeeklyProgressData[] = [];
+  
   loading = false;
+  error: string | null = null;
+  hasDataError = false; // Track if there's an actual API error vs. just empty data
+  dataState: 'loading' | 'loaded' | 'error' | 'empty' = 'loading'; // Track the overall data state
   _ = _;
-
-  // Enhanced statistics cards
-  statsCards = [
-    {
-      icon: 'fas fa-calendar-week',
-      value: this.workoutsThisWeek,
-      label: 'Workouts This Week',
-      sublabel: `${this.workoutsThisWeek}/${this.weeklyGoal} goal`,
-      color: 'primary',
-      trend: '+2 from last week',
-      trendDirection: 'up'
-    },
-    {
-      icon: 'fas fa-fire',
-      value: this.caloriesBurned,
-      label: 'Calories Burned',
-      sublabel: 'This week',
-      color: 'warning',
-      trend: '+12% from last week',
-      trendDirection: 'up'
-    },
-    {
-      icon: 'fas fa-bullseye',
-      value: this.currentStreak,
-      label: 'Current Streak',
-      sublabel: 'Days in a row',
-      color: 'success',
-      trend: 'Personal best!',
-      trendDirection: 'up'
-    },
-    {
-      icon: 'fas fa-dumbbell',
-      value: this.totalSessions,
-      label: 'Total Sessions',
-      sublabel: 'All time',
-      color: 'info',
-      trend: '+3 this month',
-      trendDirection: 'up'
-    }
-  ];
-
-  // Quick action buttons
-  quickActions = [
-    {
-      icon: 'fas fa-plus-circle',
-      label: 'Create Program',
-      description: 'Design a new workout program',
-      route: '/program-wizard',
-      color: 'fitness'
-    },
-    {
-      icon: 'fas fa-dumbbell',
-      label: 'Log Workout',
-      description: 'Record today\'s workout',
-      route: '/progress-entry',
-      color: 'primary'
-    },
-    {
-      icon: 'fas fa-chart-line',
-      label: 'View Progress',
-      description: 'Check your fitness journey',
-      route: '/progress-dashboard',
-      color: 'success'
-    },
-    {
-      icon: 'fas fa-calendar-plus',
-      label: 'Schedule Workout',
-      description: 'Plan your next session',
-      route: '/calendar',
-      color: 'info'
-    }
-  ];
-
-  // Recent activity
-  recentActivity = [
-    {
-      type: 'workout',
-      title: 'Upper Body Strength',
-      time: '2 hours ago',
-      icon: 'fas fa-dumbbell',
-      color: 'primary'
-    },
-    {
-      type: 'program',
-      title: 'Created "Summer Shred" program',
-      time: '1 day ago',
-      icon: 'fas fa-plus-circle',
-      color: 'success'
-    },
-    {
-      type: 'goal',
-      title: 'Achieved 5-day streak!',
-      time: '2 days ago',
-      icon: 'fas fa-trophy',
-      color: 'warning'
-    }
-  ];
-
-  // Weekly progress data
-  weeklyProgress = [
-    { day: 'Mon', workouts: 1, calories: 320 },
-    { day: 'Tue', workouts: 0, calories: 0 },
-    { day: 'Wed', workouts: 1, calories: 280 },
-    { day: 'Thu', workouts: 1, calories: 450 },
-    { day: 'Fri', workouts: 0, calories: 0 },
-    { day: 'Sat', workouts: 1, calories: 380 },
-    { day: 'Sun', workouts: 0, calories: 0 }
-  ];
-
-
 
   private destroy$ = new Subject<void>();
 
@@ -149,21 +49,106 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   loadDashboardData(): void {
     this.loading = true;
-    // TODO: Load real data from services
-    setTimeout(() => {
-      this.updateStatsCards();
-      this.loading = false;
-    }, 1000); // Simulate loading time
+    this.error = null;
+    this.hasDataError = false;
+    this.dataState = 'loading';
+    
+    // Load dashboard data from service
+    this.userStatsService.getDashboardStats()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          // Safely initialize data arrays with robust null/undefined checking
+          this.statsCards = Array.isArray(data?.statsCards) ? data.statsCards : [];
+          this.quickActions = Array.isArray(data?.quickActions) ? data.quickActions : [];
+          this.recentActivity = Array.isArray(data?.recentActivity) ? data.recentActivity : [];
+          this.weeklyProgress = Array.isArray(data?.weeklyProgress) ? data.weeklyProgress : [];
+          
+          // Ensure weeklyProgress has proper structure for each day
+          if (this.weeklyProgress.length === 0) {
+            // Initialize with empty week structure if no data
+            this.weeklyProgress = [
+              { day: 'Mon', workouts: 0, calories: 0 },
+              { day: 'Tue', workouts: 0, calories: 0 },
+              { day: 'Wed', workouts: 0, calories: 0 },
+              { day: 'Thu', workouts: 0, calories: 0 },
+              { day: 'Fri', workouts: 0, calories: 0 },
+              { day: 'Sat', workouts: 0, calories: 0 },
+              { day: 'Sun', workouts: 0, calories: 0 }
+            ];
+          }
+          
+          this.loading = false;
+          
+          // Determine if we have any meaningful data
+          const hasAnyData = this.statsCards.length > 0 || 
+                           this.recentActivity.length > 0 || 
+                           this.weeklyProgress.some(day => day.workouts > 0);
+          
+          this.dataState = hasAnyData ? 'loaded' : 'empty';
+        },
+        error: (error) => {
+          console.error('Error loading dashboard data:', error);
+          
+          // Determine the type of error and set appropriate error message
+          let errorMessage = 'Unable to load your dashboard data. Please try refreshing the page.';
+          
+          if (error.status === 0) {
+            errorMessage = 'Connection error: Unable to reach the server. Please check your internet connection and try again.';
+          } else if (error.status === 401) {
+            errorMessage = 'Session expired: Please log in again to continue.';
+          } else if (error.status === 403) {
+            errorMessage = 'Access denied: You don\'t have permission to view this dashboard. Please contact support if this is unexpected.';
+          } else if (error.status === 404) {
+            errorMessage = 'Dashboard not found: The requested dashboard data could not be located. Please try refreshing the page.';
+          } else if (error.status >= 500) {
+            errorMessage = 'Server error: Our servers are experiencing issues. Please try again in a few minutes.';
+          } else if (error.name === 'TimeoutError') {
+            errorMessage = 'Request timeout: The server is taking too long to respond. Please check your connection and try again.';
+          } else if (error.status === 429) {
+            errorMessage = 'Too many requests: Please wait a moment before trying again.';
+          } else if (error.status >= 400 && error.status < 500) {
+            errorMessage = 'Request error: There was an issue with your request. Please try refreshing the page.';
+          }
+          
+          // Only set error state for actual API failures, not empty data
+          this.error = errorMessage;
+          this.hasDataError = true;
+          this.loading = false;
+          this.dataState = 'error';
+          
+          // Ensure quick actions are available even during errors for navigation
+          if (!this.quickActions || this.quickActions.length === 0) {
+            this.quickActions = [
+              {
+                label: 'Log Workout',
+                description: 'Record your fitness activity',
+                icon: 'fas fa-plus',
+                color: 'primary',
+                route: '/progress-entry'
+              },
+              {
+                label: 'View Programs',
+                description: 'Browse workout programs',
+                icon: 'fas fa-dumbbell',
+                color: 'secondary',
+                route: '/programs'
+              },
+              {
+                label: 'Set Goals',
+                description: 'Create fitness goals',
+                icon: 'fas fa-bullseye',
+                color: 'success',
+                route: '/goals'
+              }
+            ];
+          }
+        }
+      });
   }
 
-  updateStatsCards(): void {
-    // Update card values with real data
-    this.statsCards[0].value = this.workoutsThisWeek;
-    this.statsCards[0].sublabel = `${this.workoutsThisWeek}/${this.weeklyGoal} goal`;
-    
-    this.statsCards[1].value = this.caloriesBurned;
-    this.statsCards[2].value = this.currentStreak;
-    this.statsCards[3].value = this.totalSessions;
+  refreshData(): void {
+    this.loadDashboardData();
   }
 
   navigateToRoute(route: string): void {
@@ -202,5 +187,15 @@ export class HomeComponent implements OnInit, OnDestroy {
     return direction === 'up' ? 'text-success' : 'text-danger';
   }
 
+  hasWeeklyProgress(): boolean {
+    return this.weeklyProgress.some(day => day.workouts > 0);
+  }
 
+  hasRecentActivity(): boolean {
+    return this.recentActivity.length > 0;
+  }
+
+  hasSavedPrograms(): boolean {
+    return this.gs.savedPrograms && this.gs.savedPrograms.length > 0;
+  }
 }
