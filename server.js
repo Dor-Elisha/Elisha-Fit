@@ -22,7 +22,7 @@ app.get('/health', (req, res) => {
 });
 
 // Simple API placeholder
-app.use('/api/v1/*', (req, res) => {
+app.use('/api/v1', (req, res) => {
   res.status(503).json({ 
     error: 'Backend services temporarily unavailable',
     message: 'API integration in progress'
