@@ -1,7 +1,7 @@
 {
-  "name": "elisha-fit",
+  "name": "Elisha-fit",
   "description": "Elisha-Fit - Premium Fitness Tracking Application",
-  "repository": "https://github.com/yourusername/elisha-fit",
+  "repository": "https://github.com/Dor-Elisha/elisha-fit",
   "logo": "https://node-js-sample.herokuapp.com/node.png",
   "keywords": ["fitness", "workout", "tracking", "angular", "nodejs"],
   "env": {
