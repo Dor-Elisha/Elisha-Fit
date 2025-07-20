@@ -10,7 +10,7 @@ const helmet_1 = __importDefault(require("helmet"));
 const morgan_1 = __importDefault(require("morgan"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const auth_1 = __importDefault(require("./routes/auth"));
-const programs_1 = __importDefault(require("./routes/programs"));
+const workouts_1 = __importDefault(require("./routes/workouts"));
 const exercises_1 = __importDefault(require("./routes/exercises"));
 const user_stats_1 = __importDefault(require("./routes/user-stats"));
 const user_1 = __importDefault(require("./routes/user"));
@@ -84,7 +84,7 @@ class App {
             });
         });
         this.app.use('/api/v1/auth', rateLimiter_1.authLimiter, auth_1.default);
-        this.app.use('/api/v1/workouts', rateLimiter_1.apiLimiter, programs_1.default);
+        this.app.use('/api/v1/workouts', rateLimiter_1.apiLimiter, workouts_1.default);
         this.app.use('/api/v1/exercises', rateLimiter_1.exerciseLimiter, exercises_1.default);
         this.app.use('/api/v1/user-stats', rateLimiter_1.apiLimiter, user_stats_1.default);
         this.app.use('/api/v1/user', rateLimiter_1.apiLimiter, user_1.default);

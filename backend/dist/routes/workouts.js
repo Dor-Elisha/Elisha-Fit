@@ -124,4 +124,4 @@ router.post('/', validation_1.validateWorkout, createWorkout);
 router.put('/:id', validation_1.validateWorkout, updateWorkout);
 router.delete('/:id', deleteWorkout);
 exports.default = router;
-//# sourceMappingURL=programs.js.map
+//# sourceMappingURL=workouts.js.map

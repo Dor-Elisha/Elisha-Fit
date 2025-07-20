@@ -1,15 +1,10 @@
 export declare const config: {
-    port: number;
-    nodeEnv: string;
-    frontendUrl: string;
-    mongodbUri: string;
-    mongodbUriProd: string;
+    port: string | number;
+    mongoUri: string;
     jwtSecret: string;
-    jwtExpiresIn: string;
+    nodeEnv: string;
     bcryptRounds: number;
-    rateLimitWindowMs: number;
-    rateLimitMaxRequests: number;
-    logLevel: string;
+    jwtExpiresIn: string;
 };
 export default config;
 //# sourceMappingURL=config.d.ts.map

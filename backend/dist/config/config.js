@@ -14,17 +14,12 @@ function getEnvVar(key, required = true) {
     return value || '';
 }
 exports.config = {
-    port: parseInt(process.env.PORT || '8080', 10),
+    port: process.env.PORT || 8080,
+    mongoUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/elisha-fit',
+    jwtSecret: process.env.JWT_SECRET || 'your-secret-key',
     nodeEnv: process.env.NODE_ENV || 'development',
-    frontendUrl: getEnvVar('FRONTEND_URL'),
-    mongodbUri: getEnvVar('MONGODB_URI'),
-    mongodbUriProd: getEnvVar('MONGODB_URI_PROD', false),
-    jwtSecret: getEnvVar('JWT_SECRET'),
-    jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
-    bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS || '12', 10),
-    rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),
-    rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
-    logLevel: process.env.LOG_LEVEL || 'info',
+    bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS || '12'),
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d'
 };
 exports.default = exports.config;
 //# sourceMappingURL=config.js.map

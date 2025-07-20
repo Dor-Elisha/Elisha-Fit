@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Serve static files from the Angular build
-app.use(express.static(path.join(__dirname, 'dist/angular-spa')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // Proxy API requests to the backend
 app.use('/api', createProxyMiddleware({
@@ -19,7 +19,7 @@ app.use('/api', createProxyMiddleware({
 
 // Handle Angular routing - serve index.html for all non-API routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/angular-spa/index.html'));
+  res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
 
 app.listen(PORT, () => {

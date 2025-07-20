@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
-import workoutsRouter from './routes/programs';
+import workoutsRouter from './routes/workouts';
 import exercisesRouter from './routes/exercises';
 import userStatsRouter from './routes/user-stats';
 import userRouter from './routes/user';
