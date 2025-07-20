@@ -4,18 +4,21 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === 'production';
 
 // Serve static files from the Angular build
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// Proxy API requests to the backend
-app.use('/api', createProxyMiddleware({
-  target: process.env.BACKEND_URL || 'http://localhost:8080',
-  changeOrigin: true,
-  pathRewrite: {
-    '^/api': '/api/v1'
-  }
-}));
+// Proxy API requests to the backend (only in development)
+if (!isProduction) {
+  app.use('/api', createProxyMiddleware({
+    target: process.env.BACKEND_URL || 'http://localhost:8080',
+    changeOrigin: true,
+    pathRewrite: {
+      '^/api': '/api/v1'
+    }
+  }));
+}
 
 // Handle Angular routing - serve index.html for all non-API routes
 app.get('*', (req, res) => {
