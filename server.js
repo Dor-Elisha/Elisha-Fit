@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const cors = require('cors');
 const helmet = require('helmet');
 
@@ -48,7 +47,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Simple API endpoints for production (placeholder)
+// API endpoints for production (placeholder)
 if (isProduction) {
   app.use('/api/v1/*', (req, res) => {
     res.status(503).json({ 
@@ -57,14 +56,13 @@ if (isProduction) {
     });
   });
 } else {
-  // Proxy API requests to the backend (only in development)
-  app.use('/api', createProxyMiddleware({
-    target: process.env.BACKEND_URL || 'http://localhost:8080',
-    changeOrigin: true,
-    pathRewrite: {
-      '^/api': '/api/v1'
-    }
-  }));
+  // In development, we'll need to run the backend separately
+  app.use('/api/v1/*', (req, res) => {
+    res.status(503).json({ 
+      error: 'Backend not available in development mode',
+      message: 'Please start the backend server separately'
+    });
+  });
 }
 
 // Handle Angular routing - serve index.html for all non-API routes
@@ -75,5 +73,5 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Elisha-Fit app running on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 Mode: ${isProduction ? 'Production (simplified)' : 'Development (proxied)'}`);
+  console.log(`🌐 Mode: ${isProduction ? 'Production (frontend only)' : 'Development (frontend only)'}`);
 }); 
