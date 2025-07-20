@@ -1,0 +1,33 @@
+{
+  "name": "elisha-fit",
+  "description": "Elisha-Fit - Premium Fitness Tracking Application",
+  "repository": "https://github.com/yourusername/elisha-fit",
+  "logo": "https://node-js-sample.herokuapp.com/node.png",
+  "keywords": ["fitness", "workout", "tracking", "angular", "nodejs"],
+  "env": {
+    "NODE_ENV": {
+      "description": "Environment setting",
+      "value": "production"
+    },
+    "MONGODB_URI": {
+      "description": "MongoDB connection string",
+      "required": true
+    },
+    "JWT_SECRET": {
+      "description": "Secret key for JWT tokens",
+      "required": true,
+      "generator": "secret"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  }
+} 

@@ -61,6 +61,15 @@ const UserSchema = new mongoose_1.Schema({
         maxlength: [50, 'Name must be at most 50 characters'],
         default: '',
     },
+    logs: [
+        {
+            date: { type: Date, required: true },
+            workoutName: { type: String, required: true },
+            completedAll: { type: Boolean, required: true },
+            summary: { type: String, required: true },
+            workoutId: { type: String, required: false },
+        }
+    ],
 }, {
     timestamps: true,
 });

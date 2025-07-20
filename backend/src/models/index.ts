@@ -1,5 +1,4 @@
 export { User, IUser } from './User';
-export { Program, IProgram } from './Program';
-export { Goal, IGoal } from './Goal';
+export { Workout, IWorkout } from './Workout';
 export { Exercise, IExercise } from './Exercise';
-export * from './ScheduledWorkout'; 
+export { ScheduledWorkout, IScheduledWorkout } from './ScheduledWorkout'; 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ProgramService } from '../../services/program.service';
+import { WorkoutService } from '../../services/workout.service';
 import { Router } from '@angular/router';
 import { AdapterService } from '../../services/adapter.service';
 
@@ -9,24 +9,24 @@ import { AdapterService } from '../../services/adapter.service';
   styleUrls: ['./start-workout.component.scss']
 })
 export class StartWorkoutComponent implements OnInit {
-  programs: any[] = [];
+  workouts: any[] = [];
   loading = false;
 
   constructor(
-    private programService: ProgramService,
+    private programService: WorkoutService,
     private router: Router,
     private adapter: AdapterService
   ) {}
 
   ngOnInit(): void {
-    this.loadPrograms();
+    this.loadWorkouts();
   }
 
-  loadPrograms(): void {
+  loadWorkouts(): void {
     this.loading = true;
-    this.programService.getPrograms().subscribe({
-      next: (programs) => {
-        this.programs = this.adapter.toLegacyProgramArray(programs);
+    this.programService.getWorkouts().subscribe({
+      next: (workouts) => {
+        this.workouts = this.adapter.toLegacyWorkoutArray(workouts);
         this.loading = false;
       },
       error: () => {
@@ -35,19 +35,19 @@ export class StartWorkoutComponent implements OnInit {
     });
   }
 
-  startProgram(program: any): void {
-    this.router.navigate(['/program-detail', program._id], { queryParams: { start: 'true' } });
+  startWorkout(workout: any): void {
+    this.router.navigate(['/workout-detail', workout._id], { queryParams: { start: 'true' } });
   }
 
-  getProgramStats(program: any): any {
+  getWorkoutStats(workout: any): any {
     return {
-      exercises: program.exercises?.length || 0,
-      estimatedDuration: program.estimatedDuration || 0,
+      exercises: workout.exercises?.length || 0,
+      estimatedDuration: workout.estimatedDuration || 0,
     };
   }
 
-  getProgramCategory(program: any): string {
-    const tags = program.tags || [];
+  getWorkoutCategory(workout: any): string {
+    const tags = workout.tags || [];
     if (tags.includes('strength')) return 'strength';
     if (tags.includes('cardio')) return 'cardio';
     if (tags.includes('flexibility')) return 'flexibility';

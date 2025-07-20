@@ -3,6 +3,7 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { LoadingService } from '../../services/loading.service';
+import { GeneralService } from '../../services/general.service';
 
 @Component({
   selector: 'app-header',
@@ -26,16 +27,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
+    private gs: GeneralService,
     private authService: AuthService,
     private router: Router,
     private loadingService: LoadingService
   ) { }
 
   ngOnInit(): void {
-    this.authService.currentUser$
+    this.gs.userInfo$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(user => {
-        this.currentUser = user;
+      .subscribe(userInfo => {
+        if (userInfo) {
+          this.currentUser = userInfo.user;
+        }
       });
   }
 
@@ -86,6 +90,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   navigateToSettings(): void {
     // TODO: Implement settings page
     this.showUserMenu = false;
+  }
+
+  openWorkoutWizard(): void {
+    this.router.navigate(['/workout-wizard']);
   }
 
   markNotificationAsRead(notificationId: number): void {

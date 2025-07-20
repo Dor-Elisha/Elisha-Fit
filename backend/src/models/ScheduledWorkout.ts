@@ -3,8 +3,8 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IScheduledWorkout extends Document {
   userId: string;
   date: Date;
-  programId: string;
-  programSnapshot: any;
+  workoutId: string;
+  workoutSnapshot: any;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,14 +20,15 @@ const ScheduledWorkoutSchema = new Schema<IScheduledWorkout>({
     required: true,
     index: true
   },
-  programId: {
+  workoutId: {
     type: String,
-    required: true
+    required: true,
+    index: true,
   },
-  programSnapshot: {
+  workoutSnapshot: {
     type: Schema.Types.Mixed,
-    required: true
-  }
+    required: false,
+  },
 }, {
   timestamps: true
 });

@@ -58,7 +58,7 @@
   <!-- Dashboard Cards Layout -->
   <div class="dashboard-cards-grid row g-4 mt-2">
     <!-- Calendar Card -->
-    <div class="col-12 col-lg-6">
+    <div class="col-12 col-lg-6" *ngIf="!gs.isProduction">
       <div class="dashboard-card calendar-card">
         <div class="card-header">
           <h5 class="card-title mb-0"><i class="fas fa-calendar me-2"></i> Calendar</h5>
@@ -68,14 +68,14 @@
         </div>
       </div>
     </div>
-    <!-- Programs Card (moved up) -->
+    <!-- Workouts Card (moved up) -->
     <div class="col-12 col-xl-6">
-      <div class="dashboard-card programs-card">
+      <div class="dashboard-card workouts-card">
         <div class="card-header">
-          <h5 class="card-title mb-0"><i class="fas fa-dumbbell me-2"></i> Programs</h5>
+          <h5 class="card-title mb-0"><i class="fas fa-dumbbell me-2"></i> Workouts</h5>
         </div>
-        <div class="programs-content mt-3">
-          <app-programs></app-programs>
+        <div class="workouts-content mt-3">
+          <app-workouts></app-workouts>
         </div>
       </div>
     </div>

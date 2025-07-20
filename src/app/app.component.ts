@@ -43,6 +43,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.auth.currentUser$.subscribe(u => this.user = u);
+    // Load unified user info on app load if logged in
+    if (this.auth.isLoggedIn) {
+      this.gs.loadUserInfo(this.auth.routeService).catch(err => {
+        console.error('Failed to load user info:', err);
+      });
+    }
     // Exercise data is now loaded on-demand by components
     // No need to pre-load here as the service handles caching
     

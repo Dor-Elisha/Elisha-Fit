@@ -1,4 +1,4 @@
-<div class="programs-page">
+<div class="workouts-page">
   <div class="page-header">
     <div class="header-content">
       <h1 class="page-title">Start a Workout</h1>
@@ -6,51 +6,51 @@
     </div>
   </div>
 
-  <div class="programs-content">
+  <div class="workouts-content">
     <app-loading 
       *ngIf="loading"
       type="skeleton"
       size="lg"
-      text="Loading programs..."
+      text="Loading workouts..."
       [overlay]="false">
     </app-loading>
 
-    <div *ngIf="!loading && programs.length === 0" class="empty-state">
+    <div *ngIf="!loading && workouts.length === 0" class="empty-state">
       <div class="empty-icon">
         <i class="fas fa-dumbbell"></i>
       </div>
-      <h3>No programs found</h3>
+      <h3>No workouts found</h3>
       <p>Create a workout program to get started</p>
     </div>
 
-    <div *ngIf="!loading && programs.length > 0" class="programs-grid">
+    <div *ngIf="!loading && workouts.length > 0" class="workouts-grid">
       <div 
-        *ngFor="let program of programs" 
+        *ngFor="let workout of workouts" 
         class="program-card">
         <div class="program-header">
           <div class="program-info">
-            <h3 class="program-name">{{ program.name }}</h3>
-            <p class="program-description" *ngIf="program.description">
-              {{ program.description }}
+            <h3 class="program-name">{{ workout.name }}</h3>
+            <p class="program-description" *ngIf="workout.description">
+              {{ workout.description }}
             </p>
           </div>
         </div>
         <div class="program-stats">
           <div class="stat-item">
             <i class="fas fa-dumbbell"></i>
-            <span>{{ getProgramStats(program).exercises }} exercises</span>
+            <span>{{ getWorkoutStats(workout).exercises }} exercises</span>
           </div>
           <div class="stat-item">
             <i class="fas fa-clock"></i>
-            <span>{{ getProgramStats(program).estimatedDuration }} min</span>
+            <span>{{ getWorkoutStats(workout).estimatedDuration }} min</span>
           </div>
           <div class="stat-item">
             <i class="fas fa-tag"></i>
-            <span>{{ getProgramCategory(program) }}</span>
+            <span>{{ getWorkoutCategory(workout) }}</span>
           </div>
         </div>
         <div class="program-actions">
-          <button class="btn btn-primary btn-sm w-100" (click)="startProgram(program)">
+          <button class="btn btn-primary btn-sm w-100" (click)="startWorkout(workout)">
             <i class="fas fa-play me-1"></i> Start
           </button>
         </div>

@@ -2,8 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { GeneralService } from '../../services/general.service';
-import { GoalService } from '../../services/goal.service';
-import { ProgramService } from '../../services/program.service';
+import { WorkoutService } from '../../services/workout.service';
 import { UserStatsService, StatsCard, QuickAction, RecentActivity, WeeklyProgressData } from '../../services/user-stats.service';
 import * as _ from 'lodash';
 
@@ -16,8 +15,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     public gs: GeneralService,
     private router: Router,
-    private goalService: GoalService,
-    private programService: ProgramService,
+    private programService: WorkoutService,
     private userStatsService: UserStatsService
   ) { }
 
@@ -36,10 +34,26 @@ export class HomeComponent implements OnInit, OnDestroy {
   dataState: 'loading' | 'loaded' | 'error' | 'empty' = 'loading'; // Track the overall data state
   _ = _;
 
+  userInfo: any;
+
   private destroy$ = new Subject<void>();
 
   ngOnInit(): void {
-    this.loadDashboardData();
+    this.gs.userInfo$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(userInfo => {
+        if (userInfo) {
+          this.userInfo = userInfo;
+          // Example: Access user, programs, logs, scheduledWorkouts from userInfo
+          // const user = userInfo?.user;
+          // const programs = userInfo?.programs;
+          // const logs = userInfo?.user?.logs;
+          // const scheduledWorkouts = userInfo?.scheduledWorkouts;
+          // You can now use these in your component as needed
+          // ...
+          // If you need to react to changes, consider making userInfo a BehaviorSubject in GeneralService
+        }
+      });
   }
 
   ngOnDestroy(): void {

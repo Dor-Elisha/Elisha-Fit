@@ -94,52 +94,6 @@ export class AdapterService {
     return legacyPrograms.map(p => this.fromLegacyProgram(p));
   }
 
-  // Goal adapters
-  toLegacyGoal(goal) {
-    return {
-      id: goal._id,
-      userId: goal.userId,
-      title: goal.title,
-      description: goal.description,
-      type: this.mapGoalCategoryToType(goal.category) as any,
-      target: goal.targetValue,
-      current: goal.currentValue,
-      unit: goal.unit,
-      startDate: goal.createdAt, // Use createdAt as startDate
-      targetDate: goal.deadline || new Date(),
-      completed: goal.status === 'completed',
-      completedDate: goal.status === 'completed' ? goal.updatedAt : undefined,
-      createdAt: goal.createdAt,
-      updatedAt: goal.updatedAt
-    };
-  }
-
-  fromLegacyGoal(legacyGoal) {
-    return {
-      _id: legacyGoal.id,
-      userId: legacyGoal.userId,
-      title: legacyGoal.title,
-      description: legacyGoal.description,
-      category: this.mapGoalTypeToCategory(legacyGoal.type) as any,
-      targetValue: legacyGoal.target,
-      currentValue: legacyGoal.current,
-      unit: legacyGoal.unit,
-      deadline: legacyGoal.targetDate,
-      status: legacyGoal.completed ? 'completed' : 'active',
-      progressHistory: [], // Not available in legacy model
-      createdAt: legacyGoal.createdAt,
-      updatedAt: legacyGoal.updatedAt
-    };
-  }
-
-  toLegacyGoalArray(goals) {
-    return goals.map(g => this.toLegacyGoal(g));
-  }
-
-  fromLegacyGoalArray(legacyGoals) {
-    return legacyGoals.map(g => this.fromLegacyGoal(g));
-  }
-
   // Progress adapters
   toLegacyProgressEntry(progress) {
     return {
@@ -199,15 +153,6 @@ export class AdapterService {
     };
   }
 
-  toLegacyGoalResponse(response) {
-    return {
-      goals: this.toLegacyGoalArray(response.data),
-      totalCount: response.pagination.totalCount,
-      page: response.pagination.page,
-      limit: response.pagination.limit
-    };
-  }
-
   toLegacyProgressResponse(response) {
     return {
       entries: this.toLegacyProgressArray(response.data),
@@ -215,32 +160,6 @@ export class AdapterService {
       page: response.pagination.page,
       limit: response.pagination.limit
     };
-  }
-
-  // Helper methods for goal type mapping
-  private mapGoalCategoryToType(category) {
-    const mapping: { [key: string]: string } = {
-      'strength': 'weight_goal',
-      'endurance': 'reps_goal',
-      'weight': 'weight_goal',
-      'body_composition': 'weight_goal',
-      'flexibility': 'custom',
-      'custom': 'custom'
-    };
-    return mapping[category] || 'custom';
-  }
-
-  private mapGoalTypeToCategory(type) {
-    const mapping: { [key: string]: string } = {
-      'workouts_per_week': 'custom',
-      'total_workouts': 'custom',
-      'total_duration': 'custom',
-      'weight_goal': 'weight',
-      'reps_goal': 'endurance',
-      'streak_goal': 'custom',
-      'custom': 'custom'
-    };
-    return mapping[type] || 'custom';
   }
 
   // Utility methods for components
@@ -252,11 +171,19 @@ export class AdapterService {
     return '_id' in program ? program._id : program.id;
   }
 
-  getGoalId(goal) {
-    return '_id' in goal ? goal._id : goal.id;
-  }
-
   getProgressId(progress) {
     return '_id' in progress ? progress._id : progress.id;
+  }
+
+  toLegacyWorkout(workout) {
+    return this.toLegacyProgram(workout);
+  }
+
+  toLegacyWorkoutArray(workouts) {
+    return workouts.map(w => this.toLegacyWorkout(w));
+  }
+
+  getWorkoutId(workout) {
+    return this.getProgramId(workout);
   }
 } 

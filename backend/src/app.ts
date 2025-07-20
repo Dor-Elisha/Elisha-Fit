@@ -5,12 +5,10 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
-import programsRouter from './routes/programs';
-import goalsRouter from './routes/goals';
+import workoutsRouter from './routes/programs';
 import exercisesRouter from './routes/exercises';
 import userStatsRouter from './routes/user-stats';
-import logsRouter from './routes/logs';
-import scheduledWorkoutsRouter from './routes/scheduled-workouts';
+import userRouter from './routes/user';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { 
   generalLimiter, 
@@ -108,12 +106,10 @@ class App {
 
     // API routes with specific rate limiting
     this.app.use('/api/v1/auth', authLimiter, authRoutes);
-    this.app.use('/api/v1/programs', apiLimiter, programsRouter);
-    this.app.use('/api/v1/goals', apiLimiter, goalsRouter);
+    this.app.use('/api/v1/workouts', apiLimiter, workoutsRouter);
     this.app.use('/api/v1/exercises', exerciseLimiter, exercisesRouter);
     this.app.use('/api/v1/user-stats', apiLimiter, userStatsRouter);
-    this.app.use('/api/v1/logs', apiLimiter, logsRouter);
-    this.app.use('/api/v1/scheduled-workouts', apiLimiter, scheduledWorkoutsRouter);
+    this.app.use('/api/v1/user', apiLimiter, userRouter);
 
     // 404 handler for unmatched routes
     this.app.use(notFoundHandler);

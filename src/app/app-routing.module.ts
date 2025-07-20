@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
-import { ProgramsComponent } from './components/programs/programs.component';
+import { WorkoutsComponent } from './components/workouts/workouts.component';
 import { LoginComponent } from './components/login/login.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { ProgramWizardComponent } from './components/program-wizard/program-wizard/program-wizard.component';
+import { WorkoutWizardComponent } from './components/workout-wizard/workout-wizard/workout-wizard.component';
 import { AuthGuard } from './auth.guard';
-import { ProgramDetailComponent } from './components/program-detail/program-detail.component';
+import { WorkoutDetailComponent } from './components/workout-detail/workout-detail.component';
 import { LogComponent } from './components/log/log.component';
 import { StartWorkoutComponent } from './components/start-workout/start-workout.component';
 
@@ -18,23 +18,23 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'programs',
-    component: ProgramsComponent,
+    path: 'workouts',
+    component: WorkoutsComponent,
     canActivate: [AuthGuard],
   },
   {
-    path: 'program-wizard',
-    component: ProgramWizardComponent,
+    path: 'workout-wizard',
+    component: WorkoutWizardComponent,
     canActivate: [AuthGuard],
   },
   {
-    path: 'program-wizard/:id',
-    component: ProgramWizardComponent,
+    path: 'workout-wizard/:id',
+    component: WorkoutWizardComponent,
     canActivate: [AuthGuard],
   },
   {
-    path: 'program-detail/:id',
-    component: ProgramDetailComponent,
+    path: 'workout-detail/:id',
+    component: WorkoutDetailComponent,
     canActivate: [AuthGuard],
   },
   {

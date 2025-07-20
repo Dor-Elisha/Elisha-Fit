@@ -44,4 +44,8 @@ export class RouteService {
   editProgram(programId: string, program: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/programs/${programId}`, program);
   }
+
+  getInitialUserData(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/user/initial-data`);
+  }
 }

@@ -1,0 +1,43 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = require("../middleware/auth");
+const User_1 = __importDefault(require("../models/User"));
+const Workout_1 = __importDefault(require("../models/Workout"));
+const ScheduledWorkout_1 = __importDefault(require("../models/ScheduledWorkout"));
+const router = (0, express_1.Router)();
+router.get('/initial-data', auth_1.authenticate, async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Authentication required.' });
+    }
+    try {
+        const userId = req.user.id;
+        const user = await User_1.default.findById(userId).select('-password');
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+        const workouts = await Workout_1.default.find({ userId });
+        const scheduledWorkouts = await ScheduledWorkout_1.default.find({ userId });
+        const logs = user.logs || [];
+        return res.json({
+            user: {
+                id: user._id,
+                email: user.email,
+                name: user.name,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
+                logs,
+            },
+            workouts,
+            scheduledWorkouts,
+        });
+    }
+    catch (err) {
+        return res.status(500).json({ error: 'Failed to load user data.' });
+    }
+});
+exports.default = router;
+//# sourceMappingURL=user.js.map

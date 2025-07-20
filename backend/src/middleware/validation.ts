@@ -25,8 +25,8 @@ const loginSchema = Joi.object({
   }),
 });
 
-// Program validation schema
-export const programSchema = Joi.object({
+// Workout validation schema
+export const workoutSchema = Joi.object({
   name: Joi.string().max(100).required(),
   description: Joi.string().max(1000).allow(''),
   targetMuscleGroups: Joi.array().items(Joi.string()).required(),
@@ -47,7 +47,7 @@ export const programSchema = Joi.object({
 
 // Progress entry validation schema
 export const progressEntrySchema = Joi.object({
-  programId: Joi.string().required(),
+  workoutId: Joi.string().required(),
   workoutDate: Joi.date().max('now').optional(),
   exercises: Joi.array().items(
     Joi.object({
@@ -108,8 +108,8 @@ export function validateLogin(req: Request, res: Response, next: NextFunction): 
   next();
 }
 
-export function validateProgram(req: Request, res: Response, next: NextFunction): void {
-  const { error } = programSchema.validate(req.body);
+export function validateWorkout(req: Request, res: Response, next: NextFunction): void {
+  const { error } = workoutSchema.validate(req.body);
   if (error?.details?.[0]?.message) {
     res.status(400).json({ error: error.details[0].message });
     return;

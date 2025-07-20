@@ -30,9 +30,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
       badge: null
     },
     {
-      label: 'Programs',
+      label: 'Workouts',
       icon: 'fas fa-dumbbell',
-      route: '/programs',
+      route: '/workouts',
       badge: null
     },
     {
@@ -53,10 +53,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.auth.currentUser$
+    this.gs.userInfo$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(u => this.user = u);
-
+      .subscribe(userInfo => {
+        if (userInfo) {
+          this.user = userInfo.user;
+          this.savedProgram = userInfo.programs?.length || 0;
+        }
+      });
     // Track active route
     this.router.events
       .pipe(
@@ -66,10 +70,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
       .subscribe((event: NavigationEnd) => {
         this.activeRoute = event.url;
       });
-
     // Set initial active route
     this.activeRoute = this.router.url;
-
     // Auto-close sidebar on mobile when route changes
     this.router.events
       .pipe(
@@ -77,11 +79,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
         filter(event => event instanceof NavigationEnd)
       )
       .subscribe(() => {
-        if (this.isMobile) {
-          this.closeSidebar();
+        if (this.isMobile && this.sidebarOpen) {
+          this.sidebarClose.emit();
         }
       });
-
     // Check initial screen size
     this.checkScreenSize();
   }

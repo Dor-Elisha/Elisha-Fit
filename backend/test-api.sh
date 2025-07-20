@@ -55,7 +55,7 @@ echo -e "${GREEN}✅ Token extracted: ${TOKEN:0:20}...${NC}"
 
 # Test 3: Create a new program
 echo -e "\n${YELLOW}3. Testing Program Creation${NC}"
-CREATE_RESPONSE=$(curl -s -X POST "$BASE_URL/programs" \
+CREATE_RESPONSE=$(curl -s -X POST "$BASE_URL/workouts" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN" \
     -d '{
@@ -94,52 +94,31 @@ CREATE_RESPONSE=$(curl -s -X POST "$BASE_URL/programs" \
 echo "Response: $CREATE_RESPONSE"
 
 # Extract program ID from create response
-PROGRAM_ID=$(echo $CREATE_RESPONSE | grep -o '"_id":"[^"]*"' | cut -d'"' -f4)
-if [ -z "$PROGRAM_ID" ]; then
-    echo -e "${RED}❌ Failed to extract program ID from create response${NC}"
+WORKOUT_ID=$(echo $CREATE_RESPONSE | grep -o '"_id":"[^"]*"' | cut -d'"' -f4)
+if [ -z "$WORKOUT_ID" ]; then
+    echo -e "${RED}❌ Failed to extract workout ID from create response${NC}"
     exit 1
 fi
-echo -e "${GREEN}✅ Program ID extracted: $PROGRAM_ID${NC}"
+echo -e "${GREEN}✅ Workout ID extracted: $WORKOUT_ID${NC}"
 
-# Test 4: Get all programs
-echo -e "\n${YELLOW}4. Testing Get All Programs${NC}"
-GET_ALL_RESPONSE=$(curl -s -X GET "$BASE_URL/programs" \
+# Test 4: Get all workouts
+echo -e "\n${YELLOW}4. Testing Get All Workouts${NC}"
+GET_ALL_RESPONSE=$(curl -s -X GET "$BASE_URL/workouts" \
     -H "Authorization: Bearer $TOKEN")
 echo "Response: $GET_ALL_RESPONSE"
 
-# Test 5: Get specific program
-echo -e "\n${YELLOW}5. Testing Get Specific Program${NC}"
-GET_ONE_RESPONSE=$(curl -s -X GET "$BASE_URL/programs/$PROGRAM_ID" \
+# Test 5: Get specific workout
+echo -e "\n${YELLOW}5. Testing Get Specific Workout${NC}"
+GET_ONE_RESPONSE=$(curl -s -X GET "$BASE_URL/workouts/$WORKOUT_ID" \
     -H "Authorization: Bearer $TOKEN")
 echo "Response: $GET_ONE_RESPONSE"
 
-# Test 6: Update program
-echo -e "\n${YELLOW}6. Testing Program Update${NC}"
-UPDATE_RESPONSE=$(curl -s -X PUT "$BASE_URL/programs/$PROGRAM_ID" \
+# Test 6: Update workout
+echo -e "\n${YELLOW}6. Testing Workout Update${NC}"
+UPDATE_RESPONSE=$(curl -s -X PUT "$BASE_URL/workouts/$WORKOUT_ID" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN" \
-    -d '{
-        "name": "Updated Full Body Strength",
-        "description": "An improved 4-week full body strength program",
-        "exercises": [
-            {
-                "exerciseId": "507f1f77bcf86cd799439011",
-                "name": "Barbell Squat",
-                "sets": 4,
-                "reps": 12,
-                "rest": 90,
-                "notes": "Focus on form and depth"
-            },
-            {
-                "exerciseId": "507f1f77bcf86cd799439012",
-                "name": "Bench Press",
-                "sets": 4,
-                "reps": 10,
-                "rest": 120,
-                "notes": "Control the descent"
-            }
-        ]
-    }')
+    -d '{"name": "Updated Full Body Strength"}')
 echo "Response: $UPDATE_RESPONSE"
 
 # Test 7: Test validation error (missing required field)
@@ -159,9 +138,9 @@ UNAUTHORIZED_RESPONSE=$(curl -s -X GET "$BASE_URL/programs" \
     -H "Authorization: Bearer invalid-token")
 echo "Response: $UNAUTHORIZED_RESPONSE"
 
-# Test 9: Delete program
-echo -e "\n${YELLOW}9. Testing Program Deletion${NC}"
-DELETE_RESPONSE=$(curl -s -X DELETE "$BASE_URL/programs/$PROGRAM_ID" \
+# Test 7: Delete workout
+echo -e "\n${YELLOW}7. Testing Workout Deletion${NC}"
+DELETE_RESPONSE=$(curl -s -X DELETE "$BASE_URL/workouts/$WORKOUT_ID" \
     -H "Authorization: Bearer $TOKEN")
 echo "Response: $DELETE_RESPONSE"
 

@@ -1,31 +1,31 @@
 import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
-import { Program } from '../models';
+import { Workout } from '../models';
 import mongoose from 'mongoose';
-import { validateProgram } from '../middleware/validation';
+import { validateWorkout } from '../middleware/validation';
 // import validation middleware as needed
 
 const router = Router();
 
-// List all programs for the authenticated user
-const getPrograms = async (req: Request, res: Response) => {
+// List all workouts for the authenticated user
+const getWorkouts = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
-    const programs = await Program.find({ userId });
-    res.json(programs);
+    const workouts = await Workout.find({ userId });
+    res.json(workouts);
     return;
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch programs' });
+    res.status(500).json({ error: 'Failed to fetch workouts' });
     return;
   }
 };
 
-// Get a single program by ID (only if owned by user)
-const getProgram = async (req: Request, res: Response) => {
+// Get a single workout by ID (only if owned by user)
+const getWorkout = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -34,42 +34,42 @@ const getProgram = async (req: Request, res: Response) => {
     }
     const { id } = req.params as { id: string };
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(400).json({ error: 'Invalid program ID' });
+      res.status(400).json({ error: 'Invalid workout ID' });
       return;
     }
-    const program = await Program.findOne({ _id: id, userId: userId as string });
-    if (!program) {
-      res.status(404).json({ error: 'Program not found' });
+    const workout = await Workout.findOne({ _id: id, userId: userId as string });
+    if (!workout) {
+      res.status(404).json({ error: 'Workout not found' });
       return;
     }
-    res.json(program);
+    res.json(workout);
     return;
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch program' });
+    res.status(500).json({ error: 'Failed to fetch workout' });
     return;
   }
 };
 
-// Create a new program
-const createProgram = async (req: Request, res: Response) => {
+// Create a new workout
+const createWorkout = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
-    const program = new Program({ ...req.body, userId });
-    await program.save();
-    res.status(201).json(program);
+    const workout = new Workout({ ...req.body, userId });
+    await workout.save();
+    res.status(201).json(workout);
     return;
   } catch (err) {
-    res.status(400).json({ error: 'Failed to create program', details: err instanceof Error ? err.message : err });
+    res.status(400).json({ error: 'Failed to create workout', details: err instanceof Error ? err.message : err });
     return;
   }
 };
 
-// Update a program (only if owned by user)
-const updateProgram = async (req: Request, res: Response) => {
+// Update a workout (only if owned by user)
+const updateWorkout = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -78,29 +78,29 @@ const updateProgram = async (req: Request, res: Response) => {
     }
     const { id } = req.params as { id: string };
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(400).json({ error: 'Invalid program ID' });
+      res.status(400).json({ error: 'Invalid workout ID' });
       return;
     }
     // TODO: Add validation middleware
-    const program = await Program.findOneAndUpdate(
+    const workout = await Workout.findOneAndUpdate(
       { _id: id, userId: userId as string },
       req.body,
       { new: true, runValidators: true }
     );
-    if (!program) {
-      res.status(404).json({ error: 'Program not found or not owned by user' });
+    if (!workout) {
+      res.status(404).json({ error: 'Workout not found or not owned by user' });
       return;
     }
-    res.json(program);
+    res.json(workout);
     return;
   } catch (err) {
-    res.status(400).json({ error: 'Failed to update program', details: err instanceof Error ? err.message : err });
+    res.status(400).json({ error: 'Failed to update workout', details: err instanceof Error ? err.message : err });
     return;
   }
 };
 
-// Delete a program (only if owned by user)
-const deleteProgram = async (req: Request, res: Response) => {
+// Delete a workout (only if owned by user)
+const deleteWorkout = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -109,18 +109,18 @@ const deleteProgram = async (req: Request, res: Response) => {
     }
     const { id } = req.params as { id: string };
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(400).json({ error: 'Invalid program ID' });
+      res.status(400).json({ error: 'Invalid workout ID' });
       return;
     }
-    const program = await Program.findOneAndDelete({ _id: id, userId: userId as string });
-    if (!program) {
-      res.status(404).json({ error: 'Program not found or not owned by user' });
+    const workout = await Workout.findOneAndDelete({ _id: id, userId: userId as string });
+    if (!workout) {
+      res.status(404).json({ error: 'Workout not found or not owned by user' });
       return;
     }
-    res.json({ message: 'Program deleted' });
+    res.json({ message: 'Workout deleted' });
     return;
   } catch (err) {
-    res.status(400).json({ error: 'Failed to delete program', details: err instanceof Error ? err.message : err });
+    res.status(400).json({ error: 'Failed to delete workout', details: err instanceof Error ? err.message : err });
     return;
   }
 };
@@ -128,10 +128,10 @@ const deleteProgram = async (req: Request, res: Response) => {
 // All routes require authentication
 router.use(authenticate);
 
-router.get('/', getPrograms);
-router.get('/:id', getProgram);
-router.post('/', validateProgram, createProgram);
-router.put('/:id', validateProgram, updateProgram);
-router.delete('/:id', deleteProgram);
+router.get('/', getWorkouts);
+router.get('/:id', getWorkout);
+router.post('/', validateWorkout, createWorkout);
+router.put('/:id', validateWorkout, updateWorkout);
+router.delete('/:id', deleteWorkout);
 
 export default router; 

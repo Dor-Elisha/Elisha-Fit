@@ -34,13 +34,13 @@
     <div *ngIf="logs.length === 0" class="text-muted text-center py-4">No workout logs yet.</div>
     <div class="row g-3">
       <div *ngFor="let log of logs" class="col-md-6 col-lg-4">
-        <div class="card h-100 shadow-sm border-0 log-card" [routerLink]="['/program-detail', log.programId]" style="cursor:pointer;">
+        <div class="card h-100 shadow-sm border-0 log-card" [routerLink]="['/workout-detail', log.workoutId]" style="cursor:pointer;">
           <div class="card-body d-flex flex-column justify-content-between">
             <div class="d-flex align-items-center mb-2">
               <span [ngClass]="log.completedAll ? 'text-success' : 'text-warning'">
                 <i class="fas" [ngClass]="log.completedAll ? 'fa-check-circle' : 'fa-exclamation-circle'"></i>
               </span>
-              <span class="fw-bold ms-2">{{ log.programName }}</span>
+              <span class="fw-bold ms-2">{{ log.workoutName }}</span>
             </div>
             <div class="small text-muted mb-2">{{ log.date | date:'medium' }}</div>
             <div class="small flex-grow-1">{{ log.summary }}</div>

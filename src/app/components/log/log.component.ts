@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { LogService } from '../../services/log.service';
+import { GeneralService } from '../../services/general.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-log',
@@ -8,19 +10,21 @@ import { LogService } from '../../services/log.service';
 })
 export class LogComponent implements OnInit {
   logs: any[] = [];
+  private destroy$ = new Subject<void>();
 
-  constructor(private logService: LogService) {}
+  constructor(public gs: GeneralService) {}
 
   ngOnInit(): void {
-    this.logService.getLogs().subscribe({
-      next: (data) => {
-        this.logs = Array.isArray(data) ? data : (data.logs || []);
-      },
-      error: (err) => {
-        console.error('Failed to fetch logs from backend', err);
-        this.logs = [];
-      }
-    });
+    this.gs.userInfo$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(userInfo => {
+        this.logs = userInfo?.user?.logs || [];
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   get totalLogs(): number {

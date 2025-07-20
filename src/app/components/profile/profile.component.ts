@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { RouteService } from '../../services/route.service';
 import { LoadingService } from '../../services/loading.service';
 import { UserStatsService } from '../../services/user-stats.service';
+import { GeneralService } from '../../services/general.service';
 
 @Component({
   selector: 'app-profile',
@@ -70,19 +71,23 @@ export class ProfileComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
+    private gs: GeneralService,
     private auth: AuthService,
-    private rs: RouteService,
-    private fb: FormBuilder,
+    private routeService: RouteService,
     private loadingService: LoadingService,
-    private userStatsService: UserStatsService
+    private userStatsService: UserStatsService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
-    this.auth.currentUser$.pipe(takeUntil(this.destroy$)).subscribe(u => {
-      this.user = u;
+    this.gs.userInfo$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(userInfo => {
+        if (userInfo) {
+          this.user = userInfo.user;
       this.loadUserData();
+        }
     });
-    
     this.initializeForms();
     this.loadUserStats();
   }
@@ -136,7 +141,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
         goals: this.user.goals || [],
         bio: this.user.bio || ''
       };
-      
       this.profileForm.patchValue(this.profileData);
     }
   }
@@ -242,7 +246,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       const updatedData = this.profileForm.value;
       
       // Update user data via RouteService
-      this.rs.updateUserName(this.user.id, updatedData.name)
+      this.routeService.updateUserName(this.user.id, updatedData.name)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (response) => {

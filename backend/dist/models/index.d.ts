@@ -1,6 +1,5 @@
 export { User, IUser } from './User';
-export { Program, IProgram } from './Program';
-export { ProgressEntry, IProgressEntry, ISetProgress, IExerciseProgress } from './Progress';
-export { Goal, IGoal } from './Goal';
+export { Workout, IWorkout } from './Workout';
 export { Exercise, IExercise } from './Exercise';
+export { ScheduledWorkout, IScheduledWorkout } from './ScheduledWorkout';
 //# sourceMappingURL=index.d.ts.map

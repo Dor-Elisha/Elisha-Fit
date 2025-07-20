@@ -11,10 +11,10 @@ export interface IUser extends Document {
   comparePassword(candidate: string): Promise<boolean>;
   logs?: Array<{
     date: Date;
-    programName: string;
+    workoutName: string;
     completedAll: boolean;
     summary: string;
-    programId?: string;
+    workoutId?: string;
   }>;
 }
 
@@ -42,10 +42,10 @@ const UserSchema = new Schema({
   logs: [
     {
       date: { type: Date, required: true },
-      programName: { type: String, required: true },
+      workoutName: { type: String, required: true },
       completedAll: { type: Boolean, required: true },
       summary: { type: String, required: true },
-      programId: { type: String, required: false },
+      workoutId: { type: String, required: false },
     }
   ],
 }, {

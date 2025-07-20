@@ -8,8 +8,7 @@
           class="btn btn-light border"
           mwlCalendarPreviousView
           [view]="'week'"
-          [(viewDate)]="viewDate"
-          (click)="onWeekChange()">
+          [(viewDate)]="viewDate">
           <i class="fas fa-chevron-left"></i>
         </div>
         <span>{{ viewDate | calendarDate:'weekViewTitle':locale }}</span>
@@ -17,8 +16,7 @@
           class="btn btn-light border"
           mwlCalendarNextView
           [view]="'week'"
-          [(viewDate)]="viewDate"
-          (click)="onWeekChange()">
+          [(viewDate)]="viewDate">
           <i class="fas fa-chevron-right"></i>
         </div>
     </div>
@@ -41,41 +39,22 @@
       <span class="ms-3 text-muted small">{{ selectedDate | date:'fullDate' }}</span>
     </div>
     <div class="panel-body">
-      <ng-container *ngIf="loadingLogs">
-        <div class="text-center py-4">
-          <div class="spinner-border" role="status"></div>
-        </div>
-      </ng-container>
-      <ng-container *ngIf="!loadingLogs">
         <!-- Scheduled Workout Container -->
         <div class="scheduled-workout-container mb-4">
           <div class="scheduled-title fw-bold mb-2">Scheduled workout</div>
-          <ng-container *ngIf="loadingScheduled">
-            <div class="text-center py-4">
-              <div class="spinner-border" role="status"></div>
-              <div>Loading scheduled workout...</div>
-            </div>
-          </ng-container>
-          <ng-container *ngIf="!loadingScheduled && scheduledPrograms[getDayKey(selectedDate)]; else noScheduled">
+        <ng-container *ngIf="scheduledWorkouts[getDayKey(selectedDate)]; else noScheduled">
             <div class="card p-3 mb-2">
               <div class="d-flex align-items-center justify-content-between">
                 <div>
-                  <div class="fw-bold">{{ scheduledPrograms[getDayKey(selectedDate)].programSnapshot?.name }}</div>
-                  <div class="text-muted small">{{ scheduledPrograms[getDayKey(selectedDate)].programSnapshot?.description }}</div>
+                  <div class="fw-bold">{{ scheduledWorkouts[getDayKey(selectedDate)].workoutSnapshot?.name }}</div>
+                  <div class="text-muted small">{{ scheduledWorkouts[getDayKey(selectedDate)].workoutSnapshot?.description }}</div>
                 </div>
-                <!-- Only show remove button if selectedDate is today or in the future -->
-                <button *ngIf="selectedDate >= todayStartOfDay" class="btn btn-outline-danger btn-sm ms-3" (click)="removeScheduledWorkoutForDate(selectedDate)">
-                  <i class="fas fa-trash"></i> Remove
-                </button>
               </div>
             </div>
           </ng-container>
           <ng-template #noScheduled>
             <div class="text-center py-4">
-              <div *ngIf="errorScheduled" class="alert alert-danger mb-2">{{ errorScheduled }}</div>
               <div>No workout scheduled for this day.</div>
-              <!-- Only show add button if selectedDate is today or in the future -->
-              <button *ngIf="selectedDate >= todayStartOfDay" class="btn btn-primary mt-3" (click)="addWorkoutForDate()">Add Workout</button>
             </div>
           </ng-template>
         </div>
@@ -91,38 +70,6 @@
             </div>
           </ng-container>
         </div>
-      </ng-container>
     </div>
-  </div>
-</div>
-
-<!-- Add Workout Top-Layer Popup -->
-<div *ngIf="showAddWorkoutPopup" class="calendar-popup-overlay d-flex align-items-center justify-content-center">
-  <div class="calendar-popup-modal bg-white rounded shadow p-4 position-relative" style="min-width:320px; max-width:95vw; max-height:90vh; z-index:2100;">
-    <button class="btn btn-link text-danger position-absolute" style="top: 1rem; right: 1rem; font-size: 1.5rem;" (click)="closePopup()">
-      <i class="fas fa-times"></i>
-    </button>
-    <h4 class="mb-3">Add Workout for {{ selectedDate | date:'fullDate' }}</h4>
-    <div *ngIf="loadingPrograms" class="text-center py-4">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      <div>Loading programs...</div>
-    </div>
-    <div *ngIf="!loadingPrograms && programs.length === 0" class="text-center py-4 text-muted">
-      No programs found.
-    </div>
-    <div *ngIf="!loadingPrograms && programs.length > 0">
-      <div class="program-list">
-        <div *ngFor="let program of programs" class="program-list-item card mb-3 p-3 d-flex flex-row align-items-center justify-content-between">
-          <div>
-            <div class="fw-bold">{{ program.name }}</div>
-            <div class="text-muted small">{{ program.description }}</div>
-          </div>
-          <button class="btn btn-primary" (click)="selectProgram(program)">Select</button>
-        </div>
-      </div>
-    </div>
-    <button class="btn btn-secondary" (click)="closePopup()">Cancel</button>
   </div>
 </div>

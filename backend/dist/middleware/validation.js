@@ -3,10 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.goalProgressSchema = exports.goalSchema = exports.progressEntrySchema = exports.programSchema = void 0;
+exports.goalProgressSchema = exports.goalSchema = exports.progressEntrySchema = exports.workoutSchema = void 0;
 exports.validateRegister = validateRegister;
 exports.validateLogin = validateLogin;
-exports.validateProgram = validateProgram;
+exports.validateWorkout = validateWorkout;
 exports.validateProgressEntry = validateProgressEntry;
 exports.validateGoal = validateGoal;
 exports.validateGoalProgress = validateGoalProgress;
@@ -33,7 +33,7 @@ const loginSchema = joi_1.default.object({
         'any.required': 'Password is required',
     }),
 });
-exports.programSchema = joi_1.default.object({
+exports.workoutSchema = joi_1.default.object({
     name: joi_1.default.string().max(100).required(),
     description: joi_1.default.string().max(1000).allow(''),
     targetMuscleGroups: joi_1.default.array().items(joi_1.default.string()).required(),
@@ -50,7 +50,7 @@ exports.programSchema = joi_1.default.object({
     })).min(1).required()
 }).unknown(true);
 exports.progressEntrySchema = joi_1.default.object({
-    programId: joi_1.default.string().required(),
+    workoutId: joi_1.default.string().required(),
     workoutDate: joi_1.default.date().max('now').optional(),
     exercises: joi_1.default.array().items(joi_1.default.object({
         exerciseId: joi_1.default.string().required(),
@@ -100,8 +100,8 @@ function validateLogin(req, res, next) {
     }
     next();
 }
-function validateProgram(req, res, next) {
-    const { error } = exports.programSchema.validate(req.body);
+function validateWorkout(req, res, next) {
+    const { error } = exports.workoutSchema.validate(req.body);
     if (error?.details?.[0]?.message) {
         res.status(400).json({ error: error.details[0].message });
         return;

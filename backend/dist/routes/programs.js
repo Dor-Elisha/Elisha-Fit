@@ -9,23 +9,23 @@ const models_1 = require("../models");
 const mongoose_1 = __importDefault(require("mongoose"));
 const validation_1 = require("../middleware/validation");
 const router = (0, express_1.Router)();
-const getPrograms = async (req, res) => {
+const getWorkouts = async (req, res) => {
     try {
         const userId = req.user?.id;
         if (!userId) {
             res.status(401).json({ error: 'Unauthorized' });
             return;
         }
-        const programs = await models_1.Program.find({ userId });
-        res.json(programs);
+        const workouts = await models_1.Workout.find({ userId });
+        res.json(workouts);
         return;
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to fetch programs' });
+        res.status(500).json({ error: 'Failed to fetch workouts' });
         return;
     }
 };
-const getProgram = async (req, res) => {
+const getWorkout = async (req, res) => {
     try {
         const userId = req.user?.id;
         if (!userId) {
@@ -34,65 +34,40 @@ const getProgram = async (req, res) => {
         }
         const { id } = req.params;
         if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
-            res.status(400).json({ error: 'Invalid program ID' });
+            res.status(400).json({ error: 'Invalid workout ID' });
             return;
         }
-        const program = await models_1.Program.findOne({ _id: id, userId: userId });
-        if (!program) {
-            res.status(404).json({ error: 'Program not found' });
+        const workout = await models_1.Workout.findOne({ _id: id, userId: userId });
+        if (!workout) {
+            res.status(404).json({ error: 'Workout not found' });
             return;
         }
-        res.json(program);
+        res.json(workout);
         return;
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to fetch program' });
+        res.status(500).json({ error: 'Failed to fetch workout' });
         return;
     }
 };
-const createProgram = async (req, res) => {
+const createWorkout = async (req, res) => {
     try {
         const userId = req.user?.id;
         if (!userId) {
             res.status(401).json({ error: 'Unauthorized' });
             return;
         }
-        const program = new models_1.Program({ ...req.body, userId });
-        await program.save();
-        res.status(201).json(program);
+        const workout = new models_1.Workout({ ...req.body, userId });
+        await workout.save();
+        res.status(201).json(workout);
         return;
     }
     catch (err) {
-        res.status(400).json({ error: 'Failed to create program', details: err instanceof Error ? err.message : err });
+        res.status(400).json({ error: 'Failed to create workout', details: err instanceof Error ? err.message : err });
         return;
     }
 };
-const updateProgram = async (req, res) => {
-    try {
-        const userId = req.user?.id;
-        if (!userId) {
-            res.status(401).json({ error: 'Unauthorized' });
-            return;
-        }
-        const { id } = req.params;
-        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
-            res.status(400).json({ error: 'Invalid program ID' });
-            return;
-        }
-        const program = await models_1.Program.findOneAndUpdate({ _id: id, userId: userId }, req.body, { new: true, runValidators: true });
-        if (!program) {
-            res.status(404).json({ error: 'Program not found or not owned by user' });
-            return;
-        }
-        res.json(program);
-        return;
-    }
-    catch (err) {
-        res.status(400).json({ error: 'Failed to update program', details: err instanceof Error ? err.message : err });
-        return;
-    }
-};
-const deleteProgram = async (req, res) => {
+const updateWorkout = async (req, res) => {
     try {
         const userId = req.user?.id;
         if (!userId) {
@@ -101,27 +76,52 @@ const deleteProgram = async (req, res) => {
         }
         const { id } = req.params;
         if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
-            res.status(400).json({ error: 'Invalid program ID' });
+            res.status(400).json({ error: 'Invalid workout ID' });
             return;
         }
-        const program = await models_1.Program.findOneAndDelete({ _id: id, userId: userId });
-        if (!program) {
-            res.status(404).json({ error: 'Program not found or not owned by user' });
+        const workout = await models_1.Workout.findOneAndUpdate({ _id: id, userId: userId }, req.body, { new: true, runValidators: true });
+        if (!workout) {
+            res.status(404).json({ error: 'Workout not found or not owned by user' });
             return;
         }
-        res.json({ message: 'Program deleted' });
+        res.json(workout);
         return;
     }
     catch (err) {
-        res.status(400).json({ error: 'Failed to delete program', details: err instanceof Error ? err.message : err });
+        res.status(400).json({ error: 'Failed to update workout', details: err instanceof Error ? err.message : err });
+        return;
+    }
+};
+const deleteWorkout = async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            res.status(401).json({ error: 'Unauthorized' });
+            return;
+        }
+        const { id } = req.params;
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+            res.status(400).json({ error: 'Invalid workout ID' });
+            return;
+        }
+        const workout = await models_1.Workout.findOneAndDelete({ _id: id, userId: userId });
+        if (!workout) {
+            res.status(404).json({ error: 'Workout not found or not owned by user' });
+            return;
+        }
+        res.json({ message: 'Workout deleted' });
+        return;
+    }
+    catch (err) {
+        res.status(400).json({ error: 'Failed to delete workout', details: err instanceof Error ? err.message : err });
         return;
     }
 };
 router.use(auth_1.authenticate);
-router.get('/', getPrograms);
-router.get('/:id', getProgram);
-router.post('/', validation_1.validateProgram, createProgram);
-router.put('/:id', validation_1.validateProgram, updateProgram);
-router.delete('/:id', deleteProgram);
+router.get('/', getWorkouts);
+router.get('/:id', getWorkout);
+router.post('/', validation_1.validateWorkout, createWorkout);
+router.put('/:id', validation_1.validateWorkout, updateWorkout);
+router.delete('/:id', deleteWorkout);
 exports.default = router;
 //# sourceMappingURL=programs.js.map

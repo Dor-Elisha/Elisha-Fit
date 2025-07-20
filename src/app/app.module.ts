@@ -7,8 +7,12 @@ import { HeaderComponent } from './components/header/header.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HomeComponent } from './components/home/home.component';
 import { AppRoutingModule } from './app-routing.module';
-import { ProgramsComponent } from './components/programs/programs.component';
-import { SelectProgramComponent } from './components/select-program/select-program.component';
+import { WorkoutsComponent } from './components/workouts/workouts.component';
+import { SelectWorkoutComponent } from './components/select-workout/select-workout.component';
+import { WorkoutWizardComponent } from './components/workout-wizard/workout-wizard/workout-wizard.component';
+import { WorkoutListComponent } from './components/workout-list/workout-list.component';
+import { WorkoutDetailComponent } from './components/workout-detail/workout-detail.component';
+import { DuplicateWorkoutDialogComponent } from './components/duplicate-workout-dialog/duplicate-workout-dialog.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
@@ -26,19 +30,15 @@ import { AuthService } from './services/auth.service';
 import { AuthGuard } from './auth.guard';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { LoadingService } from './services/loading.service';
-import { ProgramWizardComponent } from './components/program-wizard/program-wizard/program-wizard.component';
-import { ExerciseSelectorComponent } from './components/program-wizard/program-wizard/exercise-selector/exercise-selector.component';
-import { ExerciseConfigComponent } from './components/program-wizard/exercise-config/exercise-config.component';
-import { ProgramListComponent } from './components/program-list/program-list.component';
-import { ProgramDetailComponent } from './components/program-detail/program-detail.component';
-import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-import { DuplicateProgramDialogComponent } from './components/duplicate-program-dialog/duplicate-program-dialog.component';
+import { ExerciseSelectorComponent } from './components/workout-wizard/workout-wizard/exercise-selector/exercise-selector.component';
+import { ExerciseConfigComponent } from './components/workout-wizard/workout-wizard/exercise-config/exercise-config.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { LoadingComponent } from './components/loading/loading.component';
 import { CommonModule } from '@angular/common';
 import { TimerComponent } from './components/timer/timer.component';
 import { LogComponent } from './components/log/log.component';
 import { StartWorkoutComponent } from './components/start-workout/start-workout.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -46,19 +46,19 @@ import { StartWorkoutComponent } from './components/start-workout/start-workout.
     HeaderComponent,
     SidebarComponent,
     HomeComponent,
-    ProgramsComponent,
+    WorkoutsComponent,
     CalanderComponent,
-    SelectProgramComponent,
+    SelectWorkoutComponent,
     DropdownComponent,
     LoginComponent,
     ProfileComponent,
-    ProgramWizardComponent,
+    WorkoutWizardComponent,
     ExerciseSelectorComponent,
     ExerciseConfigComponent,
-    ProgramListComponent,
-    ProgramDetailComponent,
+    WorkoutListComponent,
+    WorkoutDetailComponent,
     ConfirmDialogComponent,
-    DuplicateProgramDialogComponent,
+    DuplicateWorkoutDialogComponent,
     BreadcrumbComponent,
     LoadingComponent,
     TimerComponent,

@@ -11,11 +11,9 @@ const morgan_1 = __importDefault(require("morgan"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const programs_1 = __importDefault(require("./routes/programs"));
-const progress_1 = __importDefault(require("./routes/progress"));
-const goals_1 = __importDefault(require("./routes/goals"));
 const exercises_1 = __importDefault(require("./routes/exercises"));
-const analytics_1 = __importDefault(require("./routes/analytics"));
 const user_stats_1 = __importDefault(require("./routes/user-stats"));
+const user_1 = __importDefault(require("./routes/user"));
 const errorHandler_1 = require("./middleware/errorHandler");
 const rateLimiter_1 = require("./middleware/rateLimiter");
 const logger_1 = require("./middleware/logger");
@@ -86,12 +84,10 @@ class App {
             });
         });
         this.app.use('/api/v1/auth', rateLimiter_1.authLimiter, auth_1.default);
-        this.app.use('/api/v1/programs', rateLimiter_1.apiLimiter, programs_1.default);
-        this.app.use('/api/v1/progress', rateLimiter_1.apiLimiter, progress_1.default);
-        this.app.use('/api/v1/goals', rateLimiter_1.apiLimiter, goals_1.default);
+        this.app.use('/api/v1/workouts', rateLimiter_1.apiLimiter, programs_1.default);
         this.app.use('/api/v1/exercises', rateLimiter_1.exerciseLimiter, exercises_1.default);
-        this.app.use('/api/v1/analytics', rateLimiter_1.analyticsLimiter, analytics_1.default);
         this.app.use('/api/v1/user-stats', rateLimiter_1.apiLimiter, user_stats_1.default);
+        this.app.use('/api/v1/user', rateLimiter_1.apiLimiter, user_1.default);
         this.app.use(errorHandler_1.notFoundHandler);
     }
     initializeErrorHandling() {

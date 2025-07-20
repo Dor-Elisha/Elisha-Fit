@@ -17,7 +17,7 @@ export class AuthService {
   token$ = this.tokenSubject.asObservable();
 
   constructor(
-    private routeService: RouteService,
+    public routeService: RouteService,
     private router: Router,
   ) {
     this.loadStoredAuth();
