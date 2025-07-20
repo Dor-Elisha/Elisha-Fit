@@ -48,28 +48,14 @@ app.get('/health', (req, res) => {
   });
 });
 
-  // API routes - in production, serve from the compiled backend
-  if (isProduction) {
-    // Import the compiled backend routes
-    try {
-      const authRoutes = require('./backend/dist/routes/auth').default;
-      const workoutsRouter = require('./backend/dist/routes/workouts').default;
-      const exercisesRouter = require('./backend/dist/routes/exercises').default;
-      const userStatsRouter = require('./backend/dist/routes/user-stats').default;
-      const userRouter = require('./backend/dist/routes/user').default;
-
-      app.use('/api/v1/auth', authRoutes);
-      app.use('/api/v1/workouts', workoutsRouter);
-      app.use('/api/v1/exercises', exercisesRouter);
-      app.use('/api/v1/user-stats', userStatsRouter);
-      app.use('/api/v1/user', userRouter);
-    } catch (error) {
-      console.error('Failed to load backend routes:', error);
-      // Fallback API response
-      app.use('/api/v1/*', (req, res) => {
-        res.status(503).json({ error: 'Backend services temporarily unavailable' });
-      });
-    }
+// Simple API endpoints for production (placeholder)
+if (isProduction) {
+  app.use('/api/v1/*', (req, res) => {
+    res.status(503).json({ 
+      error: 'Backend services temporarily unavailable',
+      message: 'API integration in progress'
+    });
+  });
 } else {
   // Proxy API requests to the backend (only in development)
   app.use('/api', createProxyMiddleware({
@@ -89,5 +75,5 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Elisha-Fit app running on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 Mode: ${isProduction ? 'Production (integrated)' : 'Development (proxied)'}`);
+  console.log(`🌐 Mode: ${isProduction ? 'Production (simplified)' : 'Development (proxied)'}`);
 }); 
