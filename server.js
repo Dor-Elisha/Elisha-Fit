@@ -1,9 +1,38 @@
 const express = require('express');
 const path = require('path');
+const mongoose = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === 'production';
+
+// MongoDB Connection Test
+async function testMongoDBConnection() {
+  try {
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/elisha-fit';
+    console.log('🔍 Testing MongoDB connection...');
+    console.log('📡 MongoDB URI:', mongoUri.replace(/\/\/.*@/, '//***:***@')); // Hide credentials
+    
+    await mongoose.connect(mongoUri);
+    console.log('✅ MongoDB connection successful!');
+    console.log('🗄️  Database:', mongoose.connection.name);
+    console.log('🌐 Host:', mongoose.connection.host);
+    console.log('🔌 Port:', mongoose.connection.port);
+    
+    // Test database operations
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    console.log('📚 Collections found:', collections.length);
+    collections.forEach(col => console.log(`   - ${col.name}`));
+    
+  } catch (error) {
+    console.error('❌ MongoDB connection failed:', error.message);
+    console.error('🔧 Connection details:', {
+      uri: process.env.MONGODB_URI ? 'Set' : 'Not set',
+      nodeEnv: process.env.NODE_ENV,
+      error: error.message
+    });
+  }
+}
 
 // Basic body parsing
 app.use(express.json());
@@ -18,7 +47,12 @@ app.get('/health', (req, res) => {
     status: 'OK',
     message: 'Elisha-Fit app is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    database: {
+      connected: mongoose.connection.readyState === 1,
+      name: mongoose.connection.name,
+      host: mongoose.connection.host
+    }
   });
 });
 
@@ -80,8 +114,23 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Elisha-Fit app running on port ${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 Mode: ${isProduction ? 'Production (with API)' : 'Development (frontend only)'}`);
-}); 
+// Start server and test MongoDB connection
+async function startServer() {
+  try {
+    // Test MongoDB connection first
+    await testMongoDBConnection();
+    
+    // Start the server
+    app.listen(PORT, () => {
+      console.log(`🚀 Elisha-Fit app running on port ${PORT}`);
+      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🌐 Mode: ${isProduction ? 'Production (with API)' : 'Development (frontend only)'}`);
+      console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer(); 
