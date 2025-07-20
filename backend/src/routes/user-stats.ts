@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-const router = Router();
+const router: Router = Router();
 
 router.get('/dashboard', (req, res) => {
   res.json({

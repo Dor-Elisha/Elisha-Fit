@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import { validateWorkout } from '../middleware/validation';
 // import validation middleware as needed
 
-const router = Router();
+const router: Router = Router();
 
 // List all workouts for the authenticated user
 const getWorkouts = async (req: Request, res: Response) => {

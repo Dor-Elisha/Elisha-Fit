@@ -4,7 +4,7 @@ import User from '../models/User';
 import Workout from '../models/Workout';
 import ScheduledWorkout from '../models/ScheduledWorkout';
 
-const router = Router();
+const router: Router = Router();
 
 // GET /api/user/initial-data
 router.get('/initial-data', authenticate, async (req, res) => {

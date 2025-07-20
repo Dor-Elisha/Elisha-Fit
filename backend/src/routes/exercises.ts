@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
 import { ExerciseService } from '../services/exerciseService';
 
-const router = Router();
+const router: Router = Router();
 
 // List all exercises with optional filtering
 const getExercises = async (req: Request, res: Response) => {
