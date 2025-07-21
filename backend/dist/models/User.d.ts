@@ -14,6 +14,9 @@ export interface IUser extends Document {
         summary: string;
         workoutId?: string;
     }>;
+    exerciseDefaults: Map<string, {
+        weight: number;
+    }>;
 }
 export declare const User: mongooseShared.Model<IUser, {}, {}, {}, mongooseShared.Document<unknown, {}, IUser, {}> & IUser & Required<{
     _id: unknown;

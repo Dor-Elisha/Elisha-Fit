@@ -39,6 +39,13 @@ const UserSchema = new mongoose_1.Schema({
             workoutId: { type: String, required: false },
         }
     ],
+    exerciseDefaults: {
+        type: Map,
+        of: new mongoose_1.Schema({
+            weight: { type: Number, required: false },
+        }, { _id: false }),
+        default: {},
+    },
 }, {
     timestamps: true,
 });
