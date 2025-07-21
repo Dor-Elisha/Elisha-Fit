@@ -14,6 +14,11 @@ function log(message: string) {
 
 async function uploadExercises() {
   try {
+    log('--- SCRIPT START ---');
+    log(`process.cwd(): ${process.cwd()}`);
+    log(`__dirname: ${__dirname}`);
+    log(`process.env.MONGODB_URI: ${process.env.MONGODB_URI}`);
+    log(`config.mongoUri: ${config.mongoUri}`);
     const mongoUri = process.env.MONGODB_URI || config.mongoUri;
     log(`Connecting to MongoDB: ${mongoUri}`);
     await mongoose.connect(mongoUri);
@@ -21,8 +26,15 @@ async function uploadExercises() {
 
     // Read exercises.json
     const exercisesPath = path.resolve(__dirname, '../../../src/assets/data/exercises.json');
-    log(`Reading exercises from: ${exercisesPath}`);
+    log(`Resolved exercisesPath: ${exercisesPath}`);
+    log(`Checking if exercises.json exists...`);
+    if (!fs.existsSync(exercisesPath)) {
+      log('❌ exercises.json file does NOT exist at resolved path!');
+      throw new Error('exercises.json file not found at: ' + exercisesPath);
+    }
+    log('exercises.json file exists. Reading file...');
     const fileContent = fs.readFileSync(exercisesPath, 'utf8');
+    log('File read successfully. Parsing JSON...');
     const data = JSON.parse(fileContent);
     log(`Found ${data.exercises.length} exercises in JSON`);
 
@@ -44,8 +56,10 @@ async function uploadExercises() {
     log('✅ Upload complete!');
     await mongoose.disconnect();
     log('Disconnected from MongoDB');
+    log('--- SCRIPT END ---');
   } catch (err: any) {
-    log('❌ Error: ' + err.stack || err.message || err);
+    log('❌ Error (message): ' + (err.message || err));
+    log('❌ Error (stack): ' + (err.stack || 'no stack'));
     process.exit(1);
   }
 }
