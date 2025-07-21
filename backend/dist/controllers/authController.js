@@ -34,6 +34,13 @@ async function register(req, res) {
         });
     }
     catch (err) {
+        console.error('❌ Registration error:', {
+            message: err.message,
+            name: err.name,
+            stack: err.stack,
+            body: req.body,
+            error: err,
+        });
         if (err.name === 'ValidationError') {
             return res.status(400).json({ error: err.message });
         }

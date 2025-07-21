@@ -30,6 +30,14 @@ export async function register(req: Request, res: Response) {
       token,
     });
   } catch (err: any) {
+    // Detailed error logging for debugging
+    console.error('❌ Registration error:', {
+      message: err.message,
+      name: err.name,
+      stack: err.stack,
+      body: req.body,
+      error: err,
+    });
     if (err.name === 'ValidationError') {
       return res.status(400).json({ error: err.message });
     }
