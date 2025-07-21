@@ -18,6 +18,7 @@ export interface IUser extends Document {
     summary: string;
     workoutId?: string;
   }>;
+  exerciseDefaults: Map<string, { weight: number }>;
 }
 
 const UserSchema = new Schema({
@@ -50,6 +51,13 @@ const UserSchema = new Schema({
       workoutId: { type: String, required: false },
     }
   ],
+  exerciseDefaults: {
+    type: Map,
+    of: new Schema({
+      weight: { type: Number, required: false },
+    }, { _id: false }),
+    default: {},
+  },
 }, {
   timestamps: true,
 });

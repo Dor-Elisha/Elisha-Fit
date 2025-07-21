@@ -67,4 +67,35 @@ router.put('/profile', authenticate, async (req, res) => {
   }
 });
 
+// PUT /api/user/exercise-weight
+router.put('/exercise-weight', authenticate, async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Authentication required.' });
+  }
+  try {
+    const userId = req.user.id;
+    const { exerciseId, weight } = req.body;
+    if (!exerciseId || typeof weight !== 'number') {
+      return res.status(400).json({ error: 'exerciseId and weight are required.' });
+    }
+    // Update user exerciseDefaults
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    user.exerciseDefaults.set(exerciseId, { weight });
+    await user.save();
+    // Update all workouts for this user containing this exercise
+    await Workout.updateMany(
+      { userId, 'exercises.exerciseId': exerciseId },
+      { $set: { 'exercises.$[elem].weight': weight } },
+      { arrayFilters: [{ 'elem.exerciseId': exerciseId }] }
+    );
+    return res.json({ success: true });
+  } catch (err) {
+    console.error('Exercise weight update error:', err);
+    return res.status(500).json({ error: 'Failed to update exercise weight.' });
+  }
+});
+
 export default router; 
