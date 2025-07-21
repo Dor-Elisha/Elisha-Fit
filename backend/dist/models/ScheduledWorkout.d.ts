@@ -1,4 +1,5 @@
-import mongoose, { Document } from 'mongoose';
+import mongooseShared from '../sharedMongoose';
+import { Document } from 'mongoose';
 export interface IScheduledWorkout extends Document {
     userId: string;
     date: Date;
@@ -7,7 +8,7 @@ export interface IScheduledWorkout extends Document {
     createdAt: Date;
     updatedAt: Date;
 }
-export declare const ScheduledWorkout: mongoose.Model<IScheduledWorkout, {}, {}, {}, mongoose.Document<unknown, {}, IScheduledWorkout, {}> & IScheduledWorkout & Required<{
+export declare const ScheduledWorkout: mongooseShared.Model<IScheduledWorkout, {}, {}, {}, mongooseShared.Document<unknown, {}, IScheduledWorkout, {}> & IScheduledWorkout & Required<{
     _id: unknown;
 }> & {
     __v: number;

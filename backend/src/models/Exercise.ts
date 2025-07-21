@@ -1,4 +1,6 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongooseShared from '../sharedMongoose';
+import { Document, Schema } from 'mongoose';
+const mongoose = mongooseShared;
 
 export interface IExercise extends Document {
   id: string;

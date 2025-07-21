@@ -6,7 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const auth_1 = require("../middleware/auth");
 const models_1 = require("../models");
-const mongoose_1 = __importDefault(require("mongoose"));
+const sharedMongoose_1 = __importDefault(require("../sharedMongoose"));
+const mongoose = sharedMongoose_1.default;
 const validation_1 = require("../middleware/validation");
 const router = (0, express_1.Router)();
 const getWorkouts = async (req, res) => {
@@ -33,7 +34,7 @@ const getWorkout = async (req, res) => {
             return;
         }
         const { id } = req.params;
-        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             res.status(400).json({ error: 'Invalid workout ID' });
             return;
         }
@@ -75,7 +76,7 @@ const updateWorkout = async (req, res) => {
             return;
         }
         const { id } = req.params;
-        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             res.status(400).json({ error: 'Invalid workout ID' });
             return;
         }
@@ -100,7 +101,7 @@ const deleteWorkout = async (req, res) => {
             return;
         }
         const { id } = req.params;
-        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             res.status(400).json({ error: 'Invalid workout ID' });
             return;
         }

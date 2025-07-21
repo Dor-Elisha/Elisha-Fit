@@ -1,4 +1,5 @@
-import mongoose, { Document } from 'mongoose';
+import mongooseShared from '../sharedMongoose';
+import { Document } from 'mongoose';
 export interface IUser extends Document {
     email: string;
     password: string;
@@ -14,7 +15,7 @@ export interface IUser extends Document {
         workoutId?: string;
     }>;
 }
-export declare const User: mongoose.Model<IUser, {}, {}, {}, mongoose.Document<unknown, {}, IUser, {}> & IUser & Required<{
+export declare const User: mongooseShared.Model<IUser, {}, {}, {}, mongooseShared.Document<unknown, {}, IUser, {}> & IUser & Required<{
     _id: unknown;
 }> & {
     __v: number;

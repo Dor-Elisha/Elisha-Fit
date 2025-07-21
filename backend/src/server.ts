@@ -1,13 +1,9 @@
 console.log('DEBUG: server.ts is being executed');
 import App from './app';
-import { connectDB } from './config/database';
 import { ExerciseService } from './services/exerciseService';
 
 // Create and start the application
 const app = new App();
-
-// Connect to MongoDB
-connectDB();
 
 // Initialize database connection
 async function startServer() {

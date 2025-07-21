@@ -1,4 +1,5 @@
-import mongoose, { Document } from 'mongoose';
+import mongooseShared from '../sharedMongoose';
+import { Document } from 'mongoose';
 export interface IExercise extends Document {
     id: string;
     name: string;
@@ -10,7 +11,7 @@ export interface IExercise extends Document {
     createdAt: Date;
     updatedAt: Date;
 }
-export declare const Exercise: mongoose.Model<IExercise, {}, {}, {}, mongoose.Document<unknown, {}, IExercise, {}> & IExercise & Required<{
+export declare const Exercise: mongooseShared.Model<IExercise, {}, {}, {}, mongooseShared.Document<unknown, {}, IExercise, {}> & IExercise & Required<{
     _id: unknown;
 }> & {
     __v: number;

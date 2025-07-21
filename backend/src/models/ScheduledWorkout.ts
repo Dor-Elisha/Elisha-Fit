@@ -1,4 +1,6 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongooseShared from '../sharedMongoose';
+import { Document, Schema } from 'mongoose';
+const mongoose = mongooseShared;
 
 export interface IScheduledWorkout extends Document {
   userId: string;

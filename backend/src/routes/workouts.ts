@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
 import { Workout } from '../models';
-import mongoose from 'mongoose';
+import mongooseShared from '../sharedMongoose';
+const mongoose = mongooseShared;
 import { validateWorkout } from '../middleware/validation';
 // import validation middleware as needed
 
