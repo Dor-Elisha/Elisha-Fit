@@ -23,42 +23,6 @@
 
     <!-- Mobile User Actions -->
     <div class="d-flex flex-row align-items-center gap-2">
-      <!-- Notifications -->
-      <div class="position-relative">
-        <button
-          class="btn btn-link notification-btn"
-          (click)="toggleNotifications()"
-          aria-label="Notifications">
-          <i class="fas fa-bell"></i>
-          <span *ngIf="unreadNotificationsCount > 0" class="notification-badge">
-            {{ unreadNotificationsCount }}
-          </span>
-        </button>
-        
-        <!-- Notifications Dropdown -->
-        <div *ngIf="showNotifications" class="notification-dropdown">
-          <div class="notification-header">
-            <h6 class="mb-0">Notifications</h6>
-            <button class="btn btn-link btn-sm" (click)="showNotifications = false">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-          <div class="notification-list">
-            <div 
-              *ngFor="let notification of notifications" 
-              class="notification-item"
-              [class.unread]="!notification.read"
-              (click)="markNotificationAsRead(notification.id)">
-              <div class="notification-content">
-                <p class="notification-message">{{ notification.message }}</p>
-                <small class="notification-time">{{ notification.time }}</small>
-              </div>
-              <div *ngIf="!notification.read" class="notification-indicator"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- User Menu -->
       <div class="position-relative">
         <button
@@ -127,42 +91,6 @@
 
     <!-- Right Section: User Actions -->
     <div class="d-flex flex-row align-items-center gap-3">
-      <!-- Notifications -->
-      <div class="position-relative">
-        <button
-          class="btn btn-link notification-btn"
-          (click)="toggleNotifications()"
-          aria-label="Notifications">
-          <i class="fas fa-bell"></i>
-          <span *ngIf="unreadNotificationsCount > 0" class="notification-badge">
-            {{ unreadNotificationsCount }}
-          </span>
-        </button>
-        
-        <!-- Notifications Dropdown -->
-        <div *ngIf="showNotifications" class="notification-dropdown">
-          <div class="notification-header">
-            <h6 class="mb-0">Notifications</h6>
-            <button class="btn btn-link btn-sm" (click)="showNotifications = false">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-          <div class="notification-list">
-            <div 
-              *ngFor="let notification of notifications" 
-              class="notification-item"
-              [class.unread]="!notification.read"
-              (click)="markNotificationAsRead(notification.id)">
-              <div class="notification-content">
-                <p class="notification-message">{{ notification.message }}</p>
-                <small class="notification-time">{{ notification.time }}</small>
-              </div>
-              <div *ngIf="!notification.read" class="notification-indicator"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- User Menu -->
       <div class="position-relative">
         <button

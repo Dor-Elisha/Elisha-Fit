@@ -16,13 +16,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   currentUser: any = null;
   showUserMenu = false;
-  showNotifications = false;
   showLogoutDialog = false;
-  notifications = [
-    { id: 1, message: 'Time for your workout!', time: '2 min ago', read: false },
-    { id: 2, message: 'You\'ve completed 5 workouts this week!', time: '1 hour ago', read: true },
-    { id: 3, message: 'New program available: Advanced Strength', time: '3 hours ago', read: false }
-  ];
 
   private destroy$ = new Subject<void>();
 
@@ -54,12 +48,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   toggleUserMenu(): void {
     this.showUserMenu = !this.showUserMenu;
-    this.showNotifications = false;
-  }
-
-  toggleNotifications(): void {
-    this.showNotifications = !this.showNotifications;
-    this.showUserMenu = false;
   }
 
   logout(): void {
@@ -94,17 +82,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   openWorkoutWizard(): void {
     this.router.navigate(['/workout-wizard']);
-  }
-
-  markNotificationAsRead(notificationId: number): void {
-    const notification = this.notifications.find(n => n.id === notificationId);
-    if (notification) {
-      notification.read = true;
-    }
-  }
-
-  get unreadNotificationsCount(): number {
-    return this.notifications.filter(n => !n.read).length;
   }
 
   get userInitials(): string {

@@ -35,4 +35,8 @@ export class GeneralService {
       });
     });
   }
+
+  setUserInfo(user: any) {
+    this.userInfoSubject.next(user);
+  }
 }
