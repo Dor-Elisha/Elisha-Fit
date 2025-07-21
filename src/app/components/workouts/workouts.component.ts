@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { GeneralService } from '../../services/general.service';
 import { WorkoutService } from '../../services/workout.service';
 import { Router, NavigationExtras } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { AdapterService } from '../../services/adapter.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-workouts',
@@ -17,7 +18,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
   searchTerm = '';
   selectedCategory = 'all';
   loading = false;
-  showBreadcrumbs = true;
+  @Input() showBreadcrumbs = true;
 
   categories = ['all', 'strength', 'cardio', 'flexibility', 'hiit', 'yoga', 'mixed'];
   difficulties = ['all', 'beginner', 'intermediate', 'advanced'];
@@ -45,10 +46,12 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
     private workoutService: WorkoutService,
     private router: Router,
     private toastr: ToastrService,
-    private adapter: AdapterService
+    private adapter: AdapterService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
+    // Remove route-based detection logic
     // Check for new program in router state
     const nav = this.router.getCurrentNavigation();
     const newWorkout = nav?.extras?.state?.['newWorkout'];

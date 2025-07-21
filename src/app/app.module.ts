@@ -10,7 +10,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { WorkoutsComponent } from './components/workouts/workouts.component';
 import { SelectWorkoutComponent } from './components/select-workout/select-workout.component';
 import { WorkoutWizardComponent } from './components/workout-wizard/workout-wizard/workout-wizard.component';
-import { WorkoutListComponent } from './components/workout-list/workout-list.component';
 import { WorkoutDetailComponent } from './components/workout-detail/workout-detail.component';
 import { DuplicateWorkoutDialogComponent } from './components/duplicate-workout-dialog/duplicate-workout-dialog.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -54,7 +53,6 @@ import { ProfileWizardComponent } from './components/profile-wizard/profile-wiza
     WorkoutWizardComponent,
     ExerciseSelectorComponent,
     ExerciseConfigComponent,
-    WorkoutListComponent,
     WorkoutDetailComponent,
     ConfirmDialogComponent,
     DuplicateWorkoutDialogComponent,
