@@ -5,161 +5,165 @@
     [showHome]="true">
   </app-breadcrumb>
   
-  <div class="component-header">
+  <div class="component-header" *ngIf="currentStep === 1">
     <h2>{{ editMode ? 'Edit Custom Workout' : 'Create Custom Workout' }}</h2>
   </div>
 
-  <div class="wizard-content">
-    <!-- Step Loading State -->
-    <app-loading 
-      *ngIf="stepLoading"
-      type="dots"
-      size="md"
-      text="Loading step..."
-      [overlay]="true">
-    </app-loading>
-    
-    <!-- Step 1: Workout Details -->
-    <div *ngIf="currentStep === 1" class="step-content section-container">
-      <h3>Workout Details</h3>
-      <form [formGroup]="workoutForm" class="workout-form">
-        <div class="form-group">
-          <label for="name">Workout Name<span class="required">*</span></label>
-          <input 
-            id="name" 
-            type="text" 
-            formControlName="name" 
-            placeholder="Enter workout name"
-            class="form-control"
-            [class.is-invalid]="isFieldInvalid('name')"
-            [class.is-valid]="workoutForm.get('name')?.valid && workoutForm.get('name')?.touched"
-          />
-          <div class="error-message" *ngIf="isFieldInvalid('name')">
-            {{ getFieldError('name') }}
-          </div>
-          <div class="valid-feedback" *ngIf="workoutForm.get('name')?.valid && workoutForm.get('name')?.touched">
-            <i class="fas fa-check"></i> Workout name looks good!
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="description">Description</label>
-          <textarea 
-            id="description" 
-            formControlName="description" 
-            placeholder="Describe your workout..."
-            class="form-control"
-            rows="3"
-          ></textarea>
-          <div class="error-message" *ngIf="workoutForm.get('description')?.touched && workoutForm.get('description')?.invalid">
-            <span *ngIf="workoutForm.get('description')?.errors?.['maxlength']">Description must be at most 500 characters.</span>
-          </div>
-        </div>
-
-
-
-
-
-        <div class="form-group">
-          <label for="targetMuscleGroups">Target Muscle Groups<span class="required">*</span></label>
-          <div class="muscle-groups-selector">
-            <div class="muscle-group-options">
-              <button type="button"
-                      class="muscle-group-option btn"
-                      [class.selected]="isMuscleGroupSelected(muscle)"
-                      *ngFor="let muscle of ['Chest', 'Back', 'Shoulders', 'Arms', 'Legs', 'Core', 'Full Body']"
-                      (click)="toggleMuscleGroup(muscle, !isMuscleGroupSelected(muscle))">
-                <!-- Optionally add an icon or image here for each muscle group -->
-                <span class="muscle-group-label">{{ muscle }}</span>
-              </button>
+  <div class="wizard-content-scrollable">
+    <div class="wizard-content">
+      <!-- Step Loading State -->
+      <app-loading 
+        *ngIf="stepLoading"
+        type="dots"
+        size="md"
+        text="Loading step..."
+        [overlay]="true">
+      </app-loading>
+      
+      <!-- Step 1: Workout Details -->
+      <div *ngIf="currentStep === 1" class="step-content section-container">
+        <h3>Workout Details</h3>
+        <form [formGroup]="workoutForm" class="workout-form">
+          <div class="form-group">
+            <label for="name">Workout Name<span class="required">*</span></label>
+            <input 
+              id="name" 
+              type="text" 
+              formControlName="name" 
+              placeholder="Enter workout name"
+              class="form-control"
+              [class.is-invalid]="isFieldInvalid('name')"
+              [class.is-valid]="workoutForm.get('name')?.valid && workoutForm.get('name')?.touched"
+            />
+            <div class="error-message" *ngIf="isFieldInvalid('name')">
+              {{ getFieldError('name') }}
+            </div>
+            <div class="valid-feedback" *ngIf="workoutForm.get('name')?.valid && workoutForm.get('name')?.touched">
+              <i class="fas fa-check"></i> Workout name looks good!
             </div>
           </div>
-          <div class="error-message" *ngIf="isFieldInvalid('targetMuscleGroups')">
-            {{ getFieldError('targetMuscleGroups') }}
-          </div>
-        </div>
 
-
-
-        <div class="form-group">
-          <label for="tags">Tags (Optional)</label>
-          <input 
-            id="tags" 
-            type="text" 
-            formControlName="tags" 
-            placeholder="Enter tags separated by commas (e.g., strength, beginner, home)"
-            class="form-control"
-          />
-          <small class="form-text">Add tags to help categorize your workout</small>
-        </div>
-      </form>
-    </div>
-
-    <!-- Step 2: Exercise Selection -->
-    <div *ngIf="currentStep === 2" class="step-content section-container">
-      <h3>Select Exercises</h3>
-      <app-exercise-selector 
-        [config]="{ multiple: true, maxSelections: 20 }"
-        [selectedExercises]="selectedExercises"
-        (exercisesSelected)="onExercisesSelected($event)"
-        (exerciseRemoved)="onExerciseRemoved($event)"
-      ></app-exercise-selector>
-    </div>
-
-    <!-- Step 3: Exercise Configuration -->
-    <div *ngIf="currentStep === 3" class="step-content section-container">
-      <h3>Configure Exercises</h3>
-      <app-exercise-config 
-        [selectedExercises]="selectedExercises"
-        (configuredExercisesChange)="onExercisesConfigured($event)"
-        (validationStateChange)="onStep3ValidationChange($event)"
-      ></app-exercise-config>
-    </div>
-
-    <!-- Step 4: Review & Create -->
-    <div *ngIf="currentStep === 4" class="step-content section-container">
-      <h3>Review Your Workout</h3>
-      <div class="workout-summary">
-        <div class="summary-section">
-          <h4>Workout Details</h4>
-          <div class="summary-grid">
-            <div class="summary-item">
-              <label>Name:</label>
-              <span>{{ getWorkoutSummary().name }}</span>
-            </div>
-            <div class="summary-item">
-              <label>Target Muscles:</label>
-              <span>{{ getWorkoutSummary().targetMuscleGroups?.join(', ') }}</span>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea 
+              id="description" 
+              formControlName="description" 
+              placeholder="Describe your workout..."
+              class="form-control"
+              rows="3"
+            ></textarea>
+            <div class="error-message" *ngIf="workoutForm.get('description')?.touched && workoutForm.get('description')?.invalid">
+              <span *ngIf="workoutForm.get('description')?.errors?.['maxlength']">Description must be at most 500 characters.</span>
             </div>
           </div>
-          <div class="summary-item full-width" *ngIf="getWorkoutSummary().description">
-            <label>Description:</label>
-            <p>{{ getWorkoutSummary().description }}</p>
-          </div>
-        </div>
 
-        <div class="summary-section">
-          <h4>Exercise Summary</h4>
-          <div class="exercise-summary">
-            <div class="summary-stats">
-              <div class="stat-item">
-                <i class="fas fa-dumbbell"></i>
-                <span>{{ getWorkoutSummary().exerciseCount }} Exercises</span>
-              </div>
-              <div class="stat-item">
-                <i class="fas fa-layer-group"></i>
-                <span>{{ getWorkoutSummary().totalSets }} Total Sets</span>
+
+
+
+
+          <div class="form-group">
+            <label for="targetMuscleGroups">Target Muscle Groups<span class="required">*</span></label>
+            <div class="muscle-groups-selector">
+              <div class="muscle-group-options">
+                <button type="button"
+                        class="muscle-group-option btn"
+                        [class.selected]="isMuscleGroupSelected(muscle)"
+                        *ngFor="let muscle of ['Chest', 'Back', 'Shoulders', 'Arms', 'Legs', 'Core', 'Full Body']"
+                        (click)="toggleMuscleGroup(muscle, !isMuscleGroupSelected(muscle))">
+                  <!-- Optionally add an icon or image here for each muscle group -->
+                  <span class="muscle-group-label">{{ muscle }}</span>
+                </button>
               </div>
             </div>
-            <div class="exercise-list">
-              <div *ngFor="let exercise of configuredExercises" class="exercise-item">
-                <div class="exercise-info">
-                  <h5>{{ exercise.name }}</h5>
-                  <p>{{ exercise.sets }} sets × {{ exercise.reps }} reps</p>
+            <div class="error-message" *ngIf="isFieldInvalid('targetMuscleGroups')">
+              {{ getFieldError('targetMuscleGroups') }}
+            </div>
+          </div>
+
+
+
+          <div class="form-group">
+            <label for="tags">Tags (Optional)</label>
+            <input 
+              id="tags" 
+              type="text" 
+              formControlName="tags" 
+              placeholder="Enter tags separated by commas (e.g., strength, beginner, home)"
+              class="form-control"
+            />
+            <small class="form-text">Add tags to help categorize your workout</small>
+          </div>
+        </form>
+      </div>
+
+      <!-- Step 2: Exercise Selection -->
+      <div *ngIf="currentStep === 2" class="step-content section-container">
+        <h3>Select Exercises</h3>
+        <app-exercise-selector 
+          [config]="{ multiple: true, maxSelections: 20 }"
+          [selectedExercises]="selectedExercises"
+          (exercisesSelected)="onExercisesSelected($event)"
+          (exerciseRemoved)="onExerciseRemoved($event)"
+          [loading]="stepLoading"
+          (loading)="onExerciseSelectorLoading($event)"
+        ></app-exercise-selector>
+      </div>
+
+      <!-- Step 3: Exercise Configuration -->
+      <div *ngIf="currentStep === 3" class="step-content section-container">
+        <h3>Configure Exercises</h3>
+        <app-exercise-config 
+          [selectedExercises]="selectedExercises"
+          (configuredExercisesChange)="onExercisesConfigured($event)"
+          (validationStateChange)="onStep3ValidationChange($event)"
+        ></app-exercise-config>
+      </div>
+
+      <!-- Step 4: Review & Create -->
+      <div *ngIf="currentStep === 4" class="step-content section-container">
+        <h3>Review Your Workout</h3>
+        <div class="workout-summary">
+          <div class="summary-section">
+            <h4>Workout Details</h4>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <label>Name:</label>
+                <span>{{ getWorkoutSummary().name }}</span>
+              </div>
+              <div class="summary-item">
+                <label>Target Muscles:</label>
+                <span>{{ getWorkoutSummary().targetMuscleGroups?.join(', ') }}</span>
+              </div>
+            </div>
+            <div class="summary-item full-width" *ngIf="getWorkoutSummary().description">
+              <label>Description:</label>
+              <p>{{ getWorkoutSummary().description }}</p>
+            </div>
+          </div>
+
+          <div class="summary-section">
+            <h4>Exercise Summary</h4>
+            <div class="exercise-summary">
+              <div class="summary-stats">
+                <div class="stat-item">
+                  <i class="fas fa-dumbbell"></i>
+                  <span>{{ getWorkoutSummary().exerciseCount }} Exercises</span>
                 </div>
-                <div class="exercise-rest">
-                  <i class="fas fa-pause"></i>
-                  {{ exercise.rest }}s rest
+                <div class="stat-item">
+                  <i class="fas fa-layer-group"></i>
+                  <span>{{ getWorkoutSummary().totalSets }} Total Sets</span>
+                </div>
+              </div>
+              <div class="exercise-list">
+                <div *ngFor="let exercise of configuredExercises" class="exercise-item">
+                  <div class="exercise-info">
+                    <h5>{{ exercise.name }}</h5>
+                    <p>{{ exercise.sets }} sets × {{ exercise.reps }} reps</p>
+                  </div>
+                  <div class="exercise-rest">
+                    <i class="fas fa-pause"></i>
+                    {{ exercise.rest }}s rest
+                  </div>
                 </div>
               </div>
             </div>
@@ -169,8 +173,8 @@
     </div>
   </div>
 
-  <!-- Navigation -->
-  <div class="btn-group-actions">
+  <!-- Navigation (fixed footer on mobile) -->
+  <div class="btn-group-actions wizard-footer-mobile">
     <button 
       type="button" 
       class="btn btn-secondary btn-icon" 
@@ -214,7 +218,7 @@
   </div>
 
   <!-- Validation Summary -->
-  <div *ngIf="!canProceedToNextStep()" class="validation-summary">
+  <div *ngIf="!canProceedToNextStep() && !isMobile()" class="validation-summary">
     <div class="alert alert-warning">
       <i class="fas fa-exclamation-triangle"></i>
       <span *ngIf="currentStep === 1">Please complete all required fields to continue.</span>

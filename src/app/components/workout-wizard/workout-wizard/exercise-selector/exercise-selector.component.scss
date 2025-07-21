@@ -941,6 +941,9 @@
         .selected-grid {
           grid-template-columns: 1fr;
         }
+        .btn-outline-danger {
+          width: fit-content!important;
+        }
       }
 
       .exercises-container {
@@ -967,6 +970,15 @@
         }
       }
     }
+
+    .show-selected-exercises {
+      position: absolute;
+      top: 0;
+      background-color: white;
+      width: 95vw;
+      height: 35px;
+    }
+
   }
 
   @media (max-width: 480px) {

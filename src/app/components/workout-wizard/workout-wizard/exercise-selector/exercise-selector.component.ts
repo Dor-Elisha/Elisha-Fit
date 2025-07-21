@@ -17,6 +17,7 @@ export class ExerciseSelectorComponent implements OnInit, OnDestroy {
   
   @Output() exercisesSelected = new EventEmitter<any[]>();
   @Output() exerciseRemoved = new EventEmitter<any>();
+  @Output() loadingChange = new EventEmitter<boolean>();
 
   // Data
   allExercises: any[] = [];
@@ -62,6 +63,7 @@ export class ExerciseSelectorComponent implements OnInit, OnDestroy {
   }
 
   private loadExercises(): void {
+    this.loadingChange.emit(true);
     // Load exercises and filter options in parallel
     combineLatest([
       this.exerciseService.getExercises({}),
@@ -77,9 +79,11 @@ export class ExerciseSelectorComponent implements OnInit, OnDestroy {
           this.muscleGroups = muscleGroups;
           this.equipment = equipment;
           this.applyFilters();
+          this.loadingChange.emit(false);
         },
         error: (error) => {
           console.error('Error loading exercises:', error);
+          this.loadingChange.emit(false);
         }
       });
   }

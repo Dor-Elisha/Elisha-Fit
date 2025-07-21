@@ -75,8 +75,15 @@ export class AppComponent implements OnInit, OnDestroy {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.isLoginRoute = event.urlAfterRedirects === '/login';
-        // Scroll to top on every navigation
-        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        // Scroll main content area to top on every navigation
+        setTimeout(() => {
+          const contentArea = document.querySelector('.content-area');
+          if (contentArea) {
+            contentArea.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+          } else {
+            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+          }
+        }, 0);
       }
     });
     // Set initial value

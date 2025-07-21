@@ -4,7 +4,7 @@
   border-right: 1px solid var(--medium-gray);
   height: calc(100vh - 64px); // Adjusted for fixed header height
   @media (max-width: 767.98px) {
-    height: calc(100svh - 64px);
+    height: calc(100svh - 64px)!important;
   }
   display: flex;
   flex-direction: column;

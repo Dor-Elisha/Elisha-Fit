@@ -211,9 +211,12 @@
 
   // Responsive adjustments
   @media (max-width: 768px) {
-    margin: 10px;
     border-radius: 8px;
-
+    max-height: calc(100vh - 70px - 80px);
+    padding-left: 1rem;
+    padding-right: 1rem;
+    overflow-y: auto;
+    
     .wizard-header {
       padding: 20px;
 
@@ -225,7 +228,7 @@
     }
     
     .wizard-content {
-      padding: 20px;
+      padding: 0px;
     }
 
     .wizard-navigation {
@@ -459,4 +462,48 @@
 
 .workout-wizard .muscle-group-label {
   margin-left: 0;
+}
+
+.wizard-content-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(100svh - 90px); // leave space for footer
+  min-height: 0;
+}
+
+// Fixed footer for mobile
+.wizard-footer-mobile {
+  @media (max-width: 767.98px) {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    background: #fff;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.07);
+    padding: 1rem 1rem 1.25rem 1rem;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: row!important;
+    gap: 0.5rem;
+    button {
+      width: fit-content !important;
+      flex: 0 0 auto;
+      min-width: 0;
+      margin: 0;
+    }
+    .step-info {
+      flex: 1 1 auto;
+      width: fit-content;
+      text-align: center;
+      margin: 0;
+    }
+  }
+}
+
+// Prevent body scroll when wizard is open on mobile
+@media (max-width: 767.98px) {
+  body {
+    overflow: hidden !important;
+  }
 }

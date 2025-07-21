@@ -316,6 +316,17 @@ export class WorkoutWizardComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.currentStep++;
         this.stepLoading = false;
+        // Scroll to top on mobile after step change
+        setTimeout(() => {
+          if (window.innerWidth < 768) {
+            const contentArea = document.querySelector('.content-area');
+            if (contentArea) {
+              contentArea.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+            } else {
+              window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+            }
+          }
+        }, 0);
       }, 500);
     }
   }
@@ -323,12 +334,34 @@ export class WorkoutWizardComponent implements OnInit, OnDestroy {
   previousStep() {
     if (this.currentStep > 1) {
       this.currentStep--;
+      // Scroll to top on mobile after step change
+      setTimeout(() => {
+        if (window.innerWidth < 768) {
+          const contentArea = document.querySelector('.content-area');
+          if (contentArea) {
+            contentArea.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+          } else {
+            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+          }
+        }
+      }, 0);
     }
   }
 
   goToStep(step: number) {
     if (this.canNavigateToStep(step)) {
       this.currentStep = step;
+      // Scroll to top on mobile after step change
+      setTimeout(() => {
+        if (window.innerWidth < 768) {
+          const contentArea = document.querySelector('.content-area');
+          if (contentArea) {
+            contentArea.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+          } else {
+            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+          }
+        }
+      }, 0);
     }
   }
 
@@ -436,5 +469,17 @@ export class WorkoutWizardComponent implements OnInit, OnDestroy {
       }
     });
     return Array.from(equipment);
+  }
+
+  // In the parent wizard, add a handler for loading state from the selector
+  onExerciseSelectorLoading(loading: boolean) {
+    if (this.currentStep === 2) {
+      this.stepLoading = loading;
+    }
+  }
+
+  // Utility method to check if device is mobile
+  isMobile(): boolean {
+    return window.innerWidth < 768;
   }
 }

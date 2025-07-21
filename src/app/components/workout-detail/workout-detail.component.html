@@ -128,7 +128,7 @@
                               <span class="bg-primary rounded bg-opacity-50 px-1">{{ exercise.reps }} reps - rest {{ exercise.rest }} seconds</span>
                             </label>
                           </div>
-                          <button *ngIf="!exercise.setsCompleted[i]" class="btn btn-outline-primary btn-sm px-2 py-0" style="font-size: 0.8rem; line-height: 1.2;" (click)="openRestTimer(idx, i, exercise.rest)">Start rest</button>
+                          <button *ngIf="!exercise.setsCompleted[i]" class="btn btn-outline-primary btn-sm px-2 py-0" style="font-size: 0.8rem; line-height: 1.2; width: fit-content;" (click)="openRestTimer(idx, i, exercise.rest)">Start rest</button>
                         </div>
                       </ng-container>
                     </div>
