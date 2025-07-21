@@ -318,6 +318,12 @@
   }
 }
 
+@media (max-width: 767.98px) {
+  .modal-content {
+    max-height: 90svh;
+  }
+}
+
 // ===== LOADING STATES =====
 
 .loading-container {

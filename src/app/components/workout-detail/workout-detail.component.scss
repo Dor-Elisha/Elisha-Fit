@@ -1478,3 +1478,15 @@
   min-width: 320px;
   max-width: 90vw;
 }
+
+@media (max-width: 767.98px) {
+  .workout-detail-container {
+    height: 100svh;
+  }
+  .workout-detail-header {
+    height: 100svh;
+  }
+  .workout-detail-content {
+    height: 100svh;
+  }
+}

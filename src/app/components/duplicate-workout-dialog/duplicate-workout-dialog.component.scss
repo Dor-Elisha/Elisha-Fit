@@ -447,3 +447,12 @@
     border-top: 2px solid #000;
   }
 }
+
+@media (max-width: 767.98px) {
+  .duplicate-workout-dialog {
+    max-height: 90svh;
+  }
+  .dialog-content {
+    max-height: 60svh;
+  }
+}

@@ -3,6 +3,9 @@
   background: white;
   border-right: 1px solid var(--medium-gray);
   height: calc(100vh - 64px); // Adjusted for fixed header height
+  @media (max-width: 767.98px) {
+    height: calc(100svh - 64px);
+  }
   display: flex;
   flex-direction: column;
   transition: width var(--transition-smooth);
@@ -19,6 +22,9 @@
   .user-section {
     overflow-y: auto;
     max-height: calc(100vh - 64px - 70px); // Subtract header and header-content heights as needed
+    @media (max-width: 767.98px) {
+      max-height: calc(100svh - 64px - 70px);
+    }
   }
 }
 

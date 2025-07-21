@@ -255,6 +255,12 @@
   }
 }
 
+@media (max-width: 767.98px) {
+  .confirm-dialog {
+    max-height: 90svh;
+  }
+}
+
 // Accessibility
 @media (prefers-reduced-motion: reduce) {
   .dialog-overlay,

@@ -46,3 +46,15 @@
 .wizard-form button[type="submit"] {
   margin-top: 1.5rem;
 }
+
+@media (max-width: 767.98px) {
+  .profile-wizard-container {
+    height: 100svh;
+  }
+  .profile-wizard-content {
+    height: 100svh;
+  }
+  .profile-wizard-modal {
+    max-height: 90svh;
+  }
+}

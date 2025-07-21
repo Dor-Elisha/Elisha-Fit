@@ -1,5 +1,8 @@
 .auth-page {
   min-height: 100vh;
+  @media (max-width: 767.98px) {
+    min-height: 100svh;
+  }
   display: flex;
   align-items: center;
   justify-content: center;
