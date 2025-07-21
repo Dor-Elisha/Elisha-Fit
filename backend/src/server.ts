@@ -1,6 +1,11 @@
 console.log('DEBUG: server.ts is being executed');
 import App from './app';
 import { ExerciseService } from './services/exerciseService';
+import mongoose from './sharedMongoose';
+import dotenv from 'dotenv';
+import config from './config/config';
+
+dotenv.config();
 
 // Create and start the application
 const app = new App();
@@ -8,6 +13,13 @@ const app = new App();
 // Initialize database connection
 async function startServer() {
   try {
+    // Connect to MongoDB if not already connected (for local/dev)
+    if (mongoose.connection.readyState !== 1) {
+      const mongoUri = config.mongoUri || process.env.MONGODB_URI || 'mongodb://localhost:27017/elisha-fit';
+      console.log('🔗 Connecting to MongoDB for local/dev:', mongoUri);
+      await mongoose.connect(mongoUri);
+      console.log('✅ MongoDB connected (dev/local)');
+    }
     console.log('📚 Loading exercise data...');
     await ExerciseService.loadExercisesFromFile();
     

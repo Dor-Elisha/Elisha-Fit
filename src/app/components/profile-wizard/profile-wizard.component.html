@@ -1,0 +1,27 @@
+<div class="profile-wizard-backdrop"></div>
+<div class="profile-wizard-container">
+    <form (ngSubmit)="onSubmit()" #profileForm="ngForm" class="wizard-form">
+    <h2 class="wizard-title">Set Up Your Profile</h2>
+    <div class="form-group mb-3">
+      <label for="fullName">Full Name</label>
+      <input id="fullName" name="fullName" class="form-control" [(ngModel)]="profile.fullName" required />
+    </div>
+    <div class="form-group mb-3">
+      <label for="currentWeight">Current Weight (kg)</label>
+      <input id="currentWeight" name="currentWeight" type="number" class="form-control" [(ngModel)]="profile.currentWeight" required min="1" />
+    </div>
+    <div class="form-group mb-3">
+      <label for="height">Height (cm)</label>
+      <input id="height" name="height" type="number" class="form-control" [(ngModel)]="profile.height" required min="1" />
+    </div>
+    <div class="form-group mb-3">
+      <label for="goalWeight">Goal Weight (kg) <span class="text-muted">(optional)</span></label>
+      <input id="goalWeight" name="goalWeight" type="number" class="form-control" [(ngModel)]="profile.goalWeight" min="1" />
+    </div>
+    <div class="form-group mb-4">
+      <label for="birthday">Birthday</label>
+      <input id="birthday" name="birthday" type="date" class="form-control" [(ngModel)]="profile.birthday" required />
+    </div>
+    <button class="btn btn-primary w-100" type="submit" [disabled]="profileForm.invalid">Save Profile</button>
+  </form>
+</div>

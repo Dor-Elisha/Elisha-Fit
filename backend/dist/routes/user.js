@@ -39,5 +39,34 @@ router.get('/initial-data', auth_1.authenticate, async (req, res) => {
         return res.status(500).json({ error: 'Failed to load user data.' });
     }
 });
+router.put('/profile', auth_1.authenticate, async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Authentication required.' });
+    }
+    try {
+        const userId = req.user.id;
+        const { name, currentWeight, height, goalWeight, birthday } = req.body;
+        const update = {};
+        if (name !== undefined)
+            update.name = name;
+        if (currentWeight !== undefined)
+            update.currentWeight = currentWeight;
+        if (height !== undefined)
+            update.height = height;
+        if (goalWeight !== undefined)
+            update.goalWeight = goalWeight;
+        if (birthday !== undefined)
+            update.birthday = birthday;
+        const user = await User_1.default.findByIdAndUpdate(userId, update, { new: true, runValidators: true }).select('-password');
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+        return res.json({ user });
+    }
+    catch (err) {
+        console.error('Profile update error:', err);
+        return res.status(500).json({ error: 'Failed to update profile.' });
+    }
+});
 exports.default = router;
 //# sourceMappingURL=user.js.map

@@ -6,9 +6,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 console.log('DEBUG: server.ts is being executed');
 const app_1 = __importDefault(require("./app"));
 const exerciseService_1 = require("./services/exerciseService");
+const sharedMongoose_1 = __importDefault(require("./sharedMongoose"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const config_1 = __importDefault(require("./config/config"));
+dotenv_1.default.config();
 const app = new app_1.default();
 async function startServer() {
     try {
+        if (sharedMongoose_1.default.connection.readyState !== 1) {
+            const mongoUri = config_1.default.mongoUri || process.env.MONGODB_URI || 'mongodb://localhost:27017/elisha-fit';
+            console.log('🔗 Connecting to MongoDB for local/dev:', mongoUri);
+            await sharedMongoose_1.default.connect(mongoUri);
+            console.log('✅ MongoDB connected (dev/local)');
+        }
         console.log('📚 Loading exercise data...');
         await exerciseService_1.ExerciseService.loadExercisesFromFile();
         console.log('🚀 Starting Express server...');

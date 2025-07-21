@@ -49,3 +49,6 @@
 </app-loading>
 
 <app-select-program *ngIf="gs.createWorkoutPopupShow && !isLoginRoute"></app-select-program>
+
+<!-- Profile Wizard Modal (top-level overlay) -->
+<app-profile-wizard *ngIf="user && !user.name && !isLoginRoute"></app-profile-wizard>

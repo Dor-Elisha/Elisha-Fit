@@ -68,10 +68,6 @@
       <p *ngIf="!searchTerm && selectedCategory === 'all'">
         Create your first workout to get started
       </p>
-      <button class="btn btn-fitness" (click)="createNewWorkout()">
-        <i class="fas fa-plus me-2"></i>
-        Create Your First Workout
-      </button>
     </div>
 
     <div *ngIf="!loading && filteredWorkouts.length > 0" class="workouts-grid">

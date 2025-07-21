@@ -42,4 +42,29 @@ router.get('/initial-data', authenticate, async (req, res) => {
   }
 });
 
+// PUT /api/user/profile
+router.put('/profile', authenticate, async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Authentication required.' });
+  }
+  try {
+    const userId = req.user.id;
+    const { name, currentWeight, height, goalWeight, birthday } = req.body;
+    const update: any = {};
+    if (name !== undefined) update.name = name;
+    if (currentWeight !== undefined) update.currentWeight = currentWeight;
+    if (height !== undefined) update.height = height;
+    if (goalWeight !== undefined) update.goalWeight = goalWeight;
+    if (birthday !== undefined) update.birthday = birthday;
+    const user = await User.findByIdAndUpdate(userId, update, { new: true, runValidators: true }).select('-password');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    return res.json({ user });
+  } catch (err: any) {
+    console.error('Profile update error:', err);
+    return res.status(500).json({ error: 'Failed to update profile.' });
+  }
+});
+
 export default router; 

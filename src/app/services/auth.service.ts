@@ -148,4 +148,14 @@ export class AuthService {
       return true;
     }
   }
+
+  updateProfile(profile: any) {
+    return this.routeService.updateUserProfile(profile).pipe(
+      tap((response: any) => {
+        if (response.user) {
+          this.storeAuth(response.user, this.token!);
+        }
+      })
+    );
+  }
 }

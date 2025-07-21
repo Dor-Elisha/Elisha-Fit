@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { LoadingService } from '../../services/loading.service';
 import { Subject, takeUntil } from 'rxjs';
+import { GeneralService } from '../../services/general.service';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private auth: AuthService,
     private fb: FormBuilder,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    public gs: GeneralService // Inject GeneralService
   ) {
     if (this.auth.isLoggedIn) {
       this.router.navigate(['/']);
@@ -124,12 +126,14 @@ export class LoginComponent implements OnInit, OnDestroy {
       
       this.auth.login(email, password).subscribe({
         next: (res: any) => {
-          this.loadingService.hide();
-          this.successMessage = 'Login successful!';
-          console.log('Login successful', res);
-          setTimeout(() => {
-            this.router.navigate(['/']);
-          }, 1000);
+          this.gs.loadUserInfo(this.auth.routeService).then(() => {
+            this.loadingService.hide();
+            this.successMessage = 'Login successful!';
+            console.log('Login successful', res);
+            setTimeout(() => {
+              this.router.navigate(['/']);
+            }, 1000);
+          });
         },
         error: (err: any) => {
           this.loadingService.hide();
@@ -151,12 +155,14 @@ export class LoginComponent implements OnInit, OnDestroy {
       
       this.auth.register(email, password).subscribe({
         next: (res) => {
-          this.loadingService.hide();
-          this.successMessage = 'Account created successfully!';
-          console.log('Signup successful', res);
-          setTimeout(() => {
-            this.router.navigate(['/']);
-          }, 1000);
+          this.gs.loadUserInfo(this.auth.routeService).then(() => {
+            this.loadingService.hide();
+            this.successMessage = 'Account created successfully!';
+            console.log('Signup successful', res);
+            setTimeout(() => {
+              this.router.navigate(['/']);
+            }, 1000);
+          });
         },
         error: (err) => {
           this.loadingService.hide();

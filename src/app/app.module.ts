@@ -19,7 +19,6 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { CalanderComponent } from './components/calander/calander.component';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { LoginComponent } from './components/login/login.component';
-import { ProfileComponent } from './components/profile/profile.component';
 import { GeneralService } from './services/general.service';
 import { ExerciseService } from './services/exercise.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -39,6 +38,7 @@ import { TimerComponent } from './components/timer/timer.component';
 import { LogComponent } from './components/log/log.component';
 import { StartWorkoutComponent } from './components/start-workout/start-workout.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { ProfileWizardComponent } from './components/profile-wizard/profile-wizard.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +51,6 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     SelectWorkoutComponent,
     DropdownComponent,
     LoginComponent,
-    ProfileComponent,
     WorkoutWizardComponent,
     ExerciseSelectorComponent,
     ExerciseConfigComponent,
@@ -64,6 +63,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     TimerComponent,
     LogComponent,
     StartWorkoutComponent,
+    ProfileWizardComponent,
   ],
   imports: [
     BrowserModule,

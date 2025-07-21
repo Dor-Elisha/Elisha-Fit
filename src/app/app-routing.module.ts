@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { WorkoutsComponent } from './components/workouts/workouts.component';
 import { LoginComponent } from './components/login/login.component';
-import { ProfileComponent } from './components/profile/profile.component';
 import { WorkoutWizardComponent } from './components/workout-wizard/workout-wizard/workout-wizard.component';
 import { AuthGuard } from './auth.guard';
 import { WorkoutDetailComponent } from './components/workout-detail/workout-detail.component';
@@ -35,11 +34,6 @@ const routes: Routes = [
   {
     path: 'workout-detail/:id',
     component: WorkoutDetailComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'profile',
-    component: ProfileComponent,
     canActivate: [AuthGuard],
   },
   {

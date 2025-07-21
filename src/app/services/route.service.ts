@@ -33,6 +33,10 @@ export class RouteService {
     return this.http.put(`${this.baseUrl}/users/${userId}/name`, { name: newName });
   }
 
+  updateUserProfile(profile: any) {
+    return this.http.put<any>(`${this.baseUrl}/user/profile`, profile);
+  }
+
   saveProgram(program: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/programs`, program);
   }
