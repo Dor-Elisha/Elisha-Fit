@@ -15,7 +15,9 @@
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "clean": "rm -rf dist",
-    "prebuild": "npm run clean"
+    "prebuild": "npm run clean",
+    "heroku-postbuild": "npm run build",
+    "postdeploy": "npx ts-node src/scripts/uploadExercisesToProd.ts"
   },
   "keywords": [
     "fitness",

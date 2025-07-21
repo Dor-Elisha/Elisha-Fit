@@ -14,7 +14,7 @@ export interface IExercise extends Document {
   updatedAt: Date;
 }
 
-const ExerciseSchema = new Schema<IExercise>({
+const ExerciseSchema = new Schema({
   id: {
     type: String,
     required: true,

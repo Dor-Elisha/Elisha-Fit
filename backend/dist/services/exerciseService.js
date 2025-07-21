@@ -1,18 +1,15 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExerciseService = void 0;
 const Exercise_1 = require("../models/Exercise");
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
+const fs = require('fs');
+const path = require('path');
 class ExerciseService {
     static async loadExercisesFromFile() {
         try {
             await Exercise_1.Exercise.deleteMany({});
-            const exercisesPath = path_1.default.resolve(__dirname, '../../../src/assets/data/exercises.json');
-            const fileContent = fs_1.default.readFileSync(exercisesPath, 'utf8');
+            const exercisesPath = path.resolve(process.cwd(), 'src/assets/data/exercises.json');
+            const fileContent = fs.readFileSync(exercisesPath, 'utf8');
             const data = JSON.parse(fileContent);
             const exercisesToInsert = data.exercises.map((exercise, index) => ({
                 id: `exercise_${index + 1}`,

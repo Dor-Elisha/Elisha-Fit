@@ -1,6 +1,6 @@
 import { Exercise, IExercise } from '../models/Exercise';
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 
 interface ExerciseData {
   name: string;
