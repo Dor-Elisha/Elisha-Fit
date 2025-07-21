@@ -22,6 +22,14 @@ router.get('/initial-data', auth_1.authenticate, async (req, res) => {
         const workouts = await Workout_1.default.find({ userId });
         const scheduledWorkouts = await ScheduledWorkout_1.default.find({ userId });
         const logs = user.logs || [];
+        let exerciseDefaults = {};
+        if (user.exerciseDefaults && typeof user.exerciseDefaults === 'object' && user.exerciseDefaults instanceof Map) {
+            exerciseDefaults = Object.fromEntries(user.exerciseDefaults);
+        }
+        else if (user.exerciseDefaults && typeof user.exerciseDefaults === 'object') {
+            exerciseDefaults = user.exerciseDefaults;
+        }
+        console.log('DEBUG: exerciseDefaults for user', user._id, exerciseDefaults);
         return res.json({
             user: {
                 id: user._id,
@@ -30,6 +38,7 @@ router.get('/initial-data', auth_1.authenticate, async (req, res) => {
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt,
                 logs,
+                exerciseDefaults,
             },
             workouts,
             scheduledWorkouts,
@@ -61,7 +70,15 @@ router.put('/profile', auth_1.authenticate, async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
-        return res.json({ user });
+        return res.json({ user: {
+                id: user._id,
+                email: user.email,
+                name: user.name,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
+                logs: user.logs || [],
+                exerciseDefaults: user.exerciseDefaults ? (user.exerciseDefaults instanceof Map ? Object.fromEntries(user.exerciseDefaults) : user.exerciseDefaults) : {},
+            } });
     }
     catch (err) {
         console.error('Profile update error:', err);
@@ -84,8 +101,33 @@ router.put('/exercise-weight', auth_1.authenticate, async (req, res) => {
         }
         user.exerciseDefaults.set(exerciseId, { weight });
         await user.save();
-        await Workout_1.default.updateMany({ userId, 'exercises.exerciseId': exerciseId }, { $set: { 'exercises.$[elem].weight': weight } }, { arrayFilters: [{ 'elem.exerciseId': exerciseId }] });
-        return res.json({ success: true });
+        await Workout_1.default.updateMany({ userId, 'exercises.exerciseId': exerciseId }, [
+            {
+                $set: {
+                    exercises: {
+                        $map: {
+                            input: "$exercises",
+                            as: "ex",
+                            in: {
+                                $cond: [
+                                    { $eq: ["$$ex.exerciseId", exerciseId] },
+                                    { $mergeObjects: ["$$ex", { weight: weight }] },
+                                    "$$ex"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        ]);
+        let exerciseDefaults = {};
+        if (user.exerciseDefaults && typeof user.exerciseDefaults === 'object' && user.exerciseDefaults instanceof Map) {
+            exerciseDefaults = Object.fromEntries(user.exerciseDefaults);
+        }
+        else if (user.exerciseDefaults && typeof user.exerciseDefaults === 'object') {
+            exerciseDefaults = user.exerciseDefaults;
+        }
+        return res.json({ exerciseDefaults });
     }
     catch (err) {
         console.error('Exercise weight update error:', err);

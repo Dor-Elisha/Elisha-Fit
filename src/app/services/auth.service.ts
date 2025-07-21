@@ -158,4 +158,35 @@ export class AuthService {
       })
     );
   }
+
+  updateExerciseWeight(exerciseId: string, weight: number) {
+    return this.routeService.updateExerciseWeight(exerciseId, weight).pipe(
+      tap((response: any) => {
+        if (response.exerciseDefaults && this.currentUserSubject.value) {
+          console.log('DEBUG userInfo:', this.currentUserSubject.value);
+          // Update user.exerciseDefaults
+          const updatedUserInfo = {
+            ...this.currentUserSubject.value,
+            user: {
+              ...this.currentUserSubject.value.user,
+              exerciseDefaults: response.exerciseDefaults
+            },
+            // Also update all matching exercises in all workouts at the root level
+            workouts: (this.currentUserSubject.value.workouts || []).map((workout: any) => {
+              if (workout.exercises && Array.isArray(workout.exercises)) {
+                workout.exercises = workout.exercises.map((ex: any) => {
+                  if (ex.exerciseId === exerciseId) {
+                    return { ...ex, weight };
+                  }
+                  return ex;
+                });
+              }
+              return workout;
+            })
+          };
+          this.currentUserSubject.next(updatedUserInfo);
+        }
+      })
+    );
+  }
 }

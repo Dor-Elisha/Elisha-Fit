@@ -90,5 +90,14 @@ router.get('/categories', getCategories);
 router.get('/muscles', getMuscles);
 router.get('/equipment', getEquipment);
 router.get('/:id', getExercise);
+router.post('/reload', async (req, res) => {
+    try {
+        await exerciseService_1.ExerciseService.loadExercisesFromFile();
+        res.json({ success: true, message: 'Exercises reloaded from file.' });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to reload exercises', details: err?.message || err });
+    }
+});
 exports.default = router;
 //# sourceMappingURL=exercises.js.map

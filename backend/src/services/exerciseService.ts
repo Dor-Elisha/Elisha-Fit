@@ -25,12 +25,8 @@ export class ExerciseService {
    */
   static async loadExercisesFromFile(): Promise<void> {
     try {
-      // Check if exercises already exist in database
-      const existingCount = await Exercise.countDocuments();
-      if (existingCount > 0) {
-        console.log('Exercises already loaded in database');
-        return;
-      }
+      // Always clear the collection before loading
+      await Exercise.deleteMany({});
 
       // Read exercises.json file
       const exercisesPath = path.resolve(__dirname, '../../../src/assets/data/exercises.json');

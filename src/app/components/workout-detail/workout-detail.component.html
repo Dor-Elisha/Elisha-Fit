@@ -110,7 +110,12 @@
                 <div class="exercise-info">
                   <h4>{{ exercise.name }}</h4>
                   <div class="exercise-summary flex-column gap-2">
-                    <span *ngIf="exercise.weight" class="bg-primary rounded bg-opacity-50 px-1">{{ exercise.weight }} kg</span>
+                    <span *ngIf="exercise.weight" class="bg-primary rounded bg-opacity-50 px-1 d-inline-flex align-items-center">
+                      {{ exercise.weight }} kg
+                      <button class="btn btn-link btn-sm p-0 ms-2" (click)="onEditWeight(exercise)" title="Edit weight">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                    </span>
                     <div *ngFor="let set of [].constructor(exercise.sets); let i = index">
                       <ng-container *ngIf="!isStartMode">
                         <span class="bg-primary rounded bg-opacity-50 px-1">{{ exercise.reps }} reps - rest {{ exercise.rest }} seconds</span>
@@ -197,6 +202,23 @@
           <button class="btn btn-success me-2" (click)="onConfirmFinish()">Yes, Finish</button>
           <button class="btn btn-secondary" (click)="onCancelFinish()">Cancel</button>
         </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weight Edit Popup -->
+  <div *ngIf="editingWeightExercise" class="weight-edit-popup-overlay">
+    <div class="weight-edit-popup card shadow-lg">
+      <div class="card-body">
+        <h5 class="mb-3">Edit Weight for {{ editingWeightExercise.name }}</h5>
+        <div class="mb-3">
+          <label for="weightInput" class="form-label">New Weight (kg)</label>
+          <input id="weightInput" type="number" class="form-control" [(ngModel)]="newWeight" min="0" />
+        </div>
+        <div class="d-flex gap-2 justify-content-end">
+          <button class="btn btn-secondary" (click)="cancelEditWeight()">Cancel</button>
+          <button class="btn btn-primary" (click)="saveWeight()">Save</button>
+        </div>
       </div>
     </div>
   </div>

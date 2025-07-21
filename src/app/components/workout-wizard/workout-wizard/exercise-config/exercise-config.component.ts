@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { GeneralService } from '../../../../services/general.service';
 
 @Component({
   selector: 'app-exercise-config',
@@ -14,8 +15,13 @@ export class ExerciseConfigComponent implements OnInit {
   exerciseForms: any[] = [];
   configuredExercises: any[] = [];
   validationErrors: string[] = [];
+  userInfo: any = null;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private gs: GeneralService) {
+    this.gs.userInfo$.subscribe(userInfo => {
+      this.userInfo = userInfo;
+    });
+  }
 
   ngOnInit(): void {
     this.initializeForms();
@@ -75,14 +81,18 @@ export class ExerciseConfigComponent implements OnInit {
     this.exerciseForms = [];
     this.configuredExercises = [];
     this.validationErrors = [];
-    
+    const exerciseDefaults = this.userInfo?.user?.exerciseDefaults || {};
     this.selectedExercises.forEach((exercise: any, index: number) => {
+      let defaultWeight = 0;
+      if (exercise.exerciseId && exerciseDefaults[exercise.exerciseId]?.weight !== undefined) {
+        defaultWeight = exerciseDefaults[exercise.exerciseId].weight;
+      }
       const form = this.fb.group({
         name: [exercise.name, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
         sets: [exercise.sets ?? 3, [Validators.required, Validators.min(1), Validators.max(20), Validators.pattern(/^[0-9]+$/)]],
         reps: [exercise.reps ?? 10, [Validators.required, Validators.min(1), Validators.max(100), Validators.pattern(/^[0-9]+$/)]],
         rest: [exercise.rest ?? 60, [Validators.required, Validators.min(0), Validators.max(600), Validators.pattern(/^[0-9]+$/), this.restTimeValidator.bind(this)]],
-        weight: [exercise.weight ?? 0, [Validators.required, Validators.min(0), Validators.max(1000), Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/), this.weightValidator.bind(this)]],
+        weight: [exercise.weight ?? defaultWeight, [Validators.required, Validators.min(0), Validators.max(1000), Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/), this.weightValidator.bind(this)]],
         order: [exercise.order ?? (index + 1), [Validators.required, Validators.min(1), Validators.pattern(/^[0-9]+$/)]],
         notes: [exercise.notes ?? '', [Validators.maxLength(500)]]
       }, { validators: this.exerciseIntensityValidator.bind(this) });

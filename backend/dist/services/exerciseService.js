@@ -10,11 +10,7 @@ const path_1 = __importDefault(require("path"));
 class ExerciseService {
     static async loadExercisesFromFile() {
         try {
-            const existingCount = await Exercise_1.Exercise.countDocuments();
-            if (existingCount > 0) {
-                console.log('Exercises already loaded in database');
-                return;
-            }
+            await Exercise_1.Exercise.deleteMany({});
             const exercisesPath = path_1.default.resolve(__dirname, '../../../src/assets/data/exercises.json');
             const fileContent = fs_1.default.readFileSync(exercisesPath, 'utf8');
             const data = JSON.parse(fileContent);

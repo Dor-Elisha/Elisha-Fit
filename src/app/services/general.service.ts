@@ -39,4 +39,24 @@ export class GeneralService {
   setUserInfo(user: any) {
     this.userInfoSubject.next(user);
   }
+
+  updateExerciseWeightInWorkouts(exerciseId: string, weight: number, exerciseDefaults: any) {
+    const userInfo = this.userInfoSubject.value;
+    if (userInfo && userInfo.workouts) {
+      const updatedWorkouts = userInfo.workouts.map((workout: any) => ({
+        ...workout,
+        exercises: workout.exercises.map((ex: any) =>
+          ex.exerciseId === exerciseId ? { ...ex, weight } : ex
+        )
+      }));
+      this.userInfoSubject.next({
+        ...userInfo,
+        workouts: updatedWorkouts,
+        user: {
+          ...userInfo.user,
+          exerciseDefaults
+        }
+      });
+    }
+  }
 }

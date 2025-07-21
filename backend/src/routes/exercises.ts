@@ -101,4 +101,14 @@ router.get('/muscles', getMuscles);
 router.get('/equipment', getEquipment);
 router.get('/:id', getExercise);
 
+// TEMPORARY: Admin endpoint to reload exercises from JSON file
+router.post('/reload', async (req, res) => {
+  try {
+    await ExerciseService.loadExercisesFromFile();
+    res.json({ success: true, message: 'Exercises reloaded from file.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to reload exercises', details: (err as any)?.message || err });
+  }
+});
+
 export default router; 

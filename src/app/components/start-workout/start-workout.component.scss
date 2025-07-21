@@ -1,1 +1,23 @@
 @import '../workouts/workouts.component.scss'; 
+
+.workouts-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.workout-card {
+  width: auto;
+  min-width: unset;
+  max-width: unset;
+  margin: 0 auto;
+}
+
+@media (max-width: 767px) {
+  .workout-card {
+    width: 100%;
+    margin: 0;
+  }
+} 

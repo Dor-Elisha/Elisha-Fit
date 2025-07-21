@@ -209,6 +209,9 @@ export class ExerciseSelectorComponent implements OnInit, OnDestroy {
 
   // Selection methods
   toggleExerciseSelection(exercise: any): void {
+    if (!exercise.exerciseId && exercise.id) {
+      exercise.exerciseId = exercise.id;
+    }
     if (this.config.multiple) {
       const index = this.selectedExercises.findIndex(e => e.name === exercise.name);
       if (index > -1) {

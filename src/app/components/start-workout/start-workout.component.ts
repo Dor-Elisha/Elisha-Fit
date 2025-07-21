@@ -1,38 +1,36 @@
-import { Component, OnInit } from '@angular/core';
-import { WorkoutService } from '../../services/workout.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { GeneralService } from '../../services/general.service';
 import { Router } from '@angular/router';
-import { AdapterService } from '../../services/adapter.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-start-workout',
   templateUrl: './start-workout.component.html',
   styleUrls: ['./start-workout.component.scss']
 })
-export class StartWorkoutComponent implements OnInit {
+export class StartWorkoutComponent implements OnInit, OnDestroy {
   workouts: any[] = [];
   loading = false;
+  private destroy$ = new Subject<void>();
 
   constructor(
-    private programService: WorkoutService,
-    private router: Router,
-    private adapter: AdapterService
+    public gs: GeneralService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.loadWorkouts();
+    this.loading = true;
+    this.gs.userInfo$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(userInfo => {
+        this.workouts = userInfo?.workouts || [];
+        this.loading = false;
+      });
   }
 
-  loadWorkouts(): void {
-    this.loading = true;
-    this.programService.getWorkouts().subscribe({
-      next: (workouts) => {
-        this.workouts = this.adapter.toLegacyWorkoutArray(workouts);
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-      }
-    });
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   startWorkout(workout: any): void {

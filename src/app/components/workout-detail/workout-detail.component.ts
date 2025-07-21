@@ -1,10 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WorkoutService } from '../../services/workout.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { GeneralService } from '../../services/general.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-workout-detail',
@@ -12,7 +13,7 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./workout-detail.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class WorkoutDetailComponent implements OnInit {
+export class WorkoutDetailComponent implements OnInit, OnDestroy {
   @Input() workout = null;
   @Input() loading = false;
   @Input() showActions = true;
@@ -56,6 +57,9 @@ export class WorkoutDetailComponent implements OnInit {
   autoFinish = false;
   logs: any[] = [];
   workoutId: string | null = null;
+
+  editingWeightExercise: any = null;
+  newWeight: any = '';
 
   private destroy$ = new Subject<void>();
 
@@ -126,7 +130,8 @@ export class WorkoutDetailComponent implements OnInit {
     private workoutService: WorkoutService,
     private router: Router,
     private exerciseService: ExerciseService,
-    private gs: GeneralService
+    private gs: GeneralService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -535,5 +540,39 @@ export class WorkoutDetailComponent implements OnInit {
     } else {
       return `Completed ${completedSets} out of ${totalSets} sets in ${totalExercises} exercises.`;
     }
+  }
+
+  onEditWeight(exercise: any) {
+    this.editingWeightExercise = exercise;
+    this.newWeight = exercise.weight || '';
+  }
+
+  saveWeight() {
+    if (this.editingWeightExercise) {
+      const exerciseId = this.editingWeightExercise.exerciseId;
+      const newWeight = this.newWeight;
+      if (exerciseId && typeof newWeight === 'number' && !isNaN(newWeight)) {
+        this.auth.updateExerciseWeight(exerciseId, newWeight).subscribe({
+          next: (response: any) => {
+            this.gs.updateExerciseWeightInWorkouts(exerciseId, newWeight, response.exerciseDefaults);
+            this.editingWeightExercise.weight = newWeight;
+            this.editingWeightExercise = null;
+            this.newWeight = '';
+          },
+          error: () => {
+            // Optionally, show an error message
+          }
+        });
+      } else {
+        this.editingWeightExercise.weight = newWeight;
+        this.editingWeightExercise = null;
+        this.newWeight = '';
+      }
+    }
+  }
+
+  cancelEditWeight() {
+    this.editingWeightExercise = null;
+    this.newWeight = '';
   }
 }
