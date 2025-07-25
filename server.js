@@ -33,6 +33,17 @@ async function testMongoDBConnection() {
     console.log('📚 Collections found:', collections.length);
     collections.forEach(col => console.log(`   - ${col.name}`));
     
+    // Set up connection event listeners
+    mongoose.connection.on('error', (error) => {
+      console.error('❌ MongoDB connection error:', error);
+    });
+    mongoose.connection.on('disconnected', () => {
+      console.log('⚠️ MongoDB disconnected');
+    });
+    mongoose.connection.on('reconnected', () => {
+      console.log('🔄 MongoDB reconnected');
+    });
+    
   } catch (error) {
     console.error('❌ MongoDB connection failed:', error.message);
     console.error('🔧 Connection details:', {
@@ -73,7 +84,21 @@ app.get('/health', (req, res) => {
     database: {
       connected: mongoose.connection.readyState === 1,
       name: mongoose.connection.name,
-      host: mongoose.connection.host
+      host: mongoose.connection.host,
+      readyState: mongoose.connection.readyState
+    }
+  });
+});
+
+// API health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    message: 'API is running',
+    timestamp: new Date().toISOString(),
+    database: {
+      connected: mongoose.connection.readyState === 1,
+      readyState: mongoose.connection.readyState
     }
   });
 });
@@ -124,6 +149,10 @@ async function startServer() {
         const exercisesRouter = require('./backend/dist/routes/exercises').default;
         const userStatsRouter = require('./backend/dist/routes/user-stats').default;
         const userRouter = require('./backend/dist/routes/user').default;
+        
+        // Load exercise data
+        const { ExerciseService } = require('./backend/dist/services/exerciseService');
+        await ExerciseService.loadExercisesFromFile();
 
         // Set up CORS for API routes
         app.use('/api/v1', (req, res, next) => {
