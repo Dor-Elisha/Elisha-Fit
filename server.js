@@ -110,7 +110,7 @@ async function startServer() {
     // Load backend routes after database connection is established
     if (isProduction) {
       try {
-ç        // Ensure mongoose connection is ready before loading models
+        // Ensure mongoose connection is ready before loading models
         if (mongoose.connection.readyState !== 1) {
           console.log('⏳ Waiting for mongoose connection to be ready...');
           await new Promise((resolve) => {
