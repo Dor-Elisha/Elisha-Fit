@@ -88,6 +88,14 @@ async function startServer() {
     // Load backend routes after database connection is established
     if (isProduction) {
       try {
+        // Ensure mongoose connection is ready before loading models
+        if (mongoose.connection.readyState !== 1) {
+          console.log('⏳ Waiting for mongoose connection to be ready...');
+          await new Promise((resolve) => {
+            mongoose.connection.once('connected', resolve);
+          });
+        }
+        
         // Import the compiled backend routes
         const authRoutes = require('./backend/dist/routes/auth').default;
         const workoutsRouter = require('./backend/dist/routes/workouts').default;

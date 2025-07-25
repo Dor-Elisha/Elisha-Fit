@@ -1,1 +1,1 @@
-{"version":3,"file":"sharedMongoose.d.ts","sourceRoot":"","sources":["../src/sharedMongoose.ts"],"names":[],"mappings":"AAAA,OAAO,QAAQ,MAAM,UAAU,CAAC;AAIhC,eAAe,QAAQ,CAAC"}
+{"version":3,"file":"sharedMongoose.d.ts","sourceRoot":"","sources":["../src/sharedMongoose.ts"],"names":[],"mappings":"AAAA,OAAO,QAAQ,MAAM,UAAU,CAAC;AAWhC,eAAe,QAAQ,CAAC"}
