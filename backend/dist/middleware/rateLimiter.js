@@ -25,7 +25,7 @@ exports.generalLimiter = (0, express_rate_limit_1.default)({
 });
 exports.authLimiter = (0, express_rate_limit_1.default)({
     windowMs: 15 * 60 * 1000,
-    max: 5,
+    max: 20,
     message: {
         error: 'Too many authentication attempts, please try again later.',
         retryAfter: '15 minutes'

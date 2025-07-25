@@ -39,7 +39,11 @@ class App {
             crossOriginEmbedderPolicy: false,
         }));
         this.app.use((0, cors_1.default)({
-            origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+            origin: [
+                process.env.FRONTEND_URL || 'http://localhost:3000',
+                'https://elisha-fit-86fa277a8571.herokuapp.com',
+                'https://elisha-fit.herokuapp.com'
+            ],
             credentials: true,
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],

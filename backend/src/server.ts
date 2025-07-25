@@ -13,12 +13,35 @@ const app = new App();
 // Initialize database connection
 async function startServer() {
   try {
-    // Connect to MongoDB if not already connected (for local/dev)
+    // Connect to MongoDB if not already connected
     if (mongoose.connection.readyState !== 1) {
       const mongoUri = config.mongoUri || process.env.MONGODB_URI || 'mongodb://localhost:27017/elisha-fit';
-      console.log('🔗 Connecting to MongoDB for local/dev:', mongoUri);
-      await mongoose.connect(mongoUri);
-      console.log('✅ MongoDB connected (dev/local)');
+      console.log('🔗 Connecting to MongoDB:', mongoUri);
+      
+      // Configure MongoDB connection options for production
+      const options = {
+        maxPoolSize: 10,
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+        bufferMaxEntries: 0,
+        bufferCommands: false,
+        retryWrites: true
+      };
+      
+      await mongoose.connect(mongoUri, options);
+      console.log('✅ MongoDB connected');
+      
+      // Test the connection
+      const db = mongoose.connection;
+      db.on('error', (error) => {
+        console.error('❌ MongoDB connection error:', error);
+      });
+      db.on('disconnected', () => {
+        console.log('⚠️ MongoDB disconnected');
+      });
+      db.on('reconnected', () => {
+        console.log('🔄 MongoDB reconnected');
+      });
     }
     console.log('📚 Loading exercise data...');
     await ExerciseService.loadExercisesFromFile();

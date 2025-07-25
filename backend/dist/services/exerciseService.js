@@ -8,7 +8,7 @@ class ExerciseService {
     static async loadExercisesFromFile() {
         try {
             await Exercise_1.Exercise.deleteMany({});
-            const exercisesPath = path.resolve(process.cwd(), 'src/assets/data/exercises.json');
+            const exercisesPath = path.resolve(process.cwd(), '../src/assets/data/exercises.json');
             const fileContent = fs.readFileSync(exercisesPath, 'utf8');
             const data = JSON.parse(fileContent);
             const exercisesToInsert = data.exercises.map((exercise, index) => ({
