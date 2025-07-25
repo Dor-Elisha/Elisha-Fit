@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,7 +14,15 @@ async function testMongoDBConnection() {
     console.log('🔍 Testing MongoDB connection...');
     console.log('📡 MongoDB URI:', mongoUri.replace(/\/\/.*@/, '//***:***@')); // Hide credentials
     
-    await mongoose.connect(mongoUri);
+    // Configure MongoDB connection options for production
+    const options = {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      retryWrites: true
+    };
+    
+    await mongoose.connect(mongoUri, options);
     console.log('✅ MongoDB connection successful!');
     console.log('🗄️  Database:', mongoose.connection.name);
     console.log('🌐 Host:', mongoose.connection.host);
@@ -33,6 +42,19 @@ async function testMongoDBConnection() {
     });
   }
 }
+
+// CORS configuration
+app.use(cors({
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    'https://elisha-fit-86fa277a8571.herokuapp.com',
+    'https://elisha-fit.herokuapp.com'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['RateLimit-Remaining', 'RateLimit-Reset']
+}));
 
 // Basic body parsing
 app.use(express.json());
@@ -88,7 +110,7 @@ async function startServer() {
     // Load backend routes after database connection is established
     if (isProduction) {
       try {
-        // Ensure mongoose connection is ready before loading models
+ç        // Ensure mongoose connection is ready before loading models
         if (mongoose.connection.readyState !== 1) {
           console.log('⏳ Waiting for mongoose connection to be ready...');
           await new Promise((resolve) => {
