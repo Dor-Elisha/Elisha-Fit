@@ -29,7 +29,7 @@ export class ExerciseService {
       await Exercise.deleteMany({});
 
       // Read exercises.json file
-      const exercisesPath = path.resolve(process.cwd(), 'src/assets/data/exercises.json');
+      const exercisesPath = path.resolve(process.cwd(), '../src/assets/data/exercises.json');
       const fileContent = fs.readFileSync(exercisesPath, 'utf8');
       const data: ExercisesFile = JSON.parse(fileContent);
 
