@@ -1,0 +1,10 @@
+[2025-07-21T12:33:07.705Z] Connecting to MongoDB: mongodb+srv://dorelisha21:EX7zGe7NsMotGp6D@cluster0.dni9kgj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+[2025-07-21T12:33:09.395Z] Connected to MongoDB
+[2025-07-21T12:33:09.396Z] Reading exercises from: /Users/dorelisha/cursor/Elisha-Fit/src/assets/data/exercises.json
+[2025-07-21T12:33:09.400Z] Found 873 exercises in JSON
+[2025-07-21T12:33:09.401Z] Clearing existing exercises...
+[2025-07-21T12:33:10.761Z] Existing exercises cleared.
+[2025-07-21T12:33:10.762Z] Inserting new exercises...
+[2025-07-21T12:33:13.354Z] Inserted 873 exercises into the database.
+[2025-07-21T12:33:13.355Z] ✅ Upload complete!
+[2025-07-21T12:33:13.373Z] Disconnected from MongoDB

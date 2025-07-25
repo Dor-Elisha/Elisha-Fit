@@ -131,6 +131,10 @@
     </div>
   </div>
 
+  <div *ngIf="selectedExercises.length > 0" class="show-selected-exercises">
+    <span class="btn btn-primary">Show</span>
+  </div>
+
   <!-- Selected Exercises (Multiple Mode) -->
   <div *ngIf="!loading && config.multiple && selectedExercises.length > 0" class="selected-exercises">
     <h4 class="selected-title">Selected Exercises ({{ selectedExercises.length }})</h4>

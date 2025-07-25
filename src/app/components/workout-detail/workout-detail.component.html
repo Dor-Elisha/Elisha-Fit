@@ -28,7 +28,7 @@
             <i class="fas fa-dumbbell"></i>
           </div>
           <div class="title-content">
-            <h1>{{ workout.name }}</h1>
+            <h1 style="text-align: start;">{{ workout.name }}</h1>
             <p *ngIf="workout.description" class="description">{{ workout.description }}</p>
             <div class="program-meta">
               <span class="meta-item">
@@ -110,12 +110,9 @@
                 <div class="exercise-info">
                   <h4>{{ exercise.name }}</h4>
                   <div class="exercise-summary flex-column gap-2">
-                    <span *ngIf="exercise.weight" class="bg-primary rounded bg-opacity-50 px-1 d-inline-flex align-items-center">
-                      {{ exercise.weight }} kg
-                      <button class="btn btn-link btn-sm p-0 ms-2" (click)="onEditWeight(exercise)" title="Edit weight">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                    </span>
+                    <div *ngIf="exercise.weight" (click)="onEditWeight(exercise)" class="bg-primary rounded bg-opacity-50 px-1 flex-row align-items-center" style="width: fit-content; cursor: pointer;">
+                      <span>{{ exercise.weight }} kg <i class="fas fa-edit text-primary"></i></span>
+                    </div>
                     <div *ngFor="let set of [].constructor(exercise.sets); let i = index">
                       <ng-container *ngIf="!isStartMode">
                         <span class="bg-primary rounded bg-opacity-50 px-1">{{ exercise.reps }} reps - rest {{ exercise.rest }} seconds</span>
@@ -128,7 +125,7 @@
                               <span class="bg-primary rounded bg-opacity-50 px-1">{{ exercise.reps }} reps - rest {{ exercise.rest }} seconds</span>
                             </label>
                           </div>
-                          <button *ngIf="!exercise.setsCompleted[i]" class="btn btn-outline-primary btn-sm px-2 py-0" style="font-size: 0.8rem; line-height: 1.2; width: fit-content;" (click)="openRestTimer(idx, i, exercise.rest)">Start rest</button>
+                          <button *ngIf="!exercise.setsCompleted[i]" class="btn btn-outline-primary btn-sm px-2 py-0 mb-0" style="font-size: 0.8rem; width: fit-content;" (click)="openRestTimer(idx, i, exercise.rest)">Start rest</button>
                         </div>
                       </ng-container>
                     </div>
