@@ -56,42 +56,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes - in production, serve from the compiled backend
-if (isProduction) {
-  try {
-    // Import the compiled backend routes
-    const authRoutes = require('./backend/dist/routes/auth').default;
-    const workoutsRouter = require('./backend/dist/routes/workouts').default;
-    const exercisesRouter = require('./backend/dist/routes/exercises').default;
-    const userStatsRouter = require('./backend/dist/routes/user-stats').default;
-    const userRouter = require('./backend/dist/routes/user').default;
-
-    app.use('/api/v1/auth', authRoutes);
-    app.use('/api/v1/workouts', workoutsRouter);
-    app.use('/api/v1/exercises', exercisesRouter);
-    app.use('/api/v1/user-stats', userStatsRouter);
-    app.use('/api/v1/user', userRouter);
-    
-    console.log('✅ Backend API routes loaded successfully');
-  } catch (error) {
-    console.error('❌ Failed to load backend routes:', error.message);
-    // Fallback API response
-    app.use('/api/v1', (req, res) => {
-      res.status(503).json({ 
-        error: 'Backend services temporarily unavailable',
-        message: 'API integration in progress'
-      });
-    });
-  }
-} else {
-  // In development, we'll need to run the backend separately
-  app.use('/api/v1', (req, res) => {
-    res.status(503).json({ 
-      error: 'Backend not available in development mode',
-      message: 'Please start the backend server separately'
-    });
-  });
-}
+// API routes will be loaded after database connection in startServer()
 
 // Handle Angular routing - serve index.html for all non-API routes
 app.get('/', (req, res) => {
@@ -119,6 +84,55 @@ async function startServer() {
   try {
     // Test MongoDB connection first
     await testMongoDBConnection();
+    
+    // Load backend routes after database connection is established
+    if (isProduction) {
+      try {
+        // Import the compiled backend routes
+        const authRoutes = require('./backend/dist/routes/auth').default;
+        const workoutsRouter = require('./backend/dist/routes/workouts').default;
+        const exercisesRouter = require('./backend/dist/routes/exercises').default;
+        const userStatsRouter = require('./backend/dist/routes/user-stats').default;
+        const userRouter = require('./backend/dist/routes/user').default;
+
+        // Set up CORS for API routes
+        app.use('/api/v1', (req, res, next) => {
+          res.header('Access-Control-Allow-Origin', '*');
+          res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+          res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+          if (req.method === 'OPTIONS') {
+            res.sendStatus(200);
+          } else {
+            next();
+          }
+        });
+
+        app.use('/api/v1/auth', authRoutes);
+        app.use('/api/v1/workouts', workoutsRouter);
+        app.use('/api/v1/exercises', exercisesRouter);
+        app.use('/api/v1/user-stats', userStatsRouter);
+        app.use('/api/v1/user', userRouter);
+        
+        console.log('✅ Backend API routes loaded successfully');
+      } catch (error) {
+        console.error('❌ Failed to load backend routes:', error.message);
+        // Fallback API response
+        app.use('/api/v1', (req, res) => {
+          res.status(503).json({ 
+            error: 'Backend services temporarily unavailable',
+            message: 'API integration in progress'
+          });
+        });
+      }
+    } else {
+      // In development, we'll need to run the backend separately
+      app.use('/api/v1', (req, res) => {
+        res.status(503).json({ 
+          error: 'Backend not available in development mode',
+          message: 'Please start the backend server separately'
+        });
+      });
+    }
     
     // Start the server
     app.listen(PORT, () => {
